@@ -1,0 +1,2316 @@
+{
+  "generated_at": "2026-08-08T22:51:21",
+  "config": {
+    "per_collection_k": 20,
+    "ks": [
+      1,
+      3,
+      5
+    ],
+    "variants": [
+      "production"
+    ]
+  },
+  "questions": [
+    {
+      "id": "q001",
+      "question": "顺序表在第 i 个位置插入一个元素，平均需要移动多少个元素？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_24fd41910512",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 3,
+              "score": 0.8014,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 5,
+              "score": 0.6797,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 37,
+              "score": 0.5942,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 7,
+              "score": 0.5227,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 105,
+              "score": 0.5216,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q002",
+      "question": "单链表查找第 i 个节点的时间复杂度是多少？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_24fd41910512",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 5,
+              "score": 0.8803,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 32,
+              "score": 0.6651,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 21,
+              "score": 0.6343,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 7,
+              "score": 0.6294,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 37,
+              "score": 0.6134,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q003",
+      "question": "循环队列判断队空和队满的条件分别是什么？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 9,
+              "score": 0.7727,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 32,
+              "score": 0.5161,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 41,
+              "score": 0.44,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q004",
+      "question": "深度为 k 的二叉树至多有多少个节点？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_24fd41910512",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 12,
+              "score": 0.8738,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 50,
+              "score": 0.5745,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 6,
+              "score": 0.5691,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 11,
+              "score": 0.5636,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 13,
+              "score": 0.5521,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q005",
+      "question": "完全二叉树用数组存储时，下标为 i 的节点的左孩子下标是多少？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 12,
+              "score": 0.8555,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 16,
+              "score": 0.6112,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 11,
+              "score": 0.5576,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 17,
+              "score": 0.5254,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 50,
+              "score": 0.5207,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q006",
+      "question": "二叉排序树删除一个有两个孩子的节点时应该怎么做？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_24fd41910512",
+            "doc_3f570a771fd1",
+            "doc_e393694f5a06",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 16,
+              "score": 0.7392,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 6,
+              "score": 0.6042,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 12,
+              "score": 0.603,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 82,
+              "score": 0.5363,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 50,
+              "score": 0.5156,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q007",
+      "question": "AVL 树的四种旋转分别是什么？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 18,
+              "score": 0.7417,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 17,
+              "score": 0.5751,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 16,
+              "score": 0.4805,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 27,
+              "score": 0.4603,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 50,
+              "score": 0.4464,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q008",
+      "question": "邻接矩阵和邻接表分别适合稠密图还是稀疏图？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 21,
+              "score": 0.8278,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 27,
+              "score": 0.6304,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 41,
+              "score": 0.4383,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q009",
+      "question": "快速排序的最坏时间复杂度是多少？它稳定吗？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 39,
+              "score": 0.8451,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 45,
+              "score": 0.7045,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 37,
+              "score": 0.6917,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 41,
+              "score": 0.684,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 43,
+              "score": 0.665,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q010",
+      "question": "归并排序需要多少额外空间？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 41,
+              "score": 0.7943,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 40,
+              "score": 0.5863,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 45,
+              "score": 0.5551,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q011",
+      "question": "顺序查找的平均查找长度 ASL 是多少？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 30,
+              "score": 0.8248,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 29,
+              "score": 0.6061,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 32,
+              "score": 0.5101,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q012",
+      "question": "反转单链表通常用哪三个指针？",
+      "expected_document_id": "doc_3f570a771fd1",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 48,
+              "score": 0.6103,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 5,
+              "score": 0.5993,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 4,
+              "score": 0.5708,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 9,
+              "score": 0.4231,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 24,
+              "score": 0.0983,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q013",
+      "question": "Go 程序入口文件的包名和入口函数分别必须是什么？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 4,
+              "score": 0.7574,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 10,
+              "score": 0.6109,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 94,
+              "score": 0.07,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q014",
+      "question": "Go 中名称首字母的大小写代表什么可见性？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 10,
+              "score": 0.6091,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 13,
+              "score": 0.6013,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 17,
+              "score": 0.1208,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 11,
+              "score": 0.1138,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 12,
+              "score": 0.1008,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q015",
+      "question": "Go 中匿名导入（import _ \"example\"）的目的是什么？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 27,
+              "score": 0.72,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 16,
+              "score": 0.6174,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 17,
+              "score": 0.075,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 11,
+              "score": 0.05,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 12,
+              "score": 0.05,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q016",
+      "question": "Go 支持循环导入吗？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 34,
+              "score": 0.803,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 10,
+              "score": 0.6257,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 12,
+              "score": 0.6182,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 17,
+              "score": 0.0583,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 11,
+              "score": 0.025,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q017",
+      "question": "Go 里一元取反运算符是什么符号？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 54,
+              "score": 0.8118,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 52,
+              "score": 0.706,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 51,
+              "score": 0.5952,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 57,
+              "score": 0.5876,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 31,
+              "score": 0.0778,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q018",
+      "question": "Go 里 ++ 和 -- 有什么特殊限制？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 57,
+              "score": 0.6209,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.5991,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 12,
+              "score": 0.5877,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 2,
+              "score": 0.583,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 96,
+              "score": 0.5813,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q019",
+      "question": "Go 中字符串字面量可以用什么符号括起来？反引号字符串有什么限制？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 77,
+              "score": 0.7935,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 71,
+              "score": 0.7102,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 76,
+              "score": 0.6545,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 38,
+              "score": 0.6345,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 89,
+              "score": 0.5832,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q020",
+      "question": "Go 函数声明与 C 语言相比，参数类型写在哪里？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 80,
+              "score": 0.7184,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 82,
+              "score": 0.7058,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.6416,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 2,
+              "score": 0.6272,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 76,
+              "score": 0.6194,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q021",
+      "question": "Go 语言有三元表达式（三目运算符）吗？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 107,
+              "score": 0.7683,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 106,
+              "score": 0.6769,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 52,
+              "score": 0.664,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 57,
+              "score": 0.622,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.6143,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q022",
+      "question": "Go 中 if/for 语句可以省略花括号吗？",
+      "expected_document_id": "doc_e393694f5a06",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 104,
+              "score": 0.7197,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 101,
+              "score": 0.6289,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 90,
+              "score": 0.6265,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 38,
+              "score": 0.5783,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.5549,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q023",
+      "question": "Go 中整数 0 能当作假值（false）来使用吗？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 10,
+              "score": 0.6823,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 8,
+              "score": 0.6532,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 12,
+              "score": 0.5929,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 88,
+              "score": 0.5657,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 54,
+              "score": 0.5529,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q024",
+      "question": "Go 中 byte 和 rune 分别等价于什么类型？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 58,
+              "score": 0.5709,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 2,
+              "score": 0.5524,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 56,
+              "score": 0.5227,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 36,
+              "score": 0.0778,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q025",
+      "question": "Go 里 uintptr 是干什么用的？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_67b953f62c96",
+            "doc_e393694f5a06",
+            "doc_67b953f62c96",
+            "doc_5e3321826306",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 35,
+              "score": 0.6655,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 74,
+              "score": 0.6501,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 2,
+              "score": 0.6449,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.6428,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 17,
+              "score": 0.6282,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q026",
+      "question": "Go 的浮点数遵循什么标准？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_e393694f5a06",
+            "doc_67b953f62c96",
+            "doc_e393694f5a06",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 0,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 0.5,
+          "top_hits": [
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 65,
+              "score": 0.6669,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 42,
+              "score": 0.6439,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 66,
+              "score": 0.6336,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 44,
+              "score": 0.5967,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 38,
+              "score": 0.5847,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q027",
+      "question": "Go 中 complex64 表示什么？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_67b953f62c96",
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 0,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 0.5,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.7058,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 50,
+              "score": 0.6612,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 38,
+              "score": 0.6242,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 74,
+              "score": 0.6213,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 10,
+              "score": 0.613,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q028",
+      "question": "Go 中哪些类型的零值是 nil？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 98,
+              "score": 0.7618,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 92,
+              "score": 0.5992,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 81,
+              "score": 0.575,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 84,
+              "score": 0.5417,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q029",
+      "question": "Go 中布尔类型的零值是什么？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 3,
+              "score": 0.7455,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 87,
+              "score": 0.7205,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 92,
+              "score": 0.6236,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 4,
+              "score": 0.2,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 98,
+              "score": 0.1167,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q030",
+      "question": "Go 里 nil == nil 能通过编译吗？",
+      "expected_document_id": "doc_67b953f62c96",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_67b953f62c96",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 100,
+              "score": 0.8648,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 107,
+              "score": 0.8168,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 34,
+              "score": 0.7282,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 15,
+              "score": 0.7148,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 11,
+              "score": 0.7069,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q031",
+      "question": "Go 常量可以是切片、数组或接口类型吗？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 9,
+              "score": 0.6819,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 19,
+              "score": 0.6478,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 38,
+              "score": 0.6422,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 12,
+              "score": 0.627,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 2,
+              "score": 0.6244,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q032",
+      "question": "Go 声明常量时必须初始化吗？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_24fd41910512",
+            "doc_24fd41910512"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 13,
+              "score": 0.7888,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 19,
+              "score": 0.5801,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 12,
+              "score": 0.5794,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 6,
+              "score": 0.5694,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 9,
+              "score": 0.4074,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q033",
+      "question": "Go 中同一组 const 里省略赋值的常量会得到什么值？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 21,
+              "score": 0.6305,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 13,
+              "score": 0.5935,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 32,
+              "score": 0.5161,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q034",
+      "question": "Go 中 iota 的值从几开始？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.6303,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 23,
+              "score": 0.6113,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 7,
+              "score": 0.6082,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 25,
+              "score": 0.5944,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 10,
+              "score": 0.5845,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q035",
+      "question": "不同的 const 分组之间，iota 会互相影响吗？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_24fd41910512",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 34,
+              "score": 0.7573,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 32,
+              "score": 0.6199,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 25,
+              "score": 0.6142,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 6,
+              "score": 0.5682,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 27,
+              "score": 0.5666,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q036",
+      "question": "Go 语言有 enum 关键字吗？如何实现枚举？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_5e3321826306"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 36,
+              "score": 0.8208,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 80,
+              "score": 0.7193,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 38,
+              "score": 0.6653,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 48,
+              "score": 0.6476,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 40,
+              "score": 0.6018,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q037",
+      "question": "Go 枚举值可以直接转换成字符串吗？通常怎么做？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_67b953f62c96",
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 38,
+              "score": 0.7709,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 61,
+              "score": 0.6444,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 45,
+              "score": 0.6268,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 74,
+              "score": 0.597,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 89,
+              "score": 0.5784,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q038",
+      "question": "Go 常量值的来源有哪几种途径？",
+      "expected_document_id": "doc_5e3321826306",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 2,
+              "score": 0.5948,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 12,
+              "score": 0.5923,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 1,
+              "score": 0.5831,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 0,
+              "score": 0.5798,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 10,
+              "score": 0.579,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q039",
+      "question": "lim(x→0) (sin x − x)/x³ 的结果是多少？",
+      "expected_document_id": "doc_d4c6ee949f71",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_d4c6ee949f71",
+            "doc_5e3321826306",
+            "doc_3f570a771fd1",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_cuo_ti_gao_deng_shu_xue_di_san_zhang_d4c6ee949f71",
+              "index": 0,
+              "score": 0.6829,
+              "document_id": "doc_d4c6ee949f71",
+              "filename": "taylor_mistake.png"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 20,
+              "score": 0.5204,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_shu_ju_jie_gou_wan_zheng_fu_xi_bi_ji_3f570a771fd1",
+              "index": 32,
+              "score": 0.5162,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 103,
+              "score": 0.5113,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 105,
+              "score": 0.5086,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q040",
+      "question": "这道错题的正确解法用到的是哪种展开？",
+      "expected_document_id": "doc_d4c6ee949f71",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_d4c6ee949f71"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_cuo_ti_gao_deng_shu_xue_di_san_zhang_d4c6ee949f71",
+              "index": 0,
+              "score": 0.7073,
+              "document_id": "doc_d4c6ee949f71",
+              "filename": "taylor_mistake.png"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q041",
+      "question": "sin x 展开到 x³ 项是什么？",
+      "expected_document_id": "doc_d4c6ee949f71",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_d4c6ee949f71",
+            "doc_5e3321826306",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_67b953f62c96"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_cuo_ti_gao_deng_shu_xue_di_san_zhang_d4c6ee949f71",
+              "index": 0,
+              "score": 0.7019,
+              "document_id": "doc_d4c6ee949f71",
+              "filename": "taylor_mistake.png"
+            },
+            {
+              "collection": "rag_chang_liang_5e3321826306",
+              "index": 33,
+              "score": 0.5138,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 85,
+              "score": 0.5124,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_ji_ben_yu_fa_e393694f5a06",
+              "index": 41,
+              "score": 0.5114,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_shu_ju_lei_xing_67b953f62c96",
+              "index": 70,
+              "score": 0.5068,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q042",
+      "question": "北邮大创立项申请书的项目名称是什么？",
+      "expected_document_id": "doc_24fd41910512",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_24fd41910512",
+            "doc_24fd41910512",
+            "doc_24fd41910512"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 2,
+              "score": 0.6431,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 0,
+              "score": 0.6035,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 3,
+              "score": 0.5266,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "q043",
+      "question": "立项申请书预期用什么库绘制传播拓扑图？",
+      "expected_document_id": "doc_24fd41910512",
+      "results": {
+        "production": {
+          "ranked_doc_ids": [
+            "doc_24fd41910512",
+            "doc_24fd41910512",
+            "doc_24fd41910512",
+            "doc_24fd41910512",
+            "doc_24fd41910512"
+          ],
+          "recall@1": 1,
+          "recall@3": 1,
+          "recall@5": 1,
+          "mrr": 1.0,
+          "top_hits": [
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 8,
+              "score": 0.6725,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 5,
+              "score": 0.6251,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 2,
+              "score": 0.546,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 9,
+              "score": 0.5445,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_bei_jing_you_dian_da_xue_24fd41910512",
+              "index": 6,
+              "score": 0.5375,
+              "document_id": "doc_24fd41910512",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "production": {
+      "questions": 43,
+      "mrr": 0.9767,
+      "recall@1": 0.9535,
+      "recall@3": 1.0,
+      "recall@5": 1.0
+    }
+  }
+}

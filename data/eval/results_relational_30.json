@@ -1,0 +1,941 @@
+{
+  "generated_at": "2026-08-11T02:41:49.732086+00:00",
+  "config": {
+    "top_k": 8,
+    "ks": [
+      1,
+      3,
+      5
+    ]
+  },
+  "metric_semantics": "doc_coverage@K=前K个去重文档里找到的期望文档比例；all_docs@K=全部期望文档是否都在前K；mrr_any=第一个期望文档的倒数排名。关系型问题可回答的必要条件是 all_docs 高。",
+  "questions": [
+    {
+      "id": "rq001",
+      "question": "用 Go 编写一个程序：从标准输入读取一个整数，判断它是奇数还是偶数并输出。需要用到哪些语法知识？请分别说明输入读取、整数类型和条件判断是如何实现的。",
+      "relation": "synthesis",
+      "note": "答案=输入读取(fmt.Scanln/os.Stdin) + 整数类型(int) + 条件判断(if/else) 三份资料的知识拼接，单块给不出完整方案",
+      "expected_documents": [
+        "doc_542551a603e7",
+        "doc_67b953f62c96",
+        "doc_9d2929e5f287"
+      ],
+      "found_documents": [
+        "doc_67b953f62c96"
+      ],
+      "missing_documents": [
+        "doc_542551a603e7",
+        "doc_9d2929e5f287"
+      ],
+      "doc_ranking": [
+        "doc_ead7cf52dd71",
+        "doc_75627d8c5517",
+        "doc_67b953f62c96",
+        "doc_2465175ccf4b",
+        "doc_d85d9e1df100",
+        "doc_5e3321826306",
+        "doc_e393694f5a06"
+      ],
+      "doc_coverage@1": 0.0,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.3333,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.3333,
+      "all_docs@5": 0,
+      "first_rank": 3,
+      "mrr_any": 0.3333333333333333
+    },
+    {
+      "id": "rq002",
+      "question": "Go 中 const 声明的常量与 var 声明的变量，在「可变性」和「声明时的要求」上有什么区别？",
+      "relation": "compare",
+      "note": "常量(值不可变/必须初始化/只能基本类型) 与 变量(值可动态变化/分配存储位置) 各在各自文档，是跨文档对比",
+      "expected_documents": [
+        "doc_5e3321826306",
+        "doc_75627d8c5517"
+      ],
+      "found_documents": [
+        "doc_5e3321826306",
+        "doc_75627d8c5517"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_75627d8c5517",
+        "doc_5e3321826306",
+        "doc_67f86e0aceb1",
+        "doc_40926030450d",
+        "doc_e393694f5a06"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq003",
+      "question": "Go 中为什么「切片」不能用作常量的类型？这与切片自身的数据结构特性有什么关系？",
+      "relation": "why",
+      "note": "「为什么」要同时理解 常量规则(只能基本类型不能切片) 与 切片本质(不定长/容量不够自行扩容) 两个文档的事实",
+      "expected_documents": [
+        "doc_5e3321826306",
+        "doc_67f86e0aceb1"
+      ],
+      "found_documents": [
+        "doc_5e3321826306",
+        "doc_67f86e0aceb1"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_67f86e0aceb1",
+        "doc_5e3321826306",
+        "doc_40926030450d",
+        "doc_9b0b33a3685e",
+        "doc_56a675f39c23"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq004",
+      "question": "单链表和 Go 的切片都能动态增长，两者在「动态扩容」的实现方式上有什么本质区别？",
+      "relation": "compare",
+      "note": "跨领域对比：数据结构(单链表动态分配内存/修改指针) vs Go 切片(容量不够自行扩容)",
+      "expected_documents": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1"
+      ],
+      "found_documents": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_67f86e0aceb1",
+        "doc_ead7cf52dd71",
+        "doc_40926030450d",
+        "doc_3f570a771fd1",
+        "doc_9b0b33a3685e"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq005",
+      "question": "「多源图像溯源与传播链路分析智能体系统」的项目材料中，波束信号的强度分布适合用哪种图像类型呈现？",
+      "relation": "join",
+      "note": "项目背景(大创申请书) + 图表类型(传感器 PPT 二维伪彩色热力图/强度分布图) 两个领域的事实拼接",
+      "expected_documents": [
+        "doc_24fd41910512",
+        "doc_28be467a0861"
+      ],
+      "found_documents": [
+        "doc_24fd41910512"
+      ],
+      "missing_documents": [
+        "doc_28be467a0861"
+      ],
+      "doc_ranking": [
+        "doc_24fd41910512",
+        "doc_a90db09f1b7d",
+        "doc_224cb977f79b"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq006",
+      "question": "Go 的 if 语句对条件表达式有什么要求？为什么不能用数字 0 或 1 直接当作条件？",
+      "relation": "why",
+      "note": "条件控制(expression 必须是布尔表达式) 与 数据类型(数字无法代替布尔值) 互补的两份事实",
+      "expected_documents": [
+        "doc_9d2929e5f287",
+        "doc_67b953f62c96"
+      ],
+      "found_documents": [
+        "doc_67b953f62c96",
+        "doc_9d2929e5f287"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_9d2929e5f287",
+        "doc_d85d9e1df100",
+        "doc_5e3321826306",
+        "doc_67b953f62c96",
+        "doc_e393694f5a06"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq007",
+      "question": "fmt.Scanln(&a, &b) 中变量 a、b 前面为什么要加 & 符号？这与 Go 中「变量是存储位置」的概念有什么关系？",
+      "relation": "why",
+      "note": "输入输出(fmt.Scanln 的用法) 与 变量(每声明一个变量都分配一块内存存储值，& 取地址写入) 的概念关联",
+      "expected_documents": [
+        "doc_542551a603e7",
+        "doc_75627d8c5517"
+      ],
+      "found_documents": [
+        "doc_75627d8c5517"
+      ],
+      "missing_documents": [
+        "doc_542551a603e7"
+      ],
+      "doc_ranking": [
+        "doc_75627d8c5517",
+        "doc_e393694f5a06",
+        "doc_3f570a771fd1"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq008",
+      "question": "在 Go 中，声明一个 int 变量却不初始化，它的值是什么？声明切片变量和指针变量不初始化时又分别是什么？这与「零值」的概念有什么关系？",
+      "relation": "synthesis",
+      "note": "变量(var 声明后零值) 与 数据类型(零值表：数字 0/切片与指针 nil) 两块内容拼接才能答全",
+      "expected_documents": [
+        "doc_75627d8c5517",
+        "doc_67b953f62c96"
+      ],
+      "found_documents": [
+        "doc_75627d8c5517"
+      ],
+      "missing_documents": [
+        "doc_67b953f62c96"
+      ],
+      "doc_ranking": [
+        "doc_4fa9aac419d6",
+        "doc_67f86e0aceb1",
+        "doc_9b0b33a3685e",
+        "doc_5e3321826306",
+        "doc_75627d8c5517",
+        "doc_56a675f39c23",
+        "doc_2465175ccf4b"
+      ],
+      "doc_coverage@1": 0.0,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.0,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.0,
+      "all_docs@5": 0,
+      "first_rank": 6,
+      "mrr_any": 0.16666666666666666
+    },
+    {
+      "id": "rq009",
+      "question": "fmt.Printf 中的 %d、%f、%v、%T、%t 这些格式动词分别应该用于哪种数据类型？如果动词与实际参数类型不匹配会输出什么？",
+      "relation": "synthesis",
+      "note": "输入输出(格式化动词表 + 类型不匹配报 %!d(int=1)) 与 数据类型(整型/浮点/布尔类型) 两文档",
+      "expected_documents": [
+        "doc_542551a603e7",
+        "doc_67b953f62c96"
+      ],
+      "found_documents": [
+        "doc_67b953f62c96"
+      ],
+      "missing_documents": [
+        "doc_542551a603e7"
+      ],
+      "doc_ranking": [
+        "doc_67b953f62c96",
+        "doc_9d2929e5f287",
+        "doc_d85d9e1df100",
+        "doc_28be467a0861",
+        "doc_5e3321826306",
+        "doc_40926030450d",
+        "doc_4fa9aac419d6"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq010",
+      "question": "为什么 Go 的常量不能声明为函数类型？这与常量的取值规则和函数类型的数据特性有什么关系？",
+      "relation": "why",
+      "note": "常量(值只能来自字面量/其他常量、编译期确定) 与 函数(函数类型是派生类型、值需运行时创建) 的 why",
+      "expected_documents": [
+        "doc_5e3321826306",
+        "doc_40926030450d"
+      ],
+      "found_documents": [
+        "doc_40926030450d",
+        "doc_5e3321826306"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_5e3321826306",
+        "doc_40926030450d",
+        "doc_75627d8c5517",
+        "doc_e393694f5a06",
+        "doc_2465175ccf4b"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq011",
+      "question": "Go 中把字符串转成 []byte 切片后，修改这个字节切片会影响原字符串吗？字符串和切片在「可变性」上有什么本质区别？",
+      "relation": "why",
+      "note": "字符串(只读不可变字节序列、转换时新分配内存) 与 切片(可修改/append) 的可变性对比",
+      "expected_documents": [
+        "doc_ead7cf52dd71",
+        "doc_67f86e0aceb1"
+      ],
+      "found_documents": [
+        "doc_67f86e0aceb1",
+        "doc_ead7cf52dd71"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_ead7cf52dd71",
+        "doc_67b953f62c96",
+        "doc_67f86e0aceb1"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq012",
+      "question": "用 for range 遍历一个含中文的字符串，按字节和按 rune 遍历结果有什么不同？为什么说 Go 的字符串是「只读字节切片」？",
+      "relation": "synthesis",
+      "note": "循环(for range 可迭代字符串/整型等) 与 字符串(字节 vs rune/中文字符占 3 字节/UTF-8) 拼接",
+      "expected_documents": [
+        "doc_d85d9e1df100",
+        "doc_ead7cf52dd71"
+      ],
+      "found_documents": [
+        "doc_d85d9e1df100",
+        "doc_ead7cf52dd71"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_ead7cf52dd71",
+        "doc_d85d9e1df100",
+        "doc_67b953f62c96"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq013",
+      "question": "type Animal interface { Run() } 中，为什么 Dog{} 值无法赋值给 Animal 类型的变量，而 &Dog{} 可以？这与方法接收者是值还是指针有什么关系？",
+      "relation": "why",
+      "note": "方法(指针接收者实现接口/方法集) 与 接口(类型方法集是接口方法集的超集才叫实现) 两文档互补",
+      "expected_documents": [
+        "doc_2465175ccf4b",
+        "doc_66c9331f45d6"
+      ],
+      "found_documents": [
+        "doc_2465175ccf4b"
+      ],
+      "missing_documents": [
+        "doc_66c9331f45d6"
+      ],
+      "doc_ranking": [
+        "doc_2465175ccf4b",
+        "doc_5e3321826306",
+        "doc_4fa9aac419d6",
+        "doc_75627d8c5517",
+        "doc_67b953f62c96"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq014",
+      "question": "空接口 any 和空结构体 struct{} 有什么区别？它们各自的典型使用场景是什么？",
+      "relation": "compare",
+      "note": "接口(空接口所有类型实现/接收任意值) 与 结构体(空结构体零字节/作 map 值类型) 的对比",
+      "expected_documents": [
+        "doc_66c9331f45d6",
+        "doc_56a675f39c23"
+      ],
+      "found_documents": [
+        "doc_56a675f39c23",
+        "doc_66c9331f45d6"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_56a675f39c23",
+        "doc_67b953f62c96",
+        "doc_66c9331f45d6",
+        "doc_2465175ccf4b",
+        "doc_9b0b33a3685e",
+        "doc_24fd41910512"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq015",
+      "question": "用 map[string]struct{} 实现一个集合 Set 时，为什么值类型选择 struct{} 而不是 bool？",
+      "relation": "why",
+      "note": "映射表(Set 用 map 实现/不重复元素) + 结构体(空结构体不占用内存) 的 why",
+      "expected_documents": [
+        "doc_9b0b33a3685e",
+        "doc_56a675f39c23"
+      ],
+      "found_documents": [
+        "doc_9b0b33a3685e"
+      ],
+      "missing_documents": [
+        "doc_56a675f39c23"
+      ],
+      "doc_ranking": [
+        "doc_9b0b33a3685e",
+        "doc_67b953f62c96",
+        "doc_66c9331f45d6",
+        "doc_2465175ccf4b",
+        "doc_5e3321826306"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq016",
+      "question": "Go 的函数参数是值传递，为什么传入切片或指针时函数内修改能影响调用方？",
+      "relation": "why",
+      "note": "函数(传值拷贝实参) 与 指针(指针存地址、指向同一内存) 决定「拷贝引用」行为的 why",
+      "expected_documents": [
+        "doc_40926030450d",
+        "doc_4fa9aac419d6"
+      ],
+      "found_documents": [
+        "doc_40926030450d",
+        "doc_4fa9aac419d6"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_40926030450d",
+        "doc_67f86e0aceb1",
+        "doc_2465175ccf4b",
+        "doc_4fa9aac419d6",
+        "doc_ead7cf52dd71"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq017",
+      "question": "为什么 map 的键要求是可比较类型？切片和映射表为什么不能直接作为键？",
+      "relation": "why",
+      "note": "映射表(键类型必须可比较/哈希定位) + 接口(可比较类型表：数字字符串可比较、切片映射不可) 的 why",
+      "expected_documents": [
+        "doc_9b0b33a3685e",
+        "doc_66c9331f45d6"
+      ],
+      "found_documents": [
+        "doc_66c9331f45d6",
+        "doc_9b0b33a3685e"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_9b0b33a3685e",
+        "doc_67b953f62c96",
+        "doc_75627d8c5517",
+        "doc_4fa9aac419d6",
+        "doc_224cb977f79b",
+        "doc_66c9331f45d6",
+        "doc_a90db09f1b7d"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq018",
+      "question": "为什么结构体指针 p 可以写成 p.name 直接访问字段，而不用 (*p).name？Go 编译器在这里做了什么？",
+      "relation": "why",
+      "note": "结构体(指针访问字段时编译期转成 (*p).name) + 指针(解引用符 * 访问指向元素) 两文档",
+      "expected_documents": [
+        "doc_56a675f39c23",
+        "doc_4fa9aac419d6"
+      ],
+      "found_documents": [
+        "doc_56a675f39c23"
+      ],
+      "missing_documents": [
+        "doc_4fa9aac419d6"
+      ],
+      "doc_ranking": [
+        "doc_56a675f39c23",
+        "doc_2465175ccf4b",
+        "doc_67b953f62c96",
+        "doc_40926030450d",
+        "doc_e393694f5a06",
+        "doc_66c9331f45d6"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq019",
+      "question": "数据结构笔记里的哈希表用开放定址法和链地址法解决冲突，Go 的 map 底层也是哈希表。两者在「冲突处理」上可以互相印证哪些概念？",
+      "relation": "compare",
+      "note": "跨领域：数据结构(哈希函数映射关键字/冲突解决) vs Go 映射表(哈希表实现/键可比较) 概念互证",
+      "expected_documents": [
+        "doc_3f570a771fd1",
+        "doc_9b0b33a3685e"
+      ],
+      "found_documents": [
+        "doc_3f570a771fd1",
+        "doc_9b0b33a3685e"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_3f570a771fd1",
+        "doc_9b0b33a3685e",
+        "doc_40926030450d",
+        "doc_24fd41910512",
+        "doc_d85d9e1df100"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq020",
+      "question": "顺序表用连续存储、Go 切片底层也是连续数组，它们在「随机访问」和「插入删除」上的复杂度特性有什么异同？",
+      "relation": "compare",
+      "note": "数据结构(顺序表逻辑相邻物理相邻/优缺点) vs Go 切片(底层数组/append 扩容) 复杂度对比",
+      "expected_documents": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1"
+      ],
+      "found_documents": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1",
+        "doc_ead7cf52dd71",
+        "doc_e393694f5a06",
+        "doc_75627d8c5517",
+        "doc_24fd41910512"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq021",
+      "question": "数据结构笔记里的反转链表用了 prev、curr、next 三个指针，如果用 Go 的 for 循环实现，需要声明几个变量？为什么？",
+      "relation": "synthesis",
+      "note": "数据结构(反转链表三指针法) + 循环(for 迭代) + 指针(变量存地址) 三块拼接",
+      "expected_documents": [
+        "doc_3f570a771fd1",
+        "doc_d85d9e1df100",
+        "doc_4fa9aac419d6"
+      ],
+      "found_documents": [
+        "doc_3f570a771fd1",
+        "doc_d85d9e1df100"
+      ],
+      "missing_documents": [
+        "doc_4fa9aac419d6"
+      ],
+      "doc_ranking": [
+        "doc_3f570a771fd1",
+        "doc_75627d8c5517",
+        "doc_d85d9e1df100",
+        "doc_40926030450d"
+      ],
+      "doc_coverage@1": 0.3333,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.6667,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.6667,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq022",
+      "question": "笔记里的循环队列用数组加取模来复用空间，Go 里用切片实现队列通常会怎样推进下标？两者的空间利用有什么不同？",
+      "relation": "compare",
+      "note": "数据结构(循环队列取模复用数组空间) vs Go 切片(索引推进/容量不足扩容) 对比",
+      "expected_documents": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1"
+      ],
+      "found_documents": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_3f570a771fd1",
+        "doc_67f86e0aceb1",
+        "doc_ead7cf52dd71",
+        "doc_d85d9e1df100",
+        "doc_40926030450d",
+        "doc_5e3321826306"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq023",
+      "question": "传感器 PPT 里说「波束信息是时序数据」，如果要用 Go 保存一段时间内的波束强度序列并按时间顺序处理，用切片还是映射表更合适？为什么？",
+      "relation": "synthesis",
+      "note": "跨领域 join：传感器(波束时序数据) + 切片(有序动态数组) vs 映射表(键值对无序存储) 的选择推理",
+      "expected_documents": [
+        "doc_28be467a0861",
+        "doc_67f86e0aceb1",
+        "doc_9b0b33a3685e"
+      ],
+      "found_documents": [
+        "doc_28be467a0861",
+        "doc_67f86e0aceb1"
+      ],
+      "missing_documents": [
+        "doc_9b0b33a3685e"
+      ],
+      "doc_ranking": [
+        "doc_28be467a0861",
+        "doc_67f86e0aceb1",
+        "doc_d85d9e1df100",
+        "doc_24fd41910512",
+        "doc_40926030450d",
+        "doc_a90db09f1b7d"
+      ],
+      "doc_coverage@1": 0.3333,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.6667,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.6667,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq024",
+      "question": "立项申请书说「仅有图片相似度不能确定传播顺序，也无法判断源头和关键节点」，于是设计了 Analyzer Agent；传感器 PPT 里也提到「三路信息融合为联合感知三元组」。两者在「多信号/多模块融合推理」上的设计思路有什么共通之处？",
+      "relation": "join",
+      "note": "项目背景(北邮申请书 Analyzer Agent 判断源头/传播顺序) 与 传感器(三路信息融合为联合感知三元组) 跨领域 join",
+      "expected_documents": [
+        "doc_24fd41910512",
+        "doc_28be467a0861"
+      ],
+      "found_documents": [
+        "doc_24fd41910512",
+        "doc_28be467a0861"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_a90db09f1b7d",
+        "doc_24fd41910512",
+        "doc_224cb977f79b",
+        "doc_28be467a0861"
+      ],
+      "doc_coverage@1": 0.0,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 2,
+      "mrr_any": 0.5
+    },
+    {
+      "id": "rq025",
+      "question": "选项模式里 WithName 函数返回的是一个闭包（func(p *Person)），这种写法为什么依赖「函数是一等公民」这个特性？",
+      "relation": "why",
+      "note": "结构体(选项模式 PersonOptions 类型/With 前缀闭包) + 函数(函数是一等公民/函数类型/闭包) 的 why",
+      "expected_documents": [
+        "doc_56a675f39c23",
+        "doc_40926030450d"
+      ],
+      "found_documents": [
+        "doc_56a675f39c23"
+      ],
+      "missing_documents": [
+        "doc_40926030450d"
+      ],
+      "doc_ranking": [
+        "doc_56a675f39c23",
+        "doc_67b953f62c96",
+        "doc_e393694f5a06",
+        "doc_75627d8c5517",
+        "doc_66c9331f45d6"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq026",
+      "question": "new 和 make 有什么区别？为什么 new(map[string]int) 之后直接往里赋值会 panic，而 make 出来的不会？",
+      "relation": "why",
+      "note": "指针(new 返回类型指针/make 返回引用值) + 映射表(nil map 赋值 panic/必须初始化) 的 why",
+      "expected_documents": [
+        "doc_4fa9aac419d6",
+        "doc_9b0b33a3685e"
+      ],
+      "found_documents": [
+        "doc_4fa9aac419d6",
+        "doc_9b0b33a3685e"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_4fa9aac419d6",
+        "doc_9b0b33a3685e"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 1.0,
+      "all_docs@3": 1,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq027",
+      "question": "Go 中 break/continue 配合标签可以跳出或跳过外层循环，这个「标签」机制和 goto 的标签机制有什么关系？使用上有什么限制？",
+      "relation": "synthesis",
+      "note": "循环(break/continue 加标签控制外层循环) + 条件控制(label 标签语句/goto 同一函数内) 拼接",
+      "expected_documents": [
+        "doc_d85d9e1df100",
+        "doc_9d2929e5f287"
+      ],
+      "found_documents": [
+        "doc_9d2929e5f287",
+        "doc_d85d9e1df100"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_d85d9e1df100",
+        "doc_9d2929e5f287",
+        "doc_4fa9aac419d6",
+        "doc_56a675f39c23"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 1.0,
+      "all_docs@5": 1,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq028",
+      "question": "rune 和 byte 有什么区别？遍历含中文的字符串时为什么用 rune 更安全？",
+      "relation": "why",
+      "note": "字符串(rune 遍历不拆字节/中文字符 3 字节/按字节遍历乱码) + 数据类型(byte=uint8/rune=int32/UTF-8) 的 why",
+      "expected_documents": [
+        "doc_ead7cf52dd71",
+        "doc_67b953f62c96"
+      ],
+      "found_documents": [
+        "doc_67b953f62c96",
+        "doc_ead7cf52dd71"
+      ],
+      "missing_documents": [],
+      "doc_ranking": [
+        "doc_ead7cf52dd71",
+        "doc_542551a603e7",
+        "doc_67b953f62c96"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq029",
+      "question": "为什么值接收者的切片方法里执行 append 之后，调用方的切片长度并没有变？什么情况下必须用指针接收者？",
+      "relation": "why",
+      "note": "方法(值接收者拷贝/append 后需重新赋值) + 切片(append 有返回值/底层数组) 的 why",
+      "expected_documents": [
+        "doc_2465175ccf4b",
+        "doc_67f86e0aceb1"
+      ],
+      "found_documents": [
+        "doc_2465175ccf4b"
+      ],
+      "missing_documents": [
+        "doc_67f86e0aceb1"
+      ],
+      "doc_ranking": [
+        "doc_2465175ccf4b",
+        "doc_4fa9aac419d6"
+      ],
+      "doc_coverage@1": 0.5,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.5,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.5,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    },
+    {
+      "id": "rq030",
+      "question": "要实现「统计一批学生成绩的平均分」，用结构体存学生信息、用映射表按姓名索引、用 for range 累加求和，这三种数据结构/语法分别解决什么问题？",
+      "relation": "synthesis",
+      "note": "结构体(复合字段) + 映射表(按键索引) + 循环(累加遍历) 三个文档拼接的综合任务",
+      "expected_documents": [
+        "doc_56a675f39c23",
+        "doc_9b0b33a3685e",
+        "doc_d85d9e1df100"
+      ],
+      "found_documents": [
+        "doc_9b0b33a3685e",
+        "doc_d85d9e1df100"
+      ],
+      "missing_documents": [
+        "doc_56a675f39c23"
+      ],
+      "doc_ranking": [
+        "doc_d85d9e1df100",
+        "doc_9b0b33a3685e",
+        "doc_224cb977f79b",
+        "doc_a90db09f1b7d",
+        "doc_24fd41910512",
+        "doc_28be467a0861",
+        "doc_3f570a771fd1"
+      ],
+      "doc_coverage@1": 0.3333,
+      "all_docs@1": 0,
+      "doc_coverage@3": 0.6667,
+      "all_docs@3": 0,
+      "doc_coverage@5": 0.6667,
+      "all_docs@5": 0,
+      "first_rank": 1,
+      "mrr_any": 1.0
+    }
+  ],
+  "summary": {
+    "questions": 30,
+    "mrr_any": 0.9333,
+    "doc_coverage@1": 0.4333,
+    "all_docs@1": 0.0,
+    "doc_coverage@3": 0.6278,
+    "all_docs@3": 0.2667,
+    "doc_coverage@5": 0.7278,
+    "all_docs@5": 0.4667
+  }
+}

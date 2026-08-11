@@ -1,0 +1,32 @@
+# 多模态阶段依赖。
+# 基础依赖来自 requirements.txt。
+
+-r requirements.txt
+
+# 文档解析
+pypdf>=6,<7
+pdfplumber>=0.11,<0.12
+pypdfium2>=5,<6
+python-docx>=1.1,<2
+python-pptx>=1.0,<2
+pywin32>=306; sys_platform == "win32"
+pylatexenc>=2.10,<3
+ftfy>=6.1,<7
+pypinyin>=0.53,<1
+
+# 表格（Excel）入库
+openpyxl>=3.1,<4
+
+# 图片 OCR（PaddleOCR 3.x，需要 paddlepaddle>=3.0）
+# 注意：GPU 版 PaddlePaddle 不能从 PyPI 装，必须用官方源：
+#   python -m pip install paddlepaddle-gpu==3.0.0 \
+#       -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+#   （cu126 对应 CUDA 12.6；CUDA 11.8 把 cu126 换成 cu118）
+# 装好后再：pip install paddleocr==3.7.0
+paddleocr>=3.7,<4
+
+# 混合检索
+rank-bm25>=0.2,<1
+
+# 异步任务（Redis）
+redis>=5,<6

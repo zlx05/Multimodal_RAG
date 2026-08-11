@@ -1,0 +1,16 @@
+numpy
+openai
+pymilvus>=2.5,<3.1
+python-dotenv
+modelscope
+sentence-transformers
+fastapi
+uvicorn
+tiktoken  # 用于 Token 分片器
+pypinyin>=0.53,<1  # 中文资料主题转 Milvus 安全标识
+SQLAlchemy>=2.0,<2.1  # 文档元数据 / 会话 / 记忆
+pymysql>=1.1,<2  # MySQL 驱动（与 docker-compose 的 mysql 服务配套）
+langchain-openai  # Agent 问答（/chat/agent）
+langchain-classic  # 经典 AgentExecutor（非 LangGraph）
+bcrypt>=4,<6  # 密码哈希（rag11 已装 5.0.0）
+PyJWT>=2.8,<3  # JWT（HS256，纯 Python，Windows 无编译）

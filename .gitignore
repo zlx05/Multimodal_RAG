@@ -1,0 +1,29 @@
+__pycache__/
+*.pyc
+.cache_*.npz
+volumes/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Python environments and test/build caches
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# Local models, vector data and logs
+models/
+data/*
+!data/.gitkeep
+!data/README.md
+!data/eval/
+*.log
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo

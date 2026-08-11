@@ -1,0 +1,74 @@
+{"id": "q001", "question": "顺序表在第 i 个位置插入一个元素，平均需要移动多少个元素？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q002", "question": "单链表查找第 i 个节点的时间复杂度是多少？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q003", "question": "循环队列判断队空和队满的条件分别是什么？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q004", "question": "深度为 k 的二叉树至多有多少个节点？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q005", "question": "完全二叉树用数组存储时，下标为 i 的节点的左孩子下标是多少？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q006", "question": "二叉排序树删除一个有两个孩子的节点时应该怎么做？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q007", "question": "AVL 树的四种旋转分别是什么？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q008", "question": "邻接矩阵和邻接表分别适合稠密图还是稀疏图？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q009", "question": "快速排序的最坏时间复杂度是多少？它稳定吗？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q010", "question": "归并排序需要多少额外空间？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q011", "question": "顺序查找的平均查找长度 ASL 是多少？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q012", "question": "反转单链表通常用哪三个指针？", "document_id": "doc_3f570a771fd1", "filename": "data_structures.md"}
+{"id": "q013", "question": "Go 程序入口文件的包名和入口函数分别必须是什么？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q014", "question": "Go 中名称首字母的大小写代表什么可见性？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q015", "question": "Go 中匿名导入（import _ \"example\"）的目的是什么？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q016", "question": "Go 支持循环导入吗？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q017", "question": "Go 里一元取反运算符是什么符号？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q018", "question": "Go 里 ++ 和 -- 有什么特殊限制？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q019", "question": "Go 中字符串字面量可以用什么符号括起来？反引号字符串有什么限制？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q020", "question": "Go 函数声明与 C 语言相比，参数类型写在哪里？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q021", "question": "Go 语言有三元表达式（三目运算符）吗？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q022", "question": "Go 中 if/for 语句可以省略花括号吗？", "document_id": "doc_e393694f5a06", "filename": "1_grammer.html"}
+{"id": "q023", "question": "Go 中整数 0 能当作假值（false）来使用吗？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q024", "question": "Go 中 byte 和 rune 分别等价于什么类型？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q025", "question": "Go 里 uintptr 是干什么用的？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q026", "question": "Go 的浮点数遵循什么标准？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q027", "question": "Go 中 complex64 表示什么？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q028", "question": "Go 中哪些类型的零值是 nil？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q029", "question": "Go 中布尔类型的零值是什么？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q030", "question": "Go 里 nil == nil 能通过编译吗？", "document_id": "doc_67b953f62c96", "filename": "10_datatype.html"}
+{"id": "q031", "question": "Go 常量可以是切片、数组或接口类型吗？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q032", "question": "Go 声明常量时必须初始化吗？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q033", "question": "Go 中同一组 const 里省略赋值的常量会得到什么值？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q034", "question": "Go 中 iota 的值从几开始？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q035", "question": "不同的 const 分组之间，iota 会互相影响吗？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q036", "question": "Go 语言有 enum 关键字吗？如何实现枚举？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q037", "question": "Go 枚举值可以直接转换成字符串吗？通常怎么做？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q038", "question": "Go 常量值的来源有哪几种途径？", "document_id": "doc_5e3321826306", "filename": "30_constant.html"}
+{"id": "q039", "question": "lim(x→0) (sin x − x)/x³ 的结果是多少？", "document_id": "doc_d4c6ee949f71", "filename": "taylor_mistake.png"}
+{"id": "q040", "question": "这道错题的正确解法用到的是哪种展开？", "document_id": "doc_d4c6ee949f71", "filename": "taylor_mistake.png"}
+{"id": "q041", "question": "sin x 展开到 x³ 项是什么？", "document_id": "doc_d4c6ee949f71", "filename": "taylor_mistake.png"}
+{"id": "q042", "question": "北邮大创立项申请书的项目名称是什么？", "document_id": "doc_24fd41910512", "filename": "大学生创新创业训练计划立项申请书.pdf"}
+{"id": "q043", "question": "立项申请书预期用什么库绘制传播拓扑图？", "document_id": "doc_24fd41910512", "filename": "大学生创新创业训练计划立项申请书.pdf"}
+{"id": "q101", "document_id": "doc_3f570a771fd1", "question": "顺序表相比链表的优点是什么？"}
+{"id": "q102", "document_id": "doc_3f570a771fd1", "question": "栈的应用场景有哪些？"}
+{"id": "q103", "document_id": "doc_3f570a771fd1", "question": "循环队列是用什么实现的？"}
+{"id": "q104", "document_id": "doc_3f570a771fd1", "question": "二叉树的第 i 层至多有多少个节点？"}
+{"id": "q105", "document_id": "doc_3f570a771fd1", "question": "二叉树的中序遍历顺序是什么？"}
+{"id": "q106", "document_id": "doc_3f570a771fd1", "question": "二叉搜索树的查找过程是怎样的？"}
+{"id": "q107", "document_id": "doc_3f570a771fd1", "question": "二叉搜索树具有什么性质？"}
+{"id": "q108", "document_id": "doc_3f570a771fd1", "question": "图的深度优先搜索类似哪种遍历？"}
+{"id": "q109", "document_id": "doc_3f570a771fd1", "question": "图的广度优先搜索类似哪种遍历？"}
+{"id": "q110", "document_id": "doc_3f570a771fd1", "question": "迪杰斯特拉算法求的是什么？"}
+{"id": "q111", "document_id": "doc_3f570a771fd1", "question": "Prim 算法和 Kruskal 算法分别怎么选边？"}
+{"id": "q112", "document_id": "doc_3f570a771fd1", "question": "二分查找的前提条件是什么？"}
+{"id": "q113", "document_id": "doc_3f570a771fd1", "question": "哈希表的冲突解决方法有哪些？"}
+{"id": "q114", "document_id": "doc_3f570a771fd1", "question": "直接插入排序的时间复杂度和稳定性如何？"}
+{"id": "q115", "document_id": "doc_3f570a771fd1", "question": "堆排序的时间复杂度是多少？稳定吗？"}
+{"id": "q116", "document_id": "doc_3f570a771fd1", "question": "判断二叉树是否平衡的方法是什么？"}
+{"id": "q117", "document_id": "doc_e393694f5a06", "question": "Go 中用什么关键字声明函数？"}
+{"id": "q118", "document_id": "doc_e393694f5a06", "question": "Go 中匿名导入 import _ 常见用在什么场景？"}
+{"id": "q119", "document_id": "doc_e393694f5a06", "question": "Go 中 internal 包是什么？"}
+{"id": "q120", "document_id": "doc_e393694f5a06", "question": "Go 中访问其他包的标识符用什么写法？"}
+{"id": "q121", "document_id": "doc_e393694f5a06", "question": "Go 支持哪几种注释方式？"}
+{"id": "q122", "document_id": "doc_67b953f62c96", "question": "Go 中 uint8 是什么类型？"}
+{"id": "q123", "document_id": "doc_67b953f62c96", "question": "Go 中 int 类型至少是多少位？"}
+{"id": "q124", "document_id": "doc_67b953f62c96", "question": "Go 中 string 类型的本质是什么？"}
+{"id": "q125", "document_id": "doc_67b953f62c96", "question": "Go 中 complex128 表示什么？"}
+{"id": "q126", "document_id": "doc_67b953f62c96", "question": "Go 中字符串为什么兼容 UTF-8？"}
+{"id": "q127", "document_id": "doc_5e3321826306", "question": "Go 常量声明后还能修改吗？"}
+{"id": "q128", "document_id": "doc_5e3321826306", "question": "Go 常量声明时可以省略类型吗？"}
+{"id": "q129", "document_id": "doc_5e3321826306", "question": "Go 中 iota 在 const 分组里起什么作用？"}
+{"id": "q130", "document_id": "doc_5e3321826306", "question": "Go 枚举是通过什么方式实现的？"}
+{"id": "q131", "document_id": "doc_5e3321826306", "question": "Go 自实现枚举有哪些缺点？"}
