@@ -16,7 +16,12 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from .deps import get_current_user, require_admin
+from .deps import (
+    get_current_user,
+    require_admin,
+    require_asset_signature,
+    require_original_signature,
+)
 from ..core.config import DATA_DIR, MILVUS_HOST, MILVUS_PORT, RAG_ORIGINAL_DIR, RAG_WORK_DIR, REDIS_URL
 from ..db.org import (
     create_upload,
@@ -208,7 +213,7 @@ def _validate_remote_url(url: str) -> None:
 
 
 @router.get("")
-async def list_documents():
+async def list_documents(current_user: dict = Depends(get_current_user)):
     """列出已上传的资料及其索引状态。
 
     附带 task_status：上传失败的任务会留下注册记录但 collection 不存在，
@@ -303,7 +308,10 @@ async def delete_document(document_id: str, admin: dict = Depends(require_admin)
 
 
 @router.get("/{document_id}/original")
-async def get_original_document(document_id: str):
+async def get_original_document(
+    document_id: str,
+    _guard: None = Depends(require_original_signature),
+):
     record = get_document(document_id)
     source_path = Path(str((record or {}).get("source_path", "")))
     if not source_path.is_file():
@@ -320,7 +328,10 @@ async def get_original_document(document_id: str):
 
 
 @router.get("/{document_id}/assets")
-async def list_document_assets(document_id: str):
+async def list_document_assets(
+    document_id: str,
+    current_user: dict = Depends(get_current_user),
+):
     candidates: list[Path] = []
     work_root = Path(RAG_WORK_DIR)
     for directory in (work_root, Path(RAG_ORIGINAL_DIR)):
@@ -343,7 +354,11 @@ async def list_document_assets(document_id: str):
 
 
 @router.get("/{document_id}/assets/{asset_path:path}")
-async def get_document_asset(document_id: str, asset_path: str):
+async def get_document_asset(
+    document_id: str,
+    asset_path: str,
+    _guard: None = Depends(require_asset_signature),
+):
     candidate = (DATA_DIR / asset_path).resolve()
     try:
         candidate.relative_to(DATA_DIR.resolve())
@@ -361,6 +376,7 @@ async def list_document_chunks(
     document_id: str,
     limit: int = Query(default=60, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
+    current_user: dict = Depends(get_current_user),
 ):
     """Return indexed chunks and provenance for the chunk inspection view."""
     from pymilvus import Collection, connections, utility

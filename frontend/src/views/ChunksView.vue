@@ -31,7 +31,8 @@ const htmlPreviewChunks = computed(() => chunks.value.filter((chunk, index) => {
 }));
 const fileType = computed(() => store.documents.find((item) => item.document_id === selectedDocument.value)?.source_type ?? "");
 const selectedDocumentRecord = computed(() => store.documents.find((item) => item.document_id === selectedDocument.value));
-const originalUrl = computed(() => selectedDocumentRecord.value?.original_url || `/api/v1/documents/${selectedDocument.value}/original`);
+// original_url 由后端生成（签名临时 URL）；库内记录缺失时留空，避免拼出未签名链接。
+const originalUrl = computed(() => selectedDocumentRecord.value?.original_url ?? "");
 const originalKind = computed(() => {
   const filename = selectedDocumentRecord.value?.filename.toLowerCase() ?? "";
   if (filename.endsWith(".pdf")) return "pdf";

@@ -11,13 +11,19 @@
 - 用户被删除 → 401（与"无效 token"统一，避免探测账号存在性）。
 """
 
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, Header, HTTPException, Query
 from sqlalchemy.exc import SQLAlchemyError
 
 from ..db import org
 from ..core import security
 
-__all__ = ["get_current_user", "require_admin", "require_head"]
+__all__ = [
+    "get_current_user",
+    "require_admin",
+    "require_head",
+    "require_original_signature",
+    "require_asset_signature",
+]
 
 
 def get_current_user(authorization: str | None = Header(default=None)) -> dict:
@@ -66,3 +72,37 @@ def require_head(user: dict = Depends(get_current_user)) -> dict:
     if user.get("role") != "head":
         raise HTTPException(status_code=403, detail="仅班主任可执行此操作")
     return user
+
+
+def require_original_signature(
+    document_id: str,
+    exp: int = Query(default=0),
+    sign: str = Query(default=""),
+) -> None:
+    """原始资料文件必须携带有效的签名临时 URL。
+
+    `<img>` / `<iframe>` / 链接点击发不了 Bearer header，所以文件服务接口
+    用签名 URL（assets.original_url 生成）代替 header 鉴权。document_id 由
+    路径参数注入，与生成侧 `original:<id>` 一致。
+    """
+    from ..rag.assets import verify_asset_signature
+
+    if not verify_asset_signature("original", document_id, None, exp, sign):
+        raise HTTPException(status_code=403, detail="资源链接无效或已过期")
+
+
+def require_asset_signature(
+    document_id: str,
+    asset_path: str,
+    exp: int = Query(default=0),
+    sign: str = Query(default=""),
+) -> None:
+    """解析产物（图片/附件）必须携带有效的签名临时 URL。
+
+    asset_path 是签名时用的相对路径（FastAPI 解码 path 参数后与生成侧一致），
+    签名绑定 `asset:<document_id>:<asset_path>`，不能跨资源复用。
+    """
+    from ..rag.assets import verify_asset_signature
+
+    if not verify_asset_signature("asset", document_id, asset_path, exp, sign):
+        raise HTTPException(status_code=403, detail="资源链接无效或已过期")

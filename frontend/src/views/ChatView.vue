@@ -122,11 +122,6 @@ function formatTime(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString("zh-CN", { month: "numeric", day: "numeric" });
 }
 
-/** 打开整文件的入口（学生视角：定位到整体原文件）。 */
-function originalUrlOf(documentId: string): string {
-  return `/api/v1/documents/${encodeURIComponent(documentId)}/original`;
-}
-
 /** 每轮回答命中的文档，按 document_id 去重。
  *
  * 优先从 turn.sources 取（实时与历史回放都带 original_url，比 usedDocuments 稳）；
@@ -309,7 +304,7 @@ watch(() => workbench.defaultModel, (value) => {
                   <a
                     v-for="doc in matchedDocsOf(turn)"
                     :key="doc.document_id"
-                    :href="doc.original_url || originalUrlOf(doc.document_id)"
+                    :href="doc.original_url ?? ''"
                     target="_blank"
                     rel="noopener"
                     class="original-file-link"
