@@ -24,7 +24,8 @@ const steps: StateStep[] = [
   { key: "done", label: "可以检索", caption: "完成溯源索引" },
 ];
 
-const stageIndex: Record<string, number> = { "": 0, PARSING: 1, OCR: 2, CHUNKING: 3, INDEXING: 4, DONE: 5 };
+// EMBEDDING 与 INDEXING 同格：视觉上都是「向量入库」一步（Milvus + BM25）。
+const stageIndex: Record<string, number> = { "": 0, PARSING: 1, OCR: 2, CHUNKING: 3, EMBEDDING: 4, INDEXING: 4, DONE: 5 };
 const activeTasks = computed(() => store.activeTasks.slice(0, 5));
 const iconFor = (name: string) => {
   const ext = name.split(".").pop()?.toLowerCase();
@@ -164,6 +165,7 @@ async function deleteFailedTask(task: { task_id: string; document_id?: string })
           <StateRail :steps="steps" :active="taskRail(task).active" :status="taskRail(task).status" />
           <div v-if="task.status === 'FAILED'" class="task-error">
             <WarningCircle :size="15" /> {{ task.error_message || "任务处理失败" }}
+            <span v-if="task.error_code" class="task-error-code" :title="task.error_code">{{ task.error_code }}</span>
             <button class="text-button" type="button" @click="store.retry(task.task_id)">重新处理</button>
             <button v-if="task.document_id" class="text-button" type="button" :disabled="deletingDoc === task.document_id" @click="deleteFailedTask(task)">{{ deletingDoc === task.document_id ? "删除中…" : "删除残留" }}</button>
           </div>

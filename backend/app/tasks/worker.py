@@ -25,6 +25,18 @@ from ..rag.metrics import get_metrics
 
 QUEUE_KEY = "rag:ingestion:queue"
 
+# 结构化错误码：process_task 按失败时所在阶段映射，供前端按类型提示/重试。
+STAGE_ERROR_CODES = {
+    "DOWNLOAD": "DOWNLOAD_FAILED",
+    "PARSING": "PARSE_FAILED",
+    "REVIEW": "REVIEW_FAILED",
+    "INDEXING": "INDEXING_FAILED",
+}
+
+
+def error_code_for_stage(stage: str) -> str:
+    return STAGE_ERROR_CODES.get(stage, "UNKNOWN")
+
 
 class IngestionWorker:
     """后台入库 Worker。blocking 模式下无限循环消费队列。"""
@@ -71,8 +83,15 @@ class IngestionWorker:
         try:
             self.process_task(task_id)
         except Exception as exc:
+            # process_task 已捕获并标记失败（含错误码），这里只兜底 get_task/
+            # 初始 update_status 等 try 外的异常；重复标记会覆盖具体错误码，需避免。
             print(f"[worker] 任务 {task_id} 处理异常: {exc}")
-            self.tasks.mark_failed(task_id, str(exc)[:500])
+            try:
+                task = self.tasks.get_task(task_id)
+                if not task or task.get("status") != "FAILED":
+                    self.tasks.mark_failed(task_id, str(exc)[:500], error_code="UNKNOWN")
+            except Exception:
+                pass
 
     # ---------- 单任务处理 ----------
 
@@ -87,12 +106,16 @@ class IngestionWorker:
         source_path = task["source_path"]
         collection = task.get("collection_name", f"rag_{document_id}")
 
+        # stage 跟踪当前阶段：失败时按阶段映射结构化错误码（见 STAGE_ERROR_CODES）。
+        stage = "PARSING"
         self.tasks.update_status(task_id, "PENDING", stage="PARSING", progress=5)
         try:
             source_url = task.get("source_url", "")
             if source_url:
+                stage = "DOWNLOAD"
                 self._download_html(source_url, source_path)
             t0 = time.perf_counter()
+            stage = "PARSING"
             blocks = self._parse(document_id, source_path, task.get("filename", ""), source_url)
             get_metrics().observe("parse_ms", (time.perf_counter() - t0) * 1000)
             self.tasks.update_status(task_id, "PENDING", stage="OCR", progress=40)
@@ -112,6 +135,7 @@ class IngestionWorker:
                 mapping={"topic_label": topic_label, "collection_name": collection},
             )
 
+            stage = "REVIEW"
             review = self._review(document_id, task, blocks)
             upload = self._get_upload(document_id)
             # 管理员已人工放行/驳回的，以管理员为准：worker 自动校验不再覆盖台账。
@@ -153,6 +177,7 @@ class IngestionWorker:
                 )
 
             t1 = time.perf_counter()
+            stage = "INDEXING"
             chunks_count = self._index(collection, blocks, task)
             get_metrics().observe("index_ms", (time.perf_counter() - t1) * 1000)
             self.tasks.mark_succeeded(
@@ -163,10 +188,11 @@ class IngestionWorker:
             get_metrics().incr("docs_ingested")
             print(f"[worker] 任务 {task_id} 完成，入库 {chunks_count} chunks")
         except Exception as exc:
+            # 失败已在此标记（含阶段错误码），不再 re-raise：_poll_once 的 except
+            # 只兜底本 try 之外（get_task/初始 update_status）的异常，避免重复标记。
             print(f"[worker] 任务 {task_id} 失败: {exc}")
             get_metrics().incr("docs_failed")
-            self.tasks.mark_failed(task_id, str(exc)[:500])
-            raise
+            self.tasks.mark_failed(task_id, str(exc)[:500], error_code=error_code_for_stage(stage))
 
     def _parse(self, document_id: str, source_path: str, filename: str = "", source_url: str = ""):
         """解析文档为 DocumentBlock 列表。"""
@@ -292,8 +318,15 @@ class IngestionWorker:
             params["embedder"] = pipeline.embedder
         chunker = get_chunker(profile.chunker, **params)
 
+        # build 内嵌的 EMBEDDING/INDEXING 阶段点：chunking 完成后、向量化前切到
+        # EMBEDDING，批处理入库完成后切到 INDEXING（见 hybrid_pipeline.build on_stage）。
+        def _on_stage(stage_name: str, progress: int) -> None:
+            self.tasks.update_status(
+                task["task_id"], "PENDING", stage=stage_name, progress=progress
+            )
+
         self.tasks.update_status(task["task_id"], "PENDING", stage="CHUNKING", progress=60)
-        n = pipeline.build(blocks, chunker, profile=profile)
+        n = pipeline.build(blocks, chunker, profile=profile, on_stage=_on_stage)
         self.tasks.client.hset(
             self.tasks.KEY_PREFIX + task["task_id"],
             mapping={"chunk_profile": profile.id, "chunker": profile.chunker},

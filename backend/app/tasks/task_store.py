@@ -90,9 +90,14 @@ class TaskStore:
         if extra:
             self.client.hset(self.KEY_PREFIX + task_id, mapping=extra)
 
-    def mark_failed(self, task_id: str, error_message: str) -> None:
-        """标记任务失败，记录错误信息。"""
+    def mark_failed(self, task_id: str, error_message: str, error_code: str = "UNKNOWN") -> None:
+        """标记任务失败，记录结构化错误码 + 面向用户的错误信息。
+
+        error_code 是稳定机器可读标识（如 PARSE_FAILED / INDEXING_FAILED），
+        供前端/运维按类型提示或重试；error_message 保留原始异常文本供排查。
+        """
         self.update_status(task_id, "FAILED", error_message=error_message)
+        self.client.hset(self.KEY_PREFIX + task_id, mapping={"error_code": error_code})
 
     # ---------- 查询 ----------
 

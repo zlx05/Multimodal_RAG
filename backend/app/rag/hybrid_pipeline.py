@@ -10,7 +10,7 @@
 import os
 import threading
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 from pymilvus import (
@@ -215,12 +215,16 @@ class HybridRAGPipeline:
         blocks: list[Any],
         chunker,
         profile: ChunkingProfile | None = None,
+        on_stage: Callable[[str, int], None] | None = None,
     ) -> int:
         """把解析得到的 DocumentBlock 列表分块后入库。
 
         Args:
             blocks: 解析器产出的 DocumentBlock 列表。
             chunker: 分块器，chunk() 方法接收文本返回块列表。
+            on_stage: 可选阶段回调 on_stage(stage, progress)。分块完成后、向量化前
+                触发 EMBEDDING；向量化批处理完成后触发 INDEXING。由调用方（worker）
+                把阶段/进度写回任务状态，build 只在正确的时点触发回调。
 
         Returns:
             入库的 chunk 数。
@@ -338,6 +342,10 @@ class HybridRAGPipeline:
             print("[hybrid] 没有可入库的 chunk")
             return 0
 
+        # 向量化（embedding）是耗时长段：进入前切到 EMBEDDING，批处理完成后切到 INDEXING。
+        if on_stage:
+            on_stage("EMBEDDING", 75)
+
         # 批量 embedding + 插入 Milvus
         for start in range(0, len(rows), INDEX_BATCH_SIZE):
             batch = rows[start : start + INDEX_BATCH_SIZE]
@@ -360,6 +368,8 @@ class HybridRAGPipeline:
                     vectors,
                 ]
             )
+        if on_stage:
+            on_stage("INDEXING", 90)
         self.collection.flush()
         self.collection.load()
 
