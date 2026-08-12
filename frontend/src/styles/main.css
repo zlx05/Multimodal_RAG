@@ -515,6 +515,52 @@ em {
   align-items: start;
 }
 
+/* 聊天式对话重构：右主区纵向三段（工具条 / 消息流 / 底部输入条）撑满行高。
+   .chat-layout(1032) 的 align-items:start 在文件更后定义，这里用高特异度覆盖为 stretch。 */
+.chat-layout.chat-with-history {
+  align-items: stretch;
+  height: calc(100dvh - 170px);
+  min-height: 480px;
+}
+
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.chat-main .answer-progress {
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
+.chat-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.chat-toolbar .scope-control {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.chat-toolbar .manual-scope {
+  flex: 1 1 200px;
+  margin: 0;
+  max-width: 340px;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
 .history-panel {
   padding: 16px;
   position: sticky;
@@ -838,9 +884,7 @@ em {
 .progress-heading,
 .answer-heading,
 .inspector-heading,
-.task-card-head,
-.question-toolbar,
-.question-footer {
+.task-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1283,6 +1327,15 @@ em {
   color: var(--ink-faint);
 }
 
+.task-error-code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--surface-raised);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.66rem;
+  color: var(--ink-faint);
+}
+
 .field-block,
 .model-switcher {
   display: grid;
@@ -1298,24 +1351,12 @@ em {
   font-weight: 650;
 }
 
-.question-toolbar {
-  align-items: flex-start;
-  margin-top: 28px;
-  margin-bottom: 22px;
-}
-
-.question-toolbar > .field-block {
-  min-width: 0;
-  flex: 1;
-}
-
 .model-switcher {
   width: min(245px, 40%);
 }
 
 .control-select,
 .model-switcher select,
-.question-input,
 .control-input {
   width: 100%;
   border: 1px solid var(--line-strong);
@@ -1335,20 +1376,6 @@ em {
   padding: 0 10px;
 }
 
-.question-input {
-  display: block;
-  min-height: 176px;
-  margin-top: 8px;
-  padding: 13px;
-  resize: vertical;
-  line-height: 1.65;
-}
-
-.question-input::placeholder {
-  color: var(--ink-faint);
-}
-
-.question-input:focus,
 .control-select:focus,
 .model-switcher select:focus {
   border-color: var(--accent);
@@ -1366,11 +1393,6 @@ em {
 
 .security-caption {
   color: var(--success);
-}
-
-.question-footer {
-  align-items: center;
-  margin-top: 15px;
 }
 
 .helper-text {
@@ -1525,27 +1547,6 @@ em {
   overflow-y: hidden;
 }
 
-.chat-intro-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.chat-intro-row h2 {
-  margin-top: 7px;
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
-}
-
-.scope-summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding-top: 4px;
-  color: var(--ink-faint);
-  font-size: 0.72rem;
-}
-
 .scope-control {
   display: grid;
   gap: 7px;
@@ -1586,10 +1587,6 @@ em {
   max-width: 560px;
   gap: 7px;
   margin: -7px 0 20px;
-}
-
-.question-label {
-  margin-top: 3px;
 }
 
 .answer-trace {
@@ -1677,6 +1674,32 @@ em {
   padding-left: 7px;
   border-left: 1px solid currentColor;
   opacity: 0.82;
+}
+
+.clarification-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.clarification-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.clarification-chip:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-soft));
+  border-color: var(--accent);
 }
 
 .sources-panel {
@@ -2383,9 +2406,7 @@ em {
 
   .workspace-intro,
   .section-heading,
-  .chunk-toolbar,
-  .question-toolbar,
-  .question-footer {
+  .chunk-toolbar {
     display: grid;
     align-items: start;
   }
@@ -2446,14 +2467,6 @@ em {
   .model-switcher,
   .compact-field {
     width: 100%;
-  }
-
-  .question-footer {
-    gap: 12px;
-  }
-
-  .question-footer .primary-button {
-    justify-self: start;
   }
 
   .url-import {
@@ -3074,6 +3087,47 @@ em {
   max-height: 62dvh;
   overflow-y: auto;
   padding-right: 6px;
+}
+
+/* 聊天式对话：消息流占满主区剩余高度，空状态垂直居中。 */
+.chat-main .conversation {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.chat-main .empty-state.large {
+  margin: auto;
+}
+
+/* 底部输入条：textareas 透明无边框，Enter 发送、Shift+Enter 换行。 */
+.chat-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.chat-composer-input {
+  flex: 1;
+  min-height: 24px;
+  max-height: 140px;
+  padding: 5px 2px;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.6;
+}
+
+.chat-composer-input::placeholder {
+  color: var(--ink-faint);
 }
 
 .turn {

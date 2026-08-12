@@ -49,6 +49,17 @@ onMounted(() => {
   void store.bootstrap();
 });
 
+// 登录态变化（登录/引导设密/登出）后刷新工作台数据。初始加载若落在登录页，
+// bootstrap 会在无 token 下跑过（documents 401 为空），登录成功必须重拉，
+// 否则首页会一直显示"知识库还没有资料"。已登录刷新时 identity 在路由守卫里
+// 先恢复好，watch 只在变化时触发，不会造成重复请求。
+watch(
+  () => auth.identity,
+  (identity) => {
+    if (identity) void store.bootstrap();
+  },
+);
+
 watch(() => route.path, () => window.scrollTo({ top: 0, behavior: "smooth" }));
 </script>
 

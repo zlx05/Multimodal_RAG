@@ -15,7 +15,7 @@ import SourceList from "@/components/SourceList.vue";
 import StateRail from "@/components/StateRail.vue";
 import { renderMarkdown } from "@/utils/markdown";
 import { api } from "@/api/client";
-import type { Conversation, SearchSource, UsedDocument } from "@/api/types";
+import type { AgentRetrievalInfo, Conversation, SearchSource, UsedDocument } from "@/api/types";
 import { useAuthStore } from "@/stores/auth";
 import { useChatStore } from "@/stores/chat";
 import { useWorkbenchStore } from "@/stores/workbench";
@@ -49,8 +49,6 @@ const canAsk = computed(() => Boolean(
   && status.value !== "active"
   && (chatStore.scope !== "selected" || chatStore.selectedDocument),
 ));
-const scopeLabel = computed(() => ({ auto: "自动选择", all: "全部资料", selected: "指定资料" }[chatStore.scope]));
-
 /** 学生视角：不展示召回片段（SourceList 隐藏），只留「定位到整体原文件」链接。 */
 const isMember = computed(() => auth.identity?.role === "member");
 
@@ -70,15 +68,15 @@ function newConversation() {
   status.value = "idle";
 }
 
-async function ask() {
-  if (!canAsk.value) return;
+/** 发送一条消息并驱动 /chat/agent 问答（输入框 / 澄清问题共用）。 */
+async function sendMessage(text: string) {
+  if (status.value === "active" || !text.trim()) return;
   errorMessage.value = "";
   status.value = "active";
   activeStep.value = 0;
   const documentIds = chatStore.scope === "selected" ? [chatStore.selectedDocument] : [];
-  chatStore.turns.push({ role: "user", content: question.value.trim(), sources: [], usedDocuments: [], trace: [] });
-  const questionText = question.value.trim();
-  question.value = "";
+  chatStore.turns.push({ role: "user", content: text.trim(), sources: [], usedDocuments: [], trace: [] });
+  const questionText = text.trim();
 
   try {
     activeStep.value = 1;
@@ -111,6 +109,23 @@ async function ask() {
     chatStore.turns.push({ role: "assistant", content: errorMessage.value, sources: [], usedDocuments: [], trace: [], error: true });
     activeStep.value = 0;
   }
+}
+
+async function ask() {
+  if (!canAsk.value) return;
+  const text = question.value.trim();
+  question.value = "";
+  void sendMessage(text);
+}
+
+/** 澄清门控（Phase 5）：证据不足时后端反问的澄清问题；正常回答为空列表。 */
+function clarificationQuestionsOf(turn: { retrieval?: AgentRetrievalInfo }) {
+  return turn.retrieval?.evidence?.clarification?.questions ?? [];
+}
+
+/** 点击澄清问题：直接作为新消息发出（复用发送路径，不污染输入框）。 */
+function askClarification(q: string) {
+  void sendMessage(q);
 }
 
 function formatTime(ts: number): string {
@@ -226,44 +241,24 @@ watch(() => workbench.defaultModel, (value) => {
     </aside>
 
     <div class="chat-main">
-      <div class="question-panel panel">
-        <div class="chat-intro-row">
-          <div>
-            <h2>从问题开始</h2>
-          </div>
-          <div class="chat-intro-actions">
-            <span class="scope-summary"><MagnifyingGlass :size="15" /> {{ scopeLabel }}</span>
-            <button class="quiet-link history-toggle" type="button" @click="showHistory = !showHistory"><ChatsCircle :size="15" /> 历史</button>
-            <button v-if="chatStore.conversationId" class="quiet-link" type="button" title="清空本轮对话" @click="newConversation">新会话</button>
+      <div class="chat-toolbar">
+        <div class="scope-control" role="group" aria-label="资料范围">
+          <div class="scope-options">
+            <button v-for="option in ([['auto', '自动选择'], ['all', '全部资料'], ['selected', '指定资料']] as const)" :key="option[0]" class="scope-option" :class="{ active: chatStore.scope === option[0] }" type="button" @click="setScope(option[0])">
+              {{ option[1] }}
+            </button>
           </div>
         </div>
-
-        <div class="question-toolbar">
-          <div class="scope-control" role="group" aria-label="资料范围">
-            <span class="field-label">资料范围</span>
-            <div class="scope-options">
-              <button v-for="option in ([['auto', '自动选择'], ['all', '全部资料'], ['selected', '指定资料']] as const)" :key="option[0]" class="scope-option" :class="{ active: chatStore.scope === option[0] }" type="button" @click="setScope(option[0])">
-                {{ option[1] }}
-              </button>
-            </div>
-          </div>
-          <ModelSwitcher :models="workbench.models" :model="chatStore.selectedModel" @change="updateModel" />
-        </div>
-
         <div v-if="showManualScope" class="manual-scope">
-          <label class="field-label" for="document-select">选择一份资料</label>
           <select id="document-select" v-model="chatStore.selectedDocument" class="control-select" @change="chatStore.persist()">
             <option value="" disabled>选择资料</option>
             <option v-for="document in completedDocuments" :key="document.document_id" :value="document.document_id">{{ document.topic_label || document.filename }} · {{ document.filename }}</option>
           </select>
         </div>
-
-        <label class="field-label question-label" for="question-input">问题</label>
-        <textarea id="question-input" v-model="question" class="question-input" rows="5" placeholder="例如：泰勒展开的使用条件是什么？" @keydown.meta.enter="ask" @keydown.ctrl.enter="ask"></textarea>
-        <div class="question-footer">
-          <span class="helper-text"><MagnifyingGlass :size="15" /> 自动从资料库定位相关片段</span>
-          <button class="primary-button" type="button" :disabled="!canAsk" @click="ask"><Sparkle :size="18" weight="bold" /> {{ status === "active" ? "处理中" : "开始回答" }} <ArrowRight :size="16" /></button>
-        </div>
+        <ModelSwitcher :models="workbench.models" :model="chatStore.selectedModel" @change="updateModel" />
+        <span class="toolbar-spacer"></span>
+        <button class="quiet-link history-toggle" type="button" @click="showHistory = !showHistory"><ChatsCircle :size="15" /> 历史</button>
+        <button v-if="chatStore.conversationId" class="quiet-link" type="button" title="清空本轮对话" @click="newConversation">新会话</button>
       </div>
 
       <div v-if="status === 'active' || status === 'error'" class="answer-progress panel">
@@ -325,6 +320,14 @@ watch(() => workbench.defaultModel, (value) => {
                   <span v-if="turn.retrieval.evidence.escalated" class="escalated-mark">已扩全库</span>
                 </span>
               </div>
+              <div v-if="clarificationQuestionsOf(turn).length" class="clarification-row">
+                <span
+                  v-for="(q, qi) in clarificationQuestionsOf(turn)"
+                  :key="qi"
+                  class="clarification-chip"
+                  @click="askClarification(q)"
+                >{{ q }}</span>
+              </div>
               <details v-if="turn.trace.length" class="trace-details">
                 <summary>Agent 轨迹（{{ turn.trace.length }} 次工具调用）</summary>
                 <div v-for="(step, stepIndex) in turn.trace" :key="stepIndex" class="trace-step">
@@ -337,6 +340,18 @@ watch(() => workbench.defaultModel, (value) => {
             </div>
           </div>
         </template>
+      </div>
+
+      <div class="chat-composer">
+        <textarea
+          id="question-input"
+          v-model="question"
+          class="chat-composer-input"
+          rows="2"
+          placeholder="输入你的问题，Enter 发送，Shift+Enter 换行…"
+          @keydown.enter.exact.prevent="ask"
+        ></textarea>
+        <button class="primary-button" type="button" :disabled="!canAsk" @click="ask"><Sparkle :size="18" weight="bold" /> {{ status === "active" ? "处理中" : "发送" }} <ArrowRight :size="16" /></button>
       </div>
     </div>
   </section>
