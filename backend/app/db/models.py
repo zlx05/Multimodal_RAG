@@ -29,7 +29,7 @@ class Document(Base):
     source_path: Mapped[str] = mapped_column(String(1024), nullable=False)
     collection_name: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     topic_label: Mapped[str] = mapped_column(String(255), nullable=False, default="")
-    content_hash: Mapped[str] = mapped_column(String(64), nullable=False, default="")
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False, default="", index=True)
     source_type: Mapped[str] = mapped_column(String(32), nullable=False, default="")
     source_url: Mapped[str] = mapped_column(String(2048), nullable=False, default="")
     chunk_profile: Mapped[str] = mapped_column(String(64), nullable=False, default="")

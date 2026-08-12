@@ -131,6 +131,19 @@ def get_document(document_id: str) -> dict[str, Any] | None:
         return _to_dict(row) if row is not None else None
 
 
+def get_by_content_hash(content_hash: str) -> list[dict[str, Any]]:
+    """按 content_hash 返回 documents 记录列表（无则空列表）。
+
+    空 hash（URL 上传）直接返回空，不做匹配。不设唯一约束：URL 上传
+    content_hash="" 也会落库，无法做唯一索引，同一 hash 允许多条记录并存。
+    """
+    if not content_hash:
+        return []
+    with _session_factory() as db:
+        rows = db.query(Document).filter(Document.content_hash == content_hash).all()
+        return [_to_dict(row) for row in rows]
+
+
 def remove_document(document_id: str) -> dict[str, Any] | None:
     with _session_factory() as db:
         row = db.get(Document, document_id)

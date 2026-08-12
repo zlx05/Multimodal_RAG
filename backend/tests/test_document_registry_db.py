@@ -153,3 +153,21 @@ def test_list_documents_source_path_glob_fallback(sqlite_db, tmp_path):
     item = next((d for d in docs if d["document_id"] == "doc_glob"), None)
     assert item is not None
     assert item["source_path"] == str(missing)
+
+
+def test_get_by_content_hash_matches_and_empty(sqlite_db):
+    dr.register_document(
+        document_id="doc_a", filename="a.md", source_path="/tmp/a.md",
+        content_hash="hash-aaa", source_type="md",
+    )
+    dr.register_document(
+        document_id="doc_b", filename="b.md", source_path="/tmp/b.md",
+        content_hash="hash-bbb", source_type="md",
+    )
+
+    matched = dr.get_by_content_hash("hash-aaa")
+    assert [d["document_id"] for d in matched] == ["doc_a"]
+
+    # 空 hash（URL 上传语义）与不存在的 hash 都返回空列表
+    assert dr.get_by_content_hash("") == []
+    assert dr.get_by_content_hash("no-such-hash") == []

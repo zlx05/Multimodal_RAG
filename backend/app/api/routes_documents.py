@@ -30,6 +30,7 @@ from ..db.org import (
     hidden_document_ids,
 )
 from ..rag.document_registry import (
+    get_by_content_hash,
     get_document,
     list_documents as list_registered_documents,
     register_document,
@@ -57,6 +58,47 @@ class UrlIngestRequest(BaseModel):
 
 # 单实例共享 TaskStore
 _task_store = TaskStore(REDIS_URL)
+
+# 同 content_hash 查重时，各 uploads 状态的优先级（数值大者优先返回）
+_UPLOAD_STATUS_PRIORITY = {"approved": 4, "rejected": 3, "pending": 2, "hidden": 1}
+
+
+def _existing_by_hash(content_hash: str) -> dict | None:
+    """查重：按 hash 找已存在记录中状态最"有用"的一条，附带 uploads 状态。
+
+    状态优先级 approved > rejected > pending > hidden（同 hash 多条时取最高优先）。
+    content_hash 为空（URL 上传）返回 None，不做查重。
+    返回 dict：document_id / filename / status / content_hash / upload_id / review_note。
+    """
+    if not content_hash:
+        return None
+    best = None
+    for record in get_by_content_hash(content_hash):
+        upload = get_upload_by_document(record["document_id"]) or {}
+        status = upload.get("status") or "pending"
+        priority = _UPLOAD_STATUS_PRIORITY.get(status, 2)
+        if best is None or priority > best["_priority"]:
+            best = {
+                "document_id": record["document_id"],
+                "filename": record.get("filename", ""),
+                "status": status,
+                "content_hash": content_hash,
+                "upload_id": upload.get("id", ""),
+                "review_note": upload.get("review_note", ""),
+                "_priority": priority,
+            }
+    if best:
+        best.pop("_priority")
+    return best
+
+
+def _duplicate_message(existing: dict) -> str:
+    if existing["status"] == "approved":
+        return f"内容重复：已存在该资料（{existing['filename']}），无需重新上传。"
+    if existing["status"] == "rejected":
+        note = existing.get("review_note") or ""
+        return f"内容重复：相同资料此前已被驳回{f'（原因：{note}）' if note else ''}，请勿重复上传。"
+    return f"内容重复：该资料正在上传处理中（{existing['filename']}）。"
 
 
 @router.post("")
@@ -99,6 +141,24 @@ async def upload_document(
             out.write(chunk)
 
     content_hash = digest.hexdigest()
+
+    # 查重：同一内容（sha256 相同）已存在则 409 拒绝，不建第二个索引。
+    # 命中时本次只写入了 save_path 文件，清理掉即无孤儿（尚未落库/建任务）。
+    existing = _existing_by_hash(content_hash)
+    if existing:
+        save_path.unlink(missing_ok=True)
+        detail = {
+            "message": _duplicate_message(existing),
+            "document_id": existing["document_id"],
+            "filename": existing["filename"],
+            "status": existing["status"],
+            "content_hash": existing["content_hash"][:16],
+            "upload_id": existing["upload_id"],
+        }
+        if existing["status"] == "rejected" and existing["review_note"]:
+            detail["review_note"] = existing["review_note"]
+        raise HTTPException(status_code=409, detail=detail)
+
     record = register_document(
         document_id=document_id,
         filename=filename,
