@@ -214,11 +214,14 @@ def main() -> None:
 
             # --- B. ReAct ---
             react_docs, react_metrics, tool_calls, react_failed = [], {}, 0, False
+            intent_expansions: list[str] = []
             try:
                 req = ChatRequest(question=question, top_k=args.top_k, scope="auto")
                 intent = stage_intent(req, llm, gateway, profile=None, chat_history=[])
+                intent_expansions = list(getattr(intent, "expansions", None) or [])
                 react = stage_react(
-                    req, llm, gateway, intent.decision, intent.rewritten, [], profile=None
+                    req, llm, gateway, intent.decision, intent.rewritten, [], profile=None,
+                    expansions=intent.expansions,
                 )
                 react_docs = _evidence_doc_ranking(react.ctx.fused)
                 react_metrics = evaluate_relational(react_docs, expected, ks=ks)
@@ -239,6 +242,7 @@ def main() -> None:
                 "id": qid,
                 "question": question,
                 "relation": q.get("relation", ""),
+                "expansions": intent_expansions,
                 "expected_documents": expected,
                 "single_pass": {
                     "doc_ranking": single_docs[: max(ks) * 2],

@@ -1,0 +1,10 @@
+{"id": "cls001", "question": "go语言怎么学？我应该先从哪开始？", "document_ids": ["doc_e393694f5a06", "doc_67b953f62c96", "doc_542551a603e7"], "relation": "vague", "note": "真模糊开放式问题（同 bq001）：无单一主题，答案取决于学习路径策略，主要在教学法不在文档库。关键验证题——期望触发澄清门控反问用户；若 ReAct 补检后证据 ≥0.4 而不触发，则是「只证据不足触发」策略的 gap，必须诚实报告。"}
+{"id": "cls002", "question": "量子计算和深度学习有什么关系？", "document_ids": [], "relation": "out_of_scope", "note": "超纲题：库里没有任何量子计算/深度学习相关文档，检索应为 no_evidence。期望触发反问（或提示不在资料范围）。"}
+{"id": "cls003", "question": "给我讲讲这个吧", "document_ids": [], "relation": "no_topic", "note": "无主题题：没有指代对象，改写后问题可能仍为空/无意义，检索应为 no_evidence。期望触发反问。此题的 rewritten 也可能为 null，检验门控对改写失败路径的兜底。"}
+{"id": "cls004", "question": "用 Go 编写一个程序：从标准输入读取一个整数，判断它是奇数还是偶数并输出。需要用到哪些语法知识？请分别说明输入读取、整数类型和条件判断是如何实现的。", "document_ids": ["doc_542551a603e7", "doc_67b953f62c96", "doc_9d2929e5f287"], "relation": "normal", "note": "正常精确题（同 rq001）：主题明确、文档内可答，检索应充分。期望不触发，直接给出忠实答案（对照基线）。"}
+{"id": "cls005", "question": "Go 中 const 声明的常量与 var 声明的变量，在「可变性」和「声明时的要求」上有什么区别？", "document_ids": ["doc_5e3321826306", "doc_75627d8c5517"], "relation": "normal", "note": "正常对比题（同 rq002）：跨文档对比，证据充分。期望不触发。"}
+{"id": "cls006", "question": "什么是面向对象？Go 里怎么实现面向对象？", "document_ids": ["doc_56a675f39c23", "doc_2465175ccf4b", "doc_66c9331f45d6"], "relation": "normal", "note": "口语化跨文档拼接题（同 bq002）：主题明确非模糊，ReAct 可自主补检，证据应充分。期望不触发。"}
+{"id": "cls007", "question": "数据结构里的链表，和 Go 的切片、指针有什么关系？", "document_ids": ["doc_3f570a771fd1", "doc_67f86e0aceb1", "doc_4fa9aac419d6"], "relation": "normal", "note": "口语化跨文档桥接题（同 bq005）：主题明确，证据应充分。期望不触发。"}
+{"id": "cls008", "question": "我想写一个完整的小程序，需要用到哪些语法知识？", "document_ids": ["doc_e393694f5a06", "doc_542551a603e7", "doc_40926030450d"], "relation": "borderline", "note": "开放场景题（同 bq007）：场景明确但有主题锚点，介于模糊与清晰之间。探索题——触发与否都记录，作为门控边界的观察样本。"}
+{"id": "cls009", "question": "Go 中为什么「切片」不能用作常量的类型？这与切片自身的数据结构特性有什么关系？", "document_ids": ["doc_5e3321826306", "doc_67f86e0aceb1"], "relation": "normal", "note": "正常 why 题（同 rq003）：需跨文档理解，证据应充分。期望不触发。"}
+{"id": "cls010", "question": "Go 语言中切片和数组有什么区别？", "document_ids": ["doc_67f86e0aceb1", "doc_542551a603e7"], "relation": "normal", "note": "正常精确对比题：单一主题、文档内可答，证据应充分。期望不触发。"}
