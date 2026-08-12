@@ -40,6 +40,7 @@ from ..rag.agent_rag import (
     AgentChatContext,
     RouterDecision,
     build_executor,
+    estimate_tokens,
     expand_query,
     generate_clarification_questions,
     judge_vague_question,
@@ -698,6 +699,11 @@ async def chat_ask_with_llm(req: ChatRequest):
 # 只保留最近 RECENT_WINDOW 条原文。摘要存为 role="system" 的消息。
 RECENT_WINDOW = 8
 COMPRESS_THRESHOLD = 14
+# 历史上下文 token 硬预算（预防性守卫）：调 LLM 前把「摘要 + 最近原文」按 token 封顶，
+# 超限时从最旧开始丢（最新一条强制保留），防止粘贴超长文本撑爆模型上下文窗口。
+HISTORY_MAX_TOKENS = 3000
+# 单条历史消息进上下文时的正文截断长度。
+HISTORY_MSG_CHARS = 3000
 # 画像进化的触发门槛：回答超过该长度才做一次 LLM 画像判断（省 token，弱信号不误判）
 PROFILE_EVOLUTION_MIN_ANSWER = 200
 # 证据充分性门控（Phase 3）：top-k 里最高分低于该阈值视为证据不足；
@@ -821,11 +827,25 @@ def _load_chat_history(conversation_id: str, user_id: str) -> list:
         history.append(
             SystemMessage(content=f"以下是与此学生此前的对话摘要（作为背景，不必重复验证）：\n{summary}")
         )
-    for msg in recent:
-        if msg["role"] == "user":
-            history.append(HumanMessage(content=msg["content"]))
-        elif msg["role"] == "assistant":
-            history.append(AIMessage(content=msg["content"]))
+
+    # 历史上下文 token 硬预算：摘要占掉一部分后，最近原文从新到旧装进剩余预算，
+    # 最旧装不下的直接丢弃；最新一条强制进（保证「刚才那个」类追问有紧邻上下文）。
+    budget = HISTORY_MAX_TOKENS
+    if history:
+        budget -= estimate_tokens(str(history[0].content))
+    loaded: list = []
+    for idx, msg in enumerate(reversed(recent)):
+        content = str(msg["content"] or "")[:HISTORY_MSG_CHARS].strip()
+        if not content:
+            continue
+        tokens = estimate_tokens(content)
+        if idx > 0 and budget - tokens < 0:
+            break
+        budget -= tokens
+        loaded.append(
+            HumanMessage(content=content) if msg["role"] == "user" else AIMessage(content=content)
+        )
+    history.extend(reversed(loaded))
     return history
 
 

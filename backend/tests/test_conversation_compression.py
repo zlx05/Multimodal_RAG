@@ -11,6 +11,8 @@ from sqlalchemy.pool import StaticPool
 from backend.app.core.database import Base
 from backend.app.db import org
 from backend.app.api.routes_retrieval import (
+    HISTORY_MAX_TOKENS,
+    HISTORY_MSG_CHARS,
     RECENT_WINDOW,
     _load_chat_history,
     _maybe_compress_conversation,
@@ -114,3 +116,34 @@ def test_compress_repeated_keeps_bounded(sqlite_db):
     messages = org.list_messages(conv["id"])
     assert sum(1 for m in messages if m["role"] == "system") <= 1
     assert len(messages) <= 1 + RECENT_WINDOW
+
+
+def test_load_chat_history_budget_drops_oldest_long_messages(sqlite_db):
+    """历史 token 超预算时，从最旧开始丢长消息，摘要与最新原文保留。"""
+    conv = org.create_conversation("u_1")
+    org.add_message(conv["id"], "system", "摘要", metadata_json='{"summary": true}')
+    for i in range(3):  # 6 条长消息（各约 800 字）→ 远超 HISTORY_MAX_TOKENS
+        org.add_message(conv["id"], "user", "旧" * 800, model="m")
+        org.add_message(conv["id"], "assistant", "旧答" * 800, model="m")
+    org.add_message(conv["id"], "user", "新问题", model="m")
+    org.add_message(conv["id"], "assistant", "新回答", model="m")
+
+    history = _load_chat_history(conv["id"], "u_1")
+    assert history[0].type == "system"  # 摘要保留
+    assert history[-1].content == "新回答"  # 最新保留
+    assert any(getattr(m, "content", "") == "新问题" for m in history)
+    # 长消息被预算挤掉一部分：实际带的原文条数 < RECENT_WINDOW
+    assert len(history) < 1 + RECENT_WINDOW
+
+
+def test_load_chat_history_keeps_newest_even_over_budget(sqlite_db):
+    """最新一条超长消息截断后强制保留（保证追问有紧邻上下文），最旧超预算丢弃。"""
+    conv = org.create_conversation("u_1")
+    org.add_message(conv["id"], "user", "旧" * (HISTORY_MSG_CHARS + 500), model="m")
+    org.add_message(conv["id"], "assistant", "新" * (HISTORY_MSG_CHARS + 500), model="m")
+
+    history = _load_chat_history(conv["id"], "u_1")
+    # 最新一条被截断到 HISTORY_MSG_CHARS 且必然在
+    assert history[-1].content == "新" * HISTORY_MSG_CHARS
+    # 最旧的超预算消息被丢
+    assert all(getattr(m, "content", "") != "旧" * (HISTORY_MSG_CHARS + 500) for m in history)
