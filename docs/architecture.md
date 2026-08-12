@@ -54,7 +54,8 @@ DocumentBlock
 ~~~
 
 - 清洗（所有格式）：解析后统一经过 `cleaning.py`——连字归一、行尾断连字符、折叠运行空白、剥离页眉页脚/页码/水印（正则 + 跨 60% 块重复的频次启发），任何块清洗后为空则回退原文，绝不丢块。
-- PDF：pdfplumber 按阅读顺序抽取文本（失败逐页回退 PyPDF，`metadata.parser_fallback` 可观测）；`find_tables()` 检出表格为独立 `table` 块并从正文排除表格区；字号启发式把明显大于正文中位数的行判为标题并构建标题层级；扫描页仍整页渲染交给 OCR/视觉。
+- PDF：先做**文档级分类**（`pdf_classifier.py`，pypdf 抽样 ≤10 页统计文本密度与图片密度，判定 `native / scanned / mixed`，结果写入每块 `metadata.pdf_kind`）。`native` 走 pdfplumber 逐页抽取文本（失败逐页回退 PyPDF，`metadata.parser_fallback` 可观测）；`find_tables()` 检出表格为独立 `table` 块并从正文排除表格区；字号启发式把明显大于正文中位数的行判为标题并构建标题层级；扫描页仍整页渲染交给 OCR/视觉。
+- PDF 扫描件/混合图表件（`mineru_parser.py`，可选）：分类为 `scanned`（纯扫描）或 `mixed`（文本+图表混杂）且 `MINERU_ENABLED` 开启时，整档交给 MinerU（opendatalab）子进程解析——`-m ocr` 走全页 OCR、`-m auto` 走布局+表格+公式+图片 caption；把 `middle.json` 的 `para_blocks` 按 `page_idx` 映射为 DocumentBlock（TITLE→heading、TEXT/LIST→text、TABLE→table 保留行结构、IMAGE→image_description 保留图片路径、INTERLINE_EQUATION→formula），每块带 `metadata.mineru_engine`。MinerU 未装/超时/空结果一律回退上方逐页路线，不阻塞入库。注意 MinerU 3.4 的 CLI 默认 `--backend hybrid-engine`（需 VLM 模型），必须显式传 `-b pipeline`；模型缓存默认落 C 盘用户目录，已在 `config.py` 用 `MINERU_MODELS_DIR` 重定向到项目 `models/mineru`（`MODELSCOPE_CACHE`/`MINERU_TOOLS_CONFIG_JSON`）。
 - PDF 内嵌图片、图片和手写笔记：优先调用 OpenAI 兼容视觉模型生成单份规范化中文内容；OCR 作为证据和视觉失败时的回退，不把同一图片的 OCR、公式和视觉结果重复切成多个知识块。
 - DOC/DOCX：旧格式先由 Office 转成 DOCX，再提取标题、段落、原生表格、原生 OMML 公式和内嵌图片。
 - PPT/PPTX：旧格式先由 Office 转成 PPTX，再按幻灯片提取文本、表格、原生公式和图片；幻灯片标题作为标题路径、幻灯片号作为来源定位，组块时绝不跨幻灯片合并。

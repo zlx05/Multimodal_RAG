@@ -61,6 +61,15 @@ def create_parser(document_id: str, path: str | Path, **kwargs: Any) -> BasePars
         parser_type = get_parser_type(path)
     if parser_type == "pdf":
         return PdfParser(document_id, **kwargs)
+    # MinerU 只服务 PDF：其他解析器签名不含 mineru_*，剥离避免 unexpected keyword
+    for key in (
+        "mineru_enabled",
+        "mineru_device_mode",
+        "mineru_model_source",
+        "mineru_timeout",
+        "mineru_backend",
+    ):
+        kwargs.pop(key, None)
     if parser_type == "markdown":
         return MarkdownParser(document_id)
     if parser_type == "text":

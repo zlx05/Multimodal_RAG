@@ -25,6 +25,21 @@ openpyxl>=3.1,<4
 # 装好后再：pip install paddleocr==3.7.0
 paddleocr>=3.7,<4
 
+# PDF 扫描件/混合图表件（MinerU 全管线，可选——仅 MINERU_ENABLED=true 时启用）。
+# 依赖较重（CUDA torch + 首次 1-2GB 模型下载），未装时 pdf_parser 自动回退逐页路线。
+#   python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+#     # 国内慢可改用阿里云镜像（扁平索引，必须用 --find-links）：
+#     # python -m pip install "torch==2.13.0+cu126" "torchvision==0.28.0+cu126" \
+#     #     --find-links https://mirrors.aliyun.com/pytorch-wheels/cu126/
+#   python -m pip install "mineru[pipeline]>=3.4,<4"   # 会把 transformers 降到 4.57.x（sentence-transformers 兼容）
+#   # 模型下载（走 modelscope；默认落 C 盘用户缓存，务必重定向到非 C 盘）：
+#   set MINERU_MODEL_SOURCE=modelscope
+#   set MODELSCOPE_CACHE=E:/.../models/mineru
+#   mineru-models-download -s modelscope -m pipeline
+# 配置：MINERU_ENABLED / MINERU_DEVICE_MODE(cuda) / MINERU_MODEL_SOURCE(modelscope)
+#       / MINERU_BACKEND(pipeline，勿用默认 hybrid-engine——需 VLM 模型，8G 显存扛不住)
+#       / MINERU_TIMEOUT(1200) / MINERU_MODELS_DIR(模型缓存根，见 config.py)
+
 # 混合检索
 rank-bm25>=0.2,<1
 

@@ -42,6 +42,7 @@
 | 关键词检索 | BM25 | 专业术语、公式、题号和关键词精确召回 |
 | 文档解析 | PyPDF、python-docx、python-pptx、Microsoft Office COM | PDF、Word、PPT 和旧格式文件解析 |
 | 图片解析 | PaddleOCR、PP-FormulaNet_plus-M | OCR、公式识别、框坐标和置信度 |
+| PDF 整档解析 | MinerU（opendatalab，可选） | 扫描件 OCR、混合图表件的布局/表格/公式/图片 caption |
 | 视觉理解 | OpenAI 兼容视觉模型 | 图片、手写、页面版面和复杂图文的补充理解 |
 | 文本生成 | OpenAI 兼容文本模型 | 基于检索上下文生成最终答案 |
 | Embedding | BGE-small-zh-v1.5 | 中文文本向量化 |
@@ -440,12 +441,13 @@ RRF 融合与可选重排
 
 ### Q2：PDF 如何处理？
 
-分两类：
+先在文档级分类（`pdf_classifier.py`）：用 pypdf 均匀抽样 ≤10 页，统计文本密度（与 `TEXT_PAGE_MIN_CHARS` 对齐）和图片密度，判定 `native / scanned / mixed`，分类结果写入每块 `metadata.pdf_kind` 供追溯。然后按类别走不同路线：
 
-1. 文本型 PDF：使用 PyPDF 提取文字、页码和布局相关信息。
-2. 扫描型 PDF：先渲染页面，再使用 PaddleOCR 提取文字和框坐标；公式区域使用公式识别模型；复杂图片或版面调用视觉模型补充描述。
+1. 文本型 PDF（native）：pdfplumber 按阅读顺序提取文字、表格、标题层级；失败逐页回退 PyPDF；内嵌图片走 OCR/视觉。
+2. 扫描型 PDF（scanned）：整档交给 MinerU 以 `-m ocr` 全页 OCR；MinerU 未启用或失败时，逐页渲染后走 PaddleOCR + 公式识别 + 视觉模型。
+3. 混合图表件（mixed）：文本页与图表/扫描页混杂，整档交给 MinerU `-m auto`（布局 + 表格 + 公式 + 图片 caption），再把 `middle.json` 按页码映射为 DocumentBlock。
 
-原始 PDF 和渲染图片保留在本地资料目录，Milvus 保存用于检索的文本和来源元数据。
+MinerU 是可选引擎（`MINERU_ENABLED`），配 CUDA torch 走 GPU，首次运行需下载模型；它只服务 scanned/mixed，`native` 仍走轻量快路。MinerU 不可用/超时/空结果一律回退现有逐页路线，不阻塞入库。原始 PDF 和渲染图片保留在本地资料目录，Milvus 保存用于检索的文本和来源元数据。
 
 ### Q3：Word 和 PPT 的公式会不会乱码？
 

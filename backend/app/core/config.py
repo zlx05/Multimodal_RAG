@@ -126,6 +126,33 @@ FORMULA_RECOGNITION_ENABLED = _get("FORMULA_RECOGNITION_ENABLED", "false").lower
 FORMULA_RECOGNITION_MODEL = _get("FORMULA_RECOGNITION_MODEL", "PP-FormulaNet_plus-M")
 OCR_DEVICE = _get("OCR_DEVICE", "cpu")
 
+# MinerU 引擎（PDF 扫描件/混合图表件整档解析）。文档级分类为 scanned/mixed 时
+# 走 mineru 子进程（-m ocr / -m auto），失败自动回退现有逐页解析。默认关——
+# 首次跑需下载 1-2GB 模型，且与 CUDA torch 绑定，装好并配置后再开。
+MINERU_ENABLED = _get("MINERU_ENABLED", "false").lower() in {
+    "1", "true", "yes", "on"
+}
+MINERU_DEVICE_MODE = _get("MINERU_DEVICE_MODE", "cuda")
+MINERU_MODEL_SOURCE = _get("MINERU_MODEL_SOURCE", "modelscope")
+# MinerU backend：pipeline（布局+表格+公式+OCR，8G 显存够）为默认；
+# 装 mineru[hybrid] 后可切 hybrid-engine（VLM 高精度，显存要求高）。
+MINERU_BACKEND = _get("MINERU_BACKEND", "pipeline")
+# 单文档 mineru 子进程超时（秒），超过抛 MineruUnavailable 回退
+MINERU_TIMEOUT = float(_get("MINERU_TIMEOUT", "1200"))
+# MinerU 模型缓存根目录。modelscope snapshot_download 认 MODELSCOPE_CACHE、
+# 工具配置 JSON 认 MINERU_TOOLS_CONFIG_JSON——默认都落在 C 盘用户目录，
+# 统一重定向到项目 models/mineru（与 PADDLE_PDX_CACHE_HOME 约定一致），
+# worker 启动即生效，mineru 子进程经 os.environ 自动继承。
+MINERU_MODELS_DIR = _project_path(
+    _get("MINERU_MODELS_DIR", str(PROJECT_ROOT / "models" / "mineru")),
+    PROJECT_ROOT / "models" / "mineru",
+)
+os.environ.setdefault("MODELSCOPE_CACHE", MINERU_MODELS_DIR)
+os.environ.setdefault(
+    "MINERU_TOOLS_CONFIG_JSON",
+    str(Path(MINERU_MODELS_DIR) / "mineru.json"),
+)
+
 # 上传校验 agent 开关（Phase 2）。开启时每次上传先审核内容，通过才入库可检索。
 UPLOAD_REVIEW_ENABLED = _get("UPLOAD_REVIEW_ENABLED", "true").lower() in {
     "1", "true", "yes", "on"

@@ -203,6 +203,8 @@ class IngestionWorker:
             "work_dir": RAG_WORK_DIR,
             "vision_analyzer": self._get_vision_analyzer(),
             "formula_recognizer": self._get_formula_recognizer(),
+            # MinerU 引擎：worker 透传配置（默认关），PdfParser 内部按文档分类路由。
+            "mineru_enabled": self._get_mineru_enabled(),
         }
         if source_url:
             parser_kwargs["base_url"] = source_url
@@ -296,6 +298,12 @@ class IngestionWorker:
         from ..rag.vision import VisionAnalyzer
 
         return VisionAnalyzer()
+
+    @staticmethod
+    def _get_mineru_enabled():
+        from ..core.config import MINERU_ENABLED
+
+        return MINERU_ENABLED
 
     @staticmethod
     def _get_formula_recognizer():

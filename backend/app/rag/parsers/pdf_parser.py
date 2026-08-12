@@ -1,6 +1,8 @@
-"""PDF 解析器：同时处理文本页和扫描页。
+"""PDF 解析器：文档级分类 + 原生/扫描/混合图表件分路线。
 
 策略（对应 docs/architecture.md 第 3 节）：
+0. 文档级分类（pdf_classifier）：native 走下方逐页快路；scanned/mixed 且
+   MinerU 可用时整档交给 mineru（-m ocr / -m auto），失败自动回退逐页。
 1. 优先用 pdfplumber 逐页提取文本（阅读顺序更稳），失败逐页回退 pypdf。
 2. 文本充足 -> 文本页：
    - pdfplumber find_tables() 检测表格 -> content_type="table" 块（行/列结构保留）；
@@ -43,6 +45,11 @@ class PdfParser(BaseParser):
         formula_recognizer=None,
         work_dir: str | None = None,
         original_dir: str | None = None,
+        mineru_enabled: bool | None = None,
+        mineru_device_mode: str | None = None,
+        mineru_model_source: str | None = None,
+        mineru_timeout: float | None = None,
+        mineru_backend: str | None = None,
     ):
         super().__init__(document_id)
         # 延迟导入，避免没装 OCR 时整个解析器不可用
@@ -56,11 +63,89 @@ class PdfParser(BaseParser):
         # work_dir 存扫描页渲染图和内嵌图片；original_dir 兼容统一接口（PDF 原图保留在原位，无需复制）
         self.work_dir = work_dir or os.getenv("RAG_WORK_DIR", tempfile.gettempdir())
         self.pdf_path: str | None = None
+        # MinerU 引擎（扫描/混合图表件路线）。None -> 读配置，方便测试注入不依赖环境。
+        if mineru_enabled is None:
+            from ...core.config import MINERU_ENABLED
+
+            mineru_enabled = MINERU_ENABLED
+        if (
+            mineru_device_mode is None
+            or mineru_model_source is None
+            or mineru_timeout is None
+            or mineru_backend is None
+        ):
+            from ...core.config import (
+                MINERU_BACKEND,
+                MINERU_DEVICE_MODE,
+                MINERU_MODEL_SOURCE,
+                MINERU_TIMEOUT,
+            )
+
+            if mineru_device_mode is None:
+                mineru_device_mode = MINERU_DEVICE_MODE
+            if mineru_model_source is None:
+                mineru_model_source = MINERU_MODEL_SOURCE
+            if mineru_timeout is None:
+                mineru_timeout = MINERU_TIMEOUT
+            if mineru_backend is None:
+                mineru_backend = MINERU_BACKEND
+        self.mineru_enabled = mineru_enabled
+        self.mineru_device_mode = mineru_device_mode
+        self.mineru_model_source = mineru_model_source
+        self.mineru_timeout = mineru_timeout
+        self.mineru_backend = mineru_backend
 
     def parse(self, path: str | Path) -> list[DocumentBlock]:
-        from pypdf import PdfReader
+        """文档级分类 + 按类别路由解析路线。"""
+        from .pdf_classifier import PdfKind, classify_pdf
 
         self.pdf_path = str(path)
+        classification = classify_pdf(path)
+
+        # 扫描/混合图表件 -> 尝试 MinerU 整档引擎（scanned 走 OCR 模式，mixed 走 auto）。
+        if self.mineru_enabled and classification.kind in (PdfKind.scanned, PdfKind.mixed):
+            try:
+                blocks = self._parse_via_mineru(path, classification.kind)
+                if blocks:
+                    self._annotate_kind(blocks, classification.kind)
+                    return blocks
+            except Exception as exc:
+                print(
+                    f"[pdf_parser] MinerU 解析失败（{classification.kind.value}），回退逐页解析: {exc}"
+                )
+
+        # 原生件（或 MinerU 不可用/失败）-> 现有逐页 pdfplumber/OCR 路线。
+        blocks = self._parse_per_page(path)
+        self._annotate_kind(blocks, classification.kind)
+        return blocks
+
+    def _parse_via_mineru(self, path: str | Path, kind) -> list[DocumentBlock]:
+        """走 MinerU 子进程解析。失败抛异常，由 parse 捕获回退。"""
+        from .mineru_parser import MineruParser
+        from .pdf_classifier import PdfKind
+
+        mineru_mode = "ocr" if kind == PdfKind.scanned else "auto"
+        mineru_parser = MineruParser(
+            self.document_id,
+            work_dir=self.work_dir,
+            mineru_mode=mineru_mode,
+            timeout=self.mineru_timeout,
+            device_mode=self.mineru_device_mode,
+            model_source=self.mineru_model_source,
+            backend=self.mineru_backend,
+            vision_analyzer=self.vision_analyzer,
+        )
+        return mineru_parser.parse(path)
+
+    @staticmethod
+    def _annotate_kind(blocks: list[DocumentBlock], kind) -> None:
+        """把文档级分类结果写入每个 block，便于前端/评估追溯解析路线。"""
+        for block in blocks:
+            block.metadata["pdf_kind"] = kind.value
+
+    def _parse_per_page(self, path: str | Path) -> list[DocumentBlock]:
+        from pypdf import PdfReader
+
         reader = PdfReader(str(path))
         try:
             import pdfplumber
@@ -201,7 +286,11 @@ class PdfParser(BaseParser):
                 if suffix not in {"png", "jpg", "jpeg", "bmp"}:
                     suffix = "png"
                 img_bytes = img.data
-                img_path = Path(self.work_dir) / f"pdf_{self.document_id}_p{page_number}_{img_idx}.{suffix}"
+                # 存到 {work_dir}/{document_id}/ 下：document_id 作为路径段，asset_url 的安全
+                # 校验（document_id in path.parts）才能放行并生成可展示的签名 URL。
+                img_path = (
+                    Path(self.work_dir) / self.document_id / f"pdf_p{page_number}_{img_idx}.{suffix}"
+                )
                 img_path.parent.mkdir(parents=True, exist_ok=True)
                 img_path.write_bytes(img_bytes)
                 text, metadata, confidence, content_type = analyze_media(
@@ -234,7 +323,8 @@ class PdfParser(BaseParser):
                 page = pdf[page_number - 1]
                 bitmap = page.render(scale=2.0)  # 2x 提高小字识别率
                 pil_image = bitmap.to_pil()
-            img_path = Path(self.work_dir) / f"pdf_{self.document_id}_p{page_number}_scan.png"
+            # 与 _parse_page_images 一致：document_id 作路径段，asset_url 才能生成图片 URL。
+            img_path = Path(self.work_dir) / self.document_id / f"p{page_number}_scan.png"
             img_path.parent.mkdir(parents=True, exist_ok=True)
             pil_image.save(img_path)
             text, metadata, confidence, content_type = analyze_media(
