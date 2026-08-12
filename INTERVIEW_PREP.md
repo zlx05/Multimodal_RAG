@@ -1229,9 +1229,9 @@ def resolve_model(model_id: str) -> dict[str, str]:
 4. ~~记录解析耗时、OCR 失败率、向量化耗时和问答延迟。~~（已完成，见上方 Phase 2.1 条目）
 5. ~~上下文 Token 预算和 Chunk 去重。~~（已完成：上传侧按 sha256 `content_hash` 查重，同内容重复上传 409 拒绝并清理孤儿文件；证据预算从"字符"口径升级为 tiktoken `cl100k_base` 估算的 token 口径，中文 1 字≈1 token、英文 4 字≈1 token）
 6. ~~查询改写与原问题并行召回（现有改写是"改写替换"，可改"双路召回再融合"）。~~（已完成，见上方 Phase 2.2 条目）
-7. 原图访问接口 + 安全临时 URL（前端不再用本机绝对路径）。
-8. 任务状态更细的 `EMBEDDING` 阶段和结构化错误码。
-9. 模型调用**超时、重试、限流**（成本统计已完成，见 Phase 2.1 条目）。
+7. ~~原图访问接口 + 安全临时 URL（前端不再用本机绝对路径）。~~（已完成：`/original` 与 `/assets` 走签名临时 URL，`require_original_signature`/`require_asset_signature` 校验；列表与来源带 `original_url`/`asset_url`，前端 ChatView 来源展示即用签名链接，不再暴露本机绝对路径）
+8. ~~任务状态更细的 `EMBEDDING` 阶段和结构化错误码。~~（已完成：状态机 `PENDING→PARSING→OCR→CHUNKING→EMBEDDING→INDEXING→SUCCEEDED`，`STAGE_ERROR_CODES` 按阶段映射 `*_FAILED` 结构化错误码，`error_code_for_stage` 兜底）
+9. ~~模型调用**超时、重试、限流**（成本统计已完成，见 Phase 2.1 条目）。~~（已完成：agent LLM 配 `LLM_REQUEST_TIMEOUT` 超时 + `LLM_MAX_RETRIES` 重试，避免 DeepSeek 慢响应卡死单次请求；聊天限流 `check_chat_rate_limit` 超频 429）
 
 ---
 
