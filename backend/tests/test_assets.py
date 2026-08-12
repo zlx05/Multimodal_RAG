@@ -90,6 +90,34 @@ def test_signature_bound_to_document():
     assert not verify_asset_signature("original", "doc_xyz", None, 9999999999, sign)
 
 
+# ---------------- 资产列表过滤 ----------------
+
+def test_list_document_assets_filters_to_images_only(monkeypatch, tmp_path):
+    """'解析出的图片' 栏目只列 image/*：跳过 MinerU 中间产物（PDF/JSON/MD）。
+
+    回归：MinerU 输出目录里混着 layout/span/origin PDF、middle/content_list JSON、
+    markdown 等非图片文件，若全部列进 assets 前端 <img> 渲染全裂图、点击还触发下载。
+    """
+    import asyncio
+
+    from backend.app.api import routes_documents as rd
+
+    work = tmp_path / "work"
+    (work / "doc_abc" / "mineru").mkdir(parents=True)
+    (work / "doc_abc" / "p1.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    (work / "doc_abc" / "mineru" / "layout.pdf").write_bytes(b"%PDF-1.4")
+    (work / "doc_abc" / "mineru" / "middle.json").write_bytes(b"{}")
+    (work / "doc_abc" / "mineru" / "doc_abc.md").write_bytes(b"# markdown")
+
+    monkeypatch.setattr("backend.app.api.routes_documents.RAG_WORK_DIR", str(work))
+    monkeypatch.setattr("backend.app.api.routes_documents.RAG_ORIGINAL_DIR", str(work / "orig"))
+    monkeypatch.setattr("backend.app.rag.assets.DATA_ROOT", work)
+
+    result = asyncio.run(rd.list_document_assets("doc_abc", current_user={}))
+    names = sorted(a["filename"] for a in result["assets"])
+    assert names == ["p1.png"], names
+
+
 # ---------------- FastAPI 依赖注入 ----------------
 
 def _make_app() -> FastAPI:

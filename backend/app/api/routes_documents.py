@@ -347,9 +347,14 @@ async def list_document_assets(
                 )
     assets = []
     for path in candidates:
+        ctype = media_type(path)
+        # 栏目叫"解析出的图片"、前端用 <img> 渲染：只列图片，跳过 MinerU
+        # 中间产物（layout/span/origin PDF、middle/content_list JSON、markdown 等）。
+        if not ctype.startswith("image/"):
+            continue
         url = asset_url(document_id, str(path))
         if url:
-            assets.append({"filename": path.name, "url": url, "content_type": media_type(path)})
+            assets.append({"filename": path.name, "url": url, "content_type": ctype})
     return {"document_id": document_id, "assets": assets}
 
 
