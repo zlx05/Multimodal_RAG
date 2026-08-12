@@ -36,6 +36,13 @@ def _project_path(value: str, default: Path) -> str:
 LLM_API_KEY = _get("LLM_API_KEY", "")
 LLM_BASE_URL = _get("LLM_BASE_URL", "https://api.deepseek.com")
 LLM_MODEL = _get("LLM_MODEL", "gpt-5.6-luna")
+# 问答 LLM 调用稳健性：单次请求超时（秒）与瞬时失败重试次数（429/5xx/连接错误）。
+# DeepSeek 偶发慢响应/限流，重试能显著降低用户看到的失败率。
+LLM_REQUEST_TIMEOUT = float(_get("LLM_REQUEST_TIMEOUT", "60"))
+LLM_MAX_RETRIES = int(_get("LLM_MAX_RETRIES", "3"))
+# /chat/agent 每用户固定窗口限流（防刷 LLM 预算）。Redis 不可用时自动放行。
+CHAT_RATE_LIMIT_WINDOW = int(_get("CHAT_RATE_LIMIT_WINDOW", "60"))
+CHAT_RATE_LIMIT_MAX = int(_get("CHAT_RATE_LIMIT_MAX", "12"))
 CONTEXTUAL_RETRIEVAL_ENABLED = _get("CONTEXTUAL_RETRIEVAL_ENABLED", "false").lower() in {
     "1", "true", "yes", "on"
 }
@@ -137,6 +144,12 @@ DUAL_RECALL_ENABLED = _get("DUAL_RECALL_ENABLED", "true").lower() in {
 # 如「go语言怎么学」→ 具体子主题「go语言的数据类型」等），作为额外检索路与主路融合，
 # 避免 broad 问题漏掉具体子主题。默认关——先评估收益再决定是否默认开。
 QUERY_EXPANSION_ENABLED = _get("QUERY_EXPANSION_ENABLED", "false").lower() in {
+    "1", "true", "yes", "on"
+}
+# 澄清门控开关（Phase 5）。开启时 /chat/agent 检索证据不足（no_evidence/weak_evidence）时
+# 先用 LLM 生成 1-2 个澄清问题反问用户，而不是硬凑答案；用户澄清后再正常检索回答。
+# 默认开——只在证据不足时触发，正常问题不受影响。
+CLARIFICATION_GATE_ENABLED = _get("CLARIFICATION_GATE_ENABLED", "true").lower() in {
     "1", "true", "yes", "on"
 }
 FORMULA_RECOGNITION_DEVICE = _get("FORMULA_RECOGNITION_DEVICE", OCR_DEVICE)

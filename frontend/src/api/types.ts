@@ -30,6 +30,8 @@ export interface TaskRecord {
   stage: string;
   progress: number;
   error_message?: string;
+  /** 结构化错误码（PARSE_FAILED / INDEXING_FAILED 等），便于按类型提示或重试。 */
+  error_code?: string;
   chunks?: number;
   collection_name?: string;
   retry_count?: number;
@@ -319,8 +321,10 @@ export interface AgentRetrievalInfo {
   /** 显式证据充分性判定（Phase 3 门控）。 */
   evidence?: {
     sufficient: boolean;
-    reason: "no_evidence" | "weak_evidence" | "sufficient";
+    reason: "no_evidence" | "weak_evidence" | "vague" | "sufficient";
     escalated: boolean;
+    /** 澄清门控（Phase 5）：证据不足时系统反问的 1-2 个澄清问题；正常回答时为 undefined。 */
+    clarification?: { questions: string[]; prompt: string };
   };
   /** 检索前改写后的问题；与原问题相同时为 null（Phase 3）。 */
   rewritten_question?: string | null;

@@ -12,10 +12,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from ..core.config import (
+    CLARIFICATION_GATE_ENABLED,
     DATA_DIR,
     DUAL_RECALL_ENABLED,
     LLM_API_KEY,
+    LLM_MAX_RETRIES,
     LLM_MODEL,
+    LLM_REQUEST_TIMEOUT,
     MILVUS_HOST,
     MILVUS_PORT,
     QUERY_EXPANSION_ENABLED,
@@ -28,6 +31,7 @@ from langchain_core.callbacks import BaseCallbackHandler
 from sqlalchemy.exc import SQLAlchemyError
 
 from .deps import get_current_user
+from .rate_limit import RateLimitExceeded, check_chat_rate_limit
 from ..db import org
 from ..rag.metrics import get_metrics
 
@@ -37,6 +41,8 @@ from ..rag.agent_rag import (
     RouterDecision,
     build_executor,
     expand_query,
+    generate_clarification_questions,
+    judge_vague_question,
     rewrite_query,
     route_query,
     synthesize_final_answer,
@@ -735,6 +741,10 @@ def _get_agent_llm(model_id: str) -> ChatOpenAI:
             model=model_id,
             temperature=0.2,
             max_tokens=1024,
+            # 超时 + 重试：DeepSeek 偶发慢响应/限流，卡死单次请求最多
+            # LLM_REQUEST_TIMEOUT 秒；瞬时失败按指数退避自动重试。
+            timeout=LLM_REQUEST_TIMEOUT,
+            max_retries=LLM_MAX_RETRIES,
         )
     return _AGENT_LLMS[model_id]
 
@@ -883,6 +893,47 @@ def _evidence_sufficient(fused: list[dict]) -> tuple[bool, str]:
     if best < EVIDENCE_WEAK_THRESHOLD:
         return False, "weak_evidence"
     return True, "sufficient"
+
+
+_CLARIFICATION_LEADINS = {
+    "no_evidence": "你问的问题在资料里没有找到相关内容。为了更准确地帮你，请先确认一下你想问的是：",
+    "weak_evidence": "找到的相关内容比较有限，为了避免答偏，请先确认一下你想问的是：",
+    "vague": "你问的问题范围比较宽泛，为了给你更有针对性的回答，请先确认一下你想了解的是：",
+}
+
+
+def run_clarification_gate(
+    llm, question: str, rewritten: str, ranked: list[dict]
+) -> SimpleNamespace | None:
+    """澄清门控（Phase 5）：开关开 + 检索证据不足（no/weak）**或问题模糊（vague）**时，
+    用 LLM 生成澄清问题反问用户，而不是硬凑答案。
+
+    返回 SimpleNamespace(triggered=True, reason, vague, questions, prompt)；未命中返回 None。
+    - 证据不足（no_evidence/weak_evidence）：直接触发。
+    - 证据充分但 LLM 判定问题本身模糊（如「go语言怎么学」检索到教程仍太泛）：也触发。
+    - LLM 模糊判断失败默认 False（不误伤正常题）；澄清问题生成失败/空时仍触发，
+      回退一条基于改写后问题的通用澄清（宁反问不硬凑）。
+    """
+    if not CLARIFICATION_GATE_ENABLED:
+        return None
+    sufficient, reason = _evidence_sufficient(ranked)
+    vague = False
+    if sufficient:
+        # 证据够但问题太泛 → 仍需澄清（纯检索阈值区分不出「真模糊」）
+        vague = judge_vague_question(llm, question, rewritten, ranked)
+        if not vague:
+            return None
+        reason = "vague"
+    questions = generate_clarification_questions(llm, question, rewritten, ranked)
+    if not questions:
+        questions = [f"你具体想了解「{rewritten or question}」的哪一方面？"]
+    return SimpleNamespace(
+        triggered=True,
+        reason=reason,
+        vague=vague,
+        questions=questions[:2],
+        prompt=_CLARIFICATION_LEADINS[reason],
+    )
 
 
 def _probe_and_escalate(req: ChatRequest, decision: RouterDecision, question: str) -> tuple[RouterDecision, bool]:
@@ -1110,6 +1161,10 @@ def chat_agent(req: ChatRequest, current_user: dict = Depends(get_current_user))
     """
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="请输入问题")
+    try:
+        check_chat_rate_limit(current_user["id"])
+    except RateLimitExceeded:
+        raise HTTPException(status_code=429, detail="请求过于频繁，请稍后再试")
     selected_model = _validate_model(req.model)
     llm = _get_agent_llm(selected_model)
     # Phase 2.1 成本统计：全链路挂 token 回调，收集改写/路由/ReAct/画像/压缩的用量。
@@ -1125,6 +1180,53 @@ def chat_agent(req: ChatRequest, current_user: dict = Depends(get_current_user))
         req, llm, gateway, intent.decision, intent.rewritten, chat_history, profile,
         intent.expansions,
     )
+    # Phase 5 澄清门控：ReAct 自主补检之后、落库之前判定证据是否足够。
+    # 证据不足（no/weak）时返回澄清轮（反问用户），跳过 stage_persist/stage_profile——
+    # 澄清轮不落库、不进画像，避免把反问当正式回答；用户澄清后再走正常链路。
+    gate = run_clarification_gate(llm, req.question, intent.rewritten, react.ranked)
+    if gate is not None:
+        metrics = get_metrics()
+        metrics.incr("chat_queries")
+        metrics.observe("chat_total_ms", (time.perf_counter() - start_total) * 1000)
+        metrics.observe("chat_intent_ms", intent.ms)
+        metrics.observe("chat_react_ms", react.ms)
+        metrics.incr("tokens_input", usage.input_tokens)
+        metrics.incr("tokens_output", usage.output_tokens)
+        return {
+            "conversation_id": conversation_id,
+            "answer": gate.prompt,
+            "model": selected_model,
+            "sources": [],
+            "used_documents": [],
+            "retrieval": {
+                "strategy": "agent",
+                "router": intent.decision.model_dump(),
+                "tool_calls": react.ctx.tool_calls,
+                "top_k": req.top_k,
+                "max_iterations": MAX_ITERATIONS,
+                "evidence": {
+                    "sufficient": False,
+                    "reason": gate.reason,
+                    "escalated": intent.escalated,
+                    "clarification": {"questions": gate.questions, "prompt": gate.prompt},
+                },
+                "rewritten_question": intent.rewritten if intent.rewritten != req.question else None,
+                "stages": {
+                    "intent_ms": intent.ms,
+                    "react_ms": react.ms,
+                    "persist_ms": 0,
+                    "profile_ms": 0,
+                },
+            },
+            "trace": [
+                {
+                    "tool": step[0].tool,
+                    "input": step[0].tool_input,
+                    "output": str(step[1])[:500],
+                }
+                for step in react.result.get("intermediate_steps", [])
+            ],
+        }
     persist = stage_persist(
         conversation_id,
         req.question,

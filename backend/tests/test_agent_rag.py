@@ -13,6 +13,8 @@ from backend.app.rag.agent_rag import (
     build_executor,
     build_tools,
     expand_query,
+    generate_clarification_questions,
+    judge_vague_question,
     rewrite_query,
     route_query,
     synthesize_final_answer,
@@ -24,6 +26,7 @@ from backend.app.rag.agent_rag import (
 from backend.app.api.routes_retrieval import (
     _evidence_sufficient,
     _probe_and_escalate,
+    run_clarification_gate,
 )
 
 
@@ -237,6 +240,57 @@ def test_synthesize_final_answer_empty_evidence_no_crash():
 def test_synthesize_final_answer_llm_failure_returns_empty():
     ctx = AgentChatContext()
     assert synthesize_final_answer(_BoomLLM(), ctx, "问题") == ""
+
+
+def _fused_item(collection, index, score, content, **overrides):
+    chunk = {
+        "document_id": f"doc_{collection}",
+        "filename": f"doc_{collection}.md",
+        "content": content,
+        "page_number": 1,
+        "heading_path": "标题",
+        "metadata": {},
+    }
+    chunk.update(overrides)
+    return {"collection": collection, "index": index, "score": score, "chunk": chunk}
+
+
+def test_render_evidence_dedups_near_duplicate_parent_child():
+    """parent-child 同时命中：子块正文是父块子串且长度占比≥0.9 → 只渲染高分父块。"""
+    parent_text = "go变量声明" * 40  # 320 字符
+    child_text = "go变量声明" * 36  # 288 字符，是父块子串，占比 0.9
+    ctx = AgentChatContext()
+    ctx.fused[("coll", 0)] = _fused_item("coll", 0, 0.9, parent_text)
+    ctx.fused[("coll", 1)] = _fused_item("coll", 1, 0.8, child_text)
+
+    rendered = _render_evidence(ctx)
+    assert "[1]" in rendered
+    assert "[2]" not in rendered  # 近重复子块被丢弃，不再重复占用上下文
+
+
+def test_render_evidence_keeps_distinct_low_overlap_chunks():
+    """两块内容互不包含（低重叠）→ 都保留并按分降序渲染。"""
+    ctx = AgentChatContext()
+    ctx.fused[("coll", 0)] = _fused_item("coll", 0, 0.9, "alpha" * 40)
+    ctx.fused[("coll", 1)] = _fused_item("coll", 1, 0.7, "beta" * 40)
+
+    rendered = _render_evidence(ctx)
+    assert "[1]" in rendered and "[2]" in rendered
+    assert "alpha" * 40 in rendered and "beta" * 40 in rendered
+
+
+def test_render_evidence_respects_total_char_budget():
+    """总字符预算：超出时截断，优先保留更高分块；至少保留最高分一块。"""
+    ctx = AgentChatContext()
+    ctx.fused[("coll", 0)] = _fused_item("coll", 0, 0.9, "高" * 300)
+    ctx.fused[("coll", 1)] = _fused_item("coll", 1, 0.8, "中" * 300)
+    ctx.fused[("coll", 2)] = _fused_item("coll", 2, 0.7, "低" * 300)
+
+    rendered = _render_evidence(ctx, limit=10, max_chars=500)
+    assert "高" * 300 in rendered   # 最高分块优先进入
+    assert "[2]" not in rendered    # 第二块会把总长推过 500 → 截断
+    # 预算值本身是硬上限：正文总长 ≤ 预算（编号/来源行不计入，因此留松弛）
+    assert len([line for line in rendered.splitlines() if line and not line.startswith("[")]) <= 500
 
 
 def test_search_documents_uses_selected_ids():
@@ -611,3 +665,221 @@ def test_build_executor_escapes_braces_in_rationale():
     messages = prompt.format_messages(input="问题")
     assert "interface { Run() }" in messages[0].content
     assert "struct{}" in messages[0].content
+
+
+# ---------- Phase 5 澄清门控 ----------
+
+def test_generate_clarification_questions_parses_lines():
+    """LLM 返回多行澄清问题 → 解析出 2 条。"""
+    llm = _CaptureLLM("你是想问切片的容量还是扩容机制？\n还是想问切片长度怎么算？")
+    qs = generate_clarification_questions(llm, "切片问题", rewritten="切片问题", clues=[])
+    assert len(qs) == 2
+    assert "容量" in qs[0] and "扩容" in qs[0]
+
+
+def test_generate_clarification_questions_uses_clues():
+    """带线索时 prompt 包含线索文本（heading + content 前缀）与改写后问题。"""
+    llm = _CaptureLLM("你是想问 A 还是 B？")
+    generate_clarification_questions(
+        llm, "问题", rewritten="改写后", clues=[_fused_item("coll", 0, 0.3, "切片的底层是数组")]
+    )
+    assert "切片的底层是数组" in llm.captured[0]
+    assert "改写后" in llm.captured[0]
+
+
+def test_generate_clarification_questions_no_clues_no_crash():
+    """线索为空（no_evidence）→ 走占位文本，正常返回不崩。"""
+    llm = _CaptureLLM("你是想问 A 还是 B？")
+    qs = generate_clarification_questions(llm, "问题", clues=None)
+    assert len(qs) == 1
+    assert "（没有检索到线索）" in llm.captured[0]
+
+
+def test_generate_clarification_questions_strips_dedupes_limits():
+    """剥编号前缀、去重、最多 2 条。"""
+    llm = _CaptureLLM("1.你是想问 A 还是 B？\n2.你是想问 A 还是 B？\n- 你是想问 C 还是 D？\n- 你是想问 E 还是 F？")
+    qs = generate_clarification_questions(llm, "问题")
+    assert qs == ["你是想问 A 还是 B？", "你是想问 C 还是 D？"]
+
+
+def test_generate_clarification_questions_fallback():
+    """空问题 / LLM 异常 → 回退 []。"""
+    assert generate_clarification_questions(_CaptureLLM("x"), "") == []
+    assert generate_clarification_questions(_BoomLLM(), "问题") == []
+
+
+def test_run_clarification_gate_no_evidence_triggers(monkeypatch):
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", True)
+    gate = rr.run_clarification_gate(_CaptureLLM("你是想问A还是B？"), "问题", "改写后", [])
+    assert gate is not None
+    assert gate.triggered is True
+    assert gate.reason == "no_evidence"
+    assert gate.prompt == rr._CLARIFICATION_LEADINS["no_evidence"]
+    assert len(gate.questions) == 1
+
+
+def test_run_clarification_gate_weak_triggers(monkeypatch):
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", True)
+    gate = rr.run_clarification_gate(
+        _CaptureLLM("你是想问A还是B？"), "问题", "改写后", [{"score": 0.3, "chunk": {}}]
+    )
+    assert gate is not None and gate.reason == "weak_evidence"
+
+
+def test_run_clarification_gate_sufficient_skips(monkeypatch):
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", True)
+    assert (
+        rr.run_clarification_gate(_CaptureLLM("x"), "问题", "改写后", [{"score": 0.8, "chunk": {}}])
+        is None
+    )
+
+
+def test_run_clarification_gate_disabled_skips(monkeypatch):
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", False)
+    assert rr.run_clarification_gate(_CaptureLLM("x"), "问题", "改写后", []) is None
+
+
+def test_run_clarification_gate_generation_empty_falls_back(monkeypatch):
+    """LLM 生成空 → 仍触发，回退一条基于改写后/原问题的通用澄清（宁反问不硬凑）。"""
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", True)
+    monkeypatch.setattr(rr, "generate_clarification_questions", lambda *a, **k: [])
+    gate = rr.run_clarification_gate(_CaptureLLM("x"), "问题", "改写后", [])
+    assert gate is not None
+    assert len(gate.questions) == 1
+    assert "改写后" in gate.questions[0]
+
+
+def test_judge_vague_question_true():
+    """LLM 判 vague=true → True。"""
+    llm = _CaptureLLM('{"vague": true, "reason": "问题太泛"}')
+    assert judge_vague_question(llm, "go语言怎么学") is True
+
+
+def test_judge_vague_question_false():
+    """LLM 判 vague=false → False。"""
+    llm = _CaptureLLM('{"vague": false, "reason": "主题明确"}')
+    assert judge_vague_question(llm, "切片的容量如何扩容") is False
+
+
+def test_judge_vague_question_parse_fail_false():
+    """LLM 返回无法解析的内容 / 非布尔值 → False（不误伤正常题）。"""
+    assert judge_vague_question(_CaptureLLM("x"), "问题") is False
+    assert judge_vague_question(_CaptureLLM('{"vague": 1}'), "问题") is False
+
+
+def test_judge_vague_question_boom_and_empty():
+    """LLM 异常 / 空问题 → False。"""
+    assert judge_vague_question(_BoomLLM(), "问题") is False
+    assert judge_vague_question(_CaptureLLM("x"), "") is False
+
+
+def test_run_clarification_gate_sufficient_but_vague_triggers(monkeypatch):
+    """证据充分但 LLM 判定问题模糊 → 触发，reason=vague，走 vague 引导文案。"""
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", True)
+    monkeypatch.setattr(rr, "judge_vague_question", lambda *a, **k: True)
+    gate = rr.run_clarification_gate(
+        _CaptureLLM("你是想问A还是B？"), "问题", "改写后", [{"score": 0.8, "chunk": {}}]
+    )
+    assert gate is not None
+    assert gate.triggered is True
+    assert gate.reason == "vague"
+    assert gate.vague is True
+    assert gate.prompt == rr._CLARIFICATION_LEADINS["vague"]
+    assert len(gate.questions) == 1
+
+
+def test_run_clarification_gate_sufficient_not_vague_skips(monkeypatch):
+    """证据充分且 LLM 判定不模糊 → 不触发（正常作答）。"""
+    from backend.app.api import routes_retrieval as rr
+
+    monkeypatch.setattr(rr, "CLARIFICATION_GATE_ENABLED", True)
+    monkeypatch.setattr(rr, "judge_vague_question", lambda *a, **k: False)
+    assert (
+        rr.run_clarification_gate(_CaptureLLM("x"), "问题", "改写后", [{"score": 0.8, "chunk": {}}])
+        is None
+    )
+
+
+class _ConfigCaptureLLM(_CaptureLLM):
+    """带 with_config（chat_agent 里 llm.with_config 挂 token 回调）。"""
+
+    def with_config(self, config):
+        return self
+
+
+class _FakeMetrics:
+    def incr(self, *a, **k):
+        pass
+
+    def observe(self, *a, **k):
+        pass
+
+
+def test_chat_agent_clarification_path_skips_persist_and_profile(monkeypatch):
+    """证据不足时 chat_agent 返回澄清轮：answer=引导文案、sources 空、persist/profile 不执行。"""
+    from backend.app.api import routes_retrieval as rr
+
+    fake_gate = SimpleNamespace(
+        triggered=True,
+        reason="weak_evidence",
+        questions=["你是想问切片的容量还是扩容机制？"],
+        prompt="找到的相关内容比较有限，为了避免答偏，请先确认一下你想问的是：",
+    )
+
+    def fake_intent(req, llm, gateway, profile, history):
+        return SimpleNamespace(
+            rewritten="改写后", expansions=[], escalated=False,
+            decision=RouterDecision(scope="auto", rationale="路由"), ms=1.0,
+        )
+
+    def fake_react(req, llm, gateway, decision, rewritten, history, profile, expansions):
+        return SimpleNamespace(
+            answer="硬凑答案", ms=2.0,
+            ranked=[{"score": 0.3, "chunk": {"content": "切片"}}],
+            ctx=SimpleNamespace(
+                fused={},
+                tool_calls=[{"tool": "search_library", "question": "改写后", "document_ids": []}],
+            ),
+            result={"intermediate_steps": []},
+        )
+
+    monkeypatch.setattr(rr, "check_chat_rate_limit", lambda uid: None)
+    monkeypatch.setattr(rr, "_validate_model", lambda m: m or "deepseek-v4-flash")
+    monkeypatch.setattr(rr, "_get_agent_llm", lambda m: _ConfigCaptureLLM("你是想问A还是B？"))
+    monkeypatch.setattr(rr, "TokenUsageCallback", lambda: SimpleNamespace(input_tokens=0, output_tokens=0))
+    monkeypatch.setattr(rr, "_build_gateway", lambda: _fake_gateway())
+    monkeypatch.setattr(rr, "_profile_for", lambda uid: None)
+    monkeypatch.setattr(rr, "_prepare_conversation", lambda uid, req: ("conv_1", []))
+    monkeypatch.setattr(rr, "stage_intent", fake_intent)
+    monkeypatch.setattr(rr, "stage_react", fake_react)
+    monkeypatch.setattr(rr, "run_clarification_gate", lambda llm, q, rewritten, ranked: fake_gate)
+    monkeypatch.setattr(rr, "get_metrics", lambda: _FakeMetrics())
+    monkeypatch.setattr(rr, "stage_persist", lambda *a, **k: (_ for _ in ()).throw(AssertionError("不应落库")))
+    monkeypatch.setattr(rr, "stage_profile", lambda *a, **k: (_ for _ in ()).throw(AssertionError("不应画像")))
+
+    req = SimpleNamespace(
+        question="问题", scope="auto", document_ids=[], top_k=5,
+        model=None, conversation_id=None,
+    )
+    resp = rr.chat_agent(req, {"id": "u1"})
+    assert resp["answer"] == fake_gate.prompt
+    assert resp["sources"] == []
+    assert resp["used_documents"] == []
+    assert resp["conversation_id"] == "conv_1"
+    assert resp["retrieval"]["evidence"]["sufficient"] is False
+    assert resp["retrieval"]["evidence"]["reason"] == "weak_evidence"
+    assert resp["retrieval"]["evidence"]["clarification"]["questions"] == fake_gate.questions
+    assert resp["retrieval"]["stages"]["persist_ms"] == 0
+    assert resp["retrieval"]["stages"]["profile_ms"] == 0

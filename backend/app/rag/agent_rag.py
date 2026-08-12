@@ -21,6 +21,10 @@ MAX_ADDITIONAL_SEARCHES = 4
 MAX_ITERATIONS = MAX_ADDITIONAL_SEARCHES + 1
 # 证据串正文截断长度，避免把整个 chunk 塞进 prompt 撑爆上下文。
 EVIDENCE_TEXT_LIMIT = 800
+# ReAct 单轮观察的证据总字符预算（limit=5 × 截断 800）：跨迭代累积时限制单条观察体积。
+MAX_EVIDENCE_CHARS = 4000
+# 兜底作答是一次性调用、不跨迭代累积，允许看更多证据（limit=10 × 截断 800）。
+MAX_FINAL_EVIDENCE_CHARS = 8000
 
 
 class RouterDecision(BaseModel):
@@ -234,17 +238,183 @@ def expand_query(llm, question: str, chat_history: list | None = None) -> list[s
     return _parse_expansion(raw, question)
 
 
-def _render_evidence(ctx: AgentChatContext, limit: int = 5) -> str:
-    """把累积证据渲染成带来源编号 [n] 的证据串（给 LLM 看）。"""
+_CLARIFICATION_PROMPT = """你是学习知识库的澄清提问助手。学生的问题在资料里没有检索到足够证据，需要反问他澄清，以便重新精确检索。
+- 结合学生的原始提问（可能模糊/歧义）与下面检索到的一点线索，给出 1~2 个澄清问题；
+- 澄清问题要具体、给出可选的指向（例如「你想问的是 A 还是 B？」）；
+- 直接输出问题本身，一行一个，不要编号、不要解释、不要套话；
+- 如果检索线索为空，就基于问题本身的歧义点提问。
+
+学生提问：{question}
+（改写后：{rewritten}）
+
+检索线索：
+{evidence}
+
+澄清问题："""
+
+
+def _render_clarification_clues(clues: list[dict] | None, limit: int = 3) -> str:
+    """把 rank 后的证据块渲染成紧凑线索串；空返回「（没有检索到线索）」占位。
+
+    no_evidence 时 clues 为空，走占位文本，生成函数不崩。
+    """
+    if not clues:
+        return "（没有检索到线索）"
+    parts: list[str] = []
+    for item in clues[:limit]:
+        chunk = item.get("chunk") or {}
+        metadata = chunk.get("metadata", {}) or {}
+        heading = chunk.get("heading_path", "") or metadata.get("heading_path", "")
+        text = str(chunk.get("content", ""))[:120].replace("\n", " ")
+        parts.append(f"【{heading}】{text}" if heading else text)
+    return "\n".join(parts) if parts else "（没有检索到线索）"
+
+
+def generate_clarification_questions(
+    llm,
+    question: str,
+    rewritten: str | None = None,
+    clues: list[dict] | None = None,
+) -> list[str]:
+    """证据不足时用 LLM 生成 1-2 个澄清问题（Phase 5 澄清门控）。
+
+    输入原问题/改写后问题/ranked 证据线索，输出最多 2 条具体澄清问题；
+    宽容回退：异常/空/无有效行都返回 []，由门控层兜底为通用澄清，绝不破坏链路。
+    """
+    if not question or not question.strip():
+        return []
+    try:
+        response = llm.invoke(
+            _CLARIFICATION_PROMPT.format(
+                question=question[:300],
+                rewritten=(rewritten or question)[:300],
+                evidence=_render_clarification_clues(clues),
+            )
+        )
+        raw = str(getattr(response, "content", response) or "").strip()
+    except Exception as exc:
+        print(f"[agent] 澄清问题生成失败: {exc}")
+        return []
+    return _parse_expansion(raw, question)[:2]
+
+
+_VAGUE_JUDGE_PROMPT = """你是学习知识库的问题评审员。判断学生的问题是否「模糊/太泛」——即不先向学生澄清就无法给出针对性回答。
+模糊（vague=true）的典型特征：
+- 没有明确主题或指代对象（如「给我讲讲这个吧」）；
+- 一个问题指向多种互不兼容的答案方向，必须先选一个才能答好（如「go语言怎么学」——是学基础语法还是写具体项目？）；
+- 一次问多个互不相关的话题，难以一次回答。
+不模糊（vague=false）的典型特征：
+- 有明确主题和具体问题（如「切片的容量如何扩容？」「const 和 var 有什么区别？」）；
+- 虽需跨文档拼接，但问题焦点明确。
+
+注意：检索到相关文档 ≠ 问题不模糊——「go语言怎么学」能检索到教程，但答案方向仍不唯一，应判模糊。
+
+学生提问：{question}
+（改写后：{rewritten}）
+
+检索到的相关内容：
+{evidence}
+
+只输出 JSON：{{"vague": true|false, "reason": "一句话理由"}}
+"""
+
+
+def _parse_vague_verdict(raw: str) -> bool | None:
+    """宽容提取 JSON 里的 vague 字段；解析失败返回 None。"""
+    if not raw:
+        return None
+    m = re.search(r'"vague"\s*:\s*(true|false)', raw, re.IGNORECASE)
+    return m.group(1).lower() == "true" if m else None
+
+
+def judge_vague_question(
+    llm,
+    question: str,
+    rewritten: str | None = None,
+    clues: list[dict] | None = None,
+) -> bool:
+    """LLM 判断问题是否模糊到需要反问（Phase 5 补充信号）。
+
+    与证据不足正交：证据充分但问题本身太泛（如「go语言怎么学」检索到教程仍太泛），
+    也触发澄清门控。宽容回退：异常/解析失败一律 False——宁可不触发也不误伤正常题。
+    """
+    if not question or not question.strip():
+        return False
+    try:
+        response = llm.invoke(
+            _VAGUE_JUDGE_PROMPT.format(
+                question=question[:300],
+                rewritten=(rewritten or question)[:300],
+                evidence=_render_clarification_clues(clues),
+            )
+        )
+        raw = str(getattr(response, "content", response) or "").strip()
+    except Exception as exc:
+        print(f"[agent] 模糊判断失败: {exc}")
+        return False
+    return _parse_vague_verdict(raw) is True
+
+
+def _normalize_text(text: str) -> str:
+    """折叠全部空白，用于近重复比较（parent-child 重叠内容归一化后应一致）。"""
+    return re.sub(r"\s+", "", text or "")
+
+
+def _is_near_duplicate(text: str, other: str) -> bool:
+    """两段归一化正文是否高度重叠：较短一方被较长一方包含且长度占比 ≥ 0.9。"""
+    if not text or not other:
+        return False
+    shorter, longer = (text, other) if len(text) <= len(other) else (other, text)
+    return len(shorter) / len(longer) >= 0.9 and shorter in longer
+
+
+def _dedupe_near_duplicates(items: list[dict]) -> list[dict]:
+    """丢弃与更高分块内容高度重叠的近重复，保留更完整/更高分的一块。
+
+    典型场景：parent-child 上下文检索同时命中父子块，正文互相包含；
+    只保留信息最完整的高分块，避免同一知识在 prompt 里重复出现。
+    """
+    kept: list[dict] = []
+    for item in items:
+        text = _normalize_text(
+            str((item.get("chunk") or {}).get("content", ""))[:EVIDENCE_TEXT_LIMIT]
+        )
+        duplicate = any(
+            _is_near_duplicate(
+                text,
+                _normalize_text(
+                    str((other.get("chunk") or {}).get("content", ""))[:EVIDENCE_TEXT_LIMIT]
+                ),
+            )
+            for other in kept
+        )
+        if not duplicate:
+            kept.append(item)
+    return kept
+
+
+def _render_evidence(
+    ctx: AgentChatContext, limit: int = 5, max_chars: int = MAX_EVIDENCE_CHARS
+) -> str:
+    """把累积证据渲染成带来源编号 [n] 的证据串（给 LLM 看）。
+
+    三重约束控制上下文体积：块数上限（limit）、近重复去重（parent-child 重叠）、
+    总字符预算（max_chars，超出时优先保留更高分块）。
+    """
     ranked = sorted(ctx.fused.values(), key=lambda item: item["score"], reverse=True)[:limit]
     if not ranked:
         return "（没有检索到可用证据）"
+    ranked = _dedupe_near_duplicates(ranked)
     lines = []
+    total = 0
     for rank, item in enumerate(ranked, start=1):
         chunk = item["chunk"]
         metadata = chunk.get("metadata", {}) or {}
         heading = chunk.get("heading_path", "") or metadata.get("heading_path", "")
         text = str(chunk.get("content", ""))[:EVIDENCE_TEXT_LIMIT]
+        if lines and total + len(text) > max_chars:
+            break
+        total += len(text)
         lines.append(
             f"[{rank}] 来源: document_id={chunk.get('document_id', '')}, "
             f"filename={chunk.get('filename', '')}, "
@@ -275,7 +445,7 @@ def synthesize_final_answer(llm, ctx: AgentChatContext, question: str) -> str:
     用已累积的证据（ctx.fused）做一次直接作答，保证用户永远拿到真实答案而
     不是引擎报错串。证据为空时 LLM 会明确回答"资料中没有找到相关内容"。
     """
-    evidence = _render_evidence(ctx, limit=10)
+    evidence = _render_evidence(ctx, limit=10, max_chars=MAX_FINAL_EVIDENCE_CHARS)
     try:
         response = llm.invoke(
             _FINAL_ANSWER_PROMPT.format(question=question[:500], evidence=evidence)
