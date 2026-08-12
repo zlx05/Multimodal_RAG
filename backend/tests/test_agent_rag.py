@@ -22,6 +22,7 @@ from backend.app.rag.agent_rag import (
     _merge_dual,
     _merge_queries,
     _render_evidence,
+    estimate_tokens,
 )
 from backend.app.api.routes_retrieval import (
     _evidence_sufficient,
@@ -279,18 +280,41 @@ def test_render_evidence_keeps_distinct_low_overlap_chunks():
     assert "alpha" * 40 in rendered and "beta" * 40 in rendered
 
 
-def test_render_evidence_respects_total_char_budget():
-    """总字符预算：超出时截断，优先保留更高分块；至少保留最高分一块。"""
+def test_render_evidence_respects_total_token_budget():
+    """总 token 预算：超出时截断，优先保留更高分块；至少保留最高分一块。
+
+    中文 300 字 ≈ 300 token（cl100k 实测 1 字≈1 token），max_tokens=400 下
+    第一块（≈300 token）进入，第二块把累计推到 ≈600 token 超预算 → 截断。
+    """
     ctx = AgentChatContext()
     ctx.fused[("coll", 0)] = _fused_item("coll", 0, 0.9, "高" * 300)
     ctx.fused[("coll", 1)] = _fused_item("coll", 1, 0.8, "中" * 300)
     ctx.fused[("coll", 2)] = _fused_item("coll", 2, 0.7, "低" * 300)
 
-    rendered = _render_evidence(ctx, limit=10, max_chars=500)
+    rendered = _render_evidence(ctx, limit=10, max_tokens=400)
     assert "高" * 300 in rendered   # 最高分块优先进入
-    assert "[2]" not in rendered    # 第二块会把总长推过 500 → 截断
-    # 预算值本身是硬上限：正文总长 ≤ 预算（编号/来源行不计入，因此留松弛）
-    assert len([line for line in rendered.splitlines() if line and not line.startswith("[")]) <= 500
+    assert "[2]" not in rendered    # 第二块把累计推到 ~600 token > 400 → 截断
+    # token 预算是硬上限：正文 token 总和 ≤ 预算（编号/来源行不计入，因此留松弛）
+    body_lines = [line for line in rendered.splitlines() if line and not line.startswith("[")]
+    body_tokens = sum(estimate_tokens(line) for line in body_lines)
+    assert body_tokens <= 400
+
+
+def test_estimate_tokens_empty_and_small():
+    assert estimate_tokens("") == 0
+    assert estimate_tokens("hello") > 0
+
+
+def test_estimate_tokens_chinese_approx_one_per_char():
+    # 中文 1 字 ≈ 1 token（宽松区间避免绑定 tiktoken 版本差异）
+    t = estimate_tokens("问" * 100)
+    assert 80 <= t <= 120
+
+
+def test_estimate_tokens_mixed_less_than_chars():
+    # 英文为主的文本 token 数显著小于字符数（约 4 字/token）
+    text = "the quick brown fox jumps over the lazy dog " * 50
+    assert estimate_tokens(text) < len(text) // 2
 
 
 def test_search_documents_uses_selected_ids():

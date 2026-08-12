@@ -19,12 +19,43 @@ from pydantic import BaseModel, Field
 # 调太低（如 3）会让 agent 一直在检索而没机会输出最终答案，被 max_iterations 截断。
 MAX_ADDITIONAL_SEARCHES = 4
 MAX_ITERATIONS = MAX_ADDITIONAL_SEARCHES + 1
-# 证据串正文截断长度，避免把整个 chunk 塞进 prompt 撑爆上下文。
+# 证据串正文截断长度（字符），避免把整个 chunk 塞进 prompt 撑爆上下文。
 EVIDENCE_TEXT_LIMIT = 800
-# ReAct 单轮观察的证据总字符预算（limit=5 × 截断 800）：跨迭代累积时限制单条观察体积。
-MAX_EVIDENCE_CHARS = 4000
+# ReAct 单轮观察的证据总预算（token 口径，limit=5 × 截断 800）：跨迭代累积时
+# 限制单条观察体积。cl100k 中文实测 ≈1 token/字，原 4000 字符 ≈ 4000 token——
+# 数值沿用、语义从"字符"升级为"token"，英文/markdown 内容自动松绑更贴近真实计费。
+MAX_EVIDENCE_TOKENS = 4000
 # 兜底作答是一次性调用、不跨迭代累积，允许看更多证据（limit=10 × 截断 800）。
-MAX_FINAL_EVIDENCE_CHARS = 8000
+MAX_FINAL_EVIDENCE_TOKENS = 8000
+
+
+# ---- token 计数（cl100k_base 惰性加载，仿 token_chunker.py 模式）----
+_token_encoder = None
+
+
+def estimate_tokens(text: str) -> int:
+    """估算文本 token 数。cl100k_base 惰性加载；不可用时回退字符估算。
+
+    实测（cl100k_base）：中文 ≈1 token/字、英文 ≈4 字/token。回退按 CJK
+    1 字≈1 token、其余 4 字≈1 token 近似，保证离线/装不上 tiktoken 时链路不炸。
+    """
+    global _token_encoder
+    if _token_encoder is None:
+        try:
+            import tiktoken
+
+            _token_encoder = tiktoken.get_encoding("cl100k_base")
+        except Exception:
+            _token_encoder = False
+    if _token_encoder:
+        try:
+            return len(_token_encoder.encode(text or ""))
+        except Exception:
+            pass
+    if not text:
+        return 0
+    cjk = sum(1 for ch in text if "一" <= ch <= "鿿")
+    return max(1, cjk + (len(text) - cjk) // 4)
 
 
 class RouterDecision(BaseModel):
@@ -394,27 +425,29 @@ def _dedupe_near_duplicates(items: list[dict]) -> list[dict]:
 
 
 def _render_evidence(
-    ctx: AgentChatContext, limit: int = 5, max_chars: int = MAX_EVIDENCE_CHARS
+    ctx: AgentChatContext, limit: int = 5, max_tokens: int = MAX_EVIDENCE_TOKENS
 ) -> str:
     """把累积证据渲染成带来源编号 [n] 的证据串（给 LLM 看）。
 
     三重约束控制上下文体积：块数上限（limit）、近重复去重（parent-child 重叠）、
-    总字符预算（max_chars，超出时优先保留更高分块）。
+    总 token 预算（max_tokens，超出时优先保留更高分块）。只计正文 token，
+    来源/编号行不计入；单条正文仍受 EVIDENCE_TEXT_LIMIT 字符截断。
     """
     ranked = sorted(ctx.fused.values(), key=lambda item: item["score"], reverse=True)[:limit]
     if not ranked:
         return "（没有检索到可用证据）"
     ranked = _dedupe_near_duplicates(ranked)
     lines = []
-    total = 0
+    total_tokens = 0
     for rank, item in enumerate(ranked, start=1):
         chunk = item["chunk"]
         metadata = chunk.get("metadata", {}) or {}
         heading = chunk.get("heading_path", "") or metadata.get("heading_path", "")
         text = str(chunk.get("content", ""))[:EVIDENCE_TEXT_LIMIT]
-        if lines and total + len(text) > max_chars:
+        item_tokens = estimate_tokens(text)
+        if lines and total_tokens + item_tokens > max_tokens:
             break
-        total += len(text)
+        total_tokens += item_tokens
         lines.append(
             f"[{rank}] 来源: document_id={chunk.get('document_id', '')}, "
             f"filename={chunk.get('filename', '')}, "
@@ -445,7 +478,7 @@ def synthesize_final_answer(llm, ctx: AgentChatContext, question: str) -> str:
     用已累积的证据（ctx.fused）做一次直接作答，保证用户永远拿到真实答案而
     不是引擎报错串。证据为空时 LLM 会明确回答"资料中没有找到相关内容"。
     """
-    evidence = _render_evidence(ctx, limit=10, max_chars=MAX_FINAL_EVIDENCE_CHARS)
+    evidence = _render_evidence(ctx, limit=10, max_tokens=MAX_FINAL_EVIDENCE_TOKENS)
     try:
         response = llm.invoke(
             _FINAL_ANSWER_PROMPT.format(question=question[:500], evidence=evidence)
