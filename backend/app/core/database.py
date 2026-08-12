@@ -33,23 +33,33 @@ def _ensure_precise_timestamps() -> None:
     """
     if engine.dialect.name != "mysql":
         return
+    # 所有以 Float 存储 epoch 时间戳的列都升级（FLOAT 在 epoch 量级 ULP≈128s，
+    # 会把不同时刻塌缩成同一时间——documents/uploads 此前因此"时间错乱"）。
+    # reviewed_at 可空，按 information_schema 保留 NULL/NOT NULL。
     columns = [
         ("messages", "created_at"),
         ("agent_traces", "created_at"),
         ("conversations", "created_at"),
         ("conversations", "updated_at"),
+        ("documents", "created_at"),
+        ("uploads", "created_at"),
+        ("uploads", "reviewed_at"),
+        ("users", "created_at"),
+        ("classes", "created_at"),
+        ("class_members", "joined_at"),
     ]
     with engine.begin() as conn:
         for table, column in columns:
             row = conn.execute(
                 text(
-                    "SELECT DATA_TYPE FROM information_schema.columns "
+                    "SELECT DATA_TYPE, IS_NULLABLE FROM information_schema.columns "
                     "WHERE table_schema = DATABASE() AND table_name = :t AND column_name = :c"
                 ),
                 {"t": table, "c": column},
             ).fetchone()
             if row and row[0].lower() == "float":
-                conn.execute(text(f"ALTER TABLE {table} MODIFY {column} DOUBLE NOT NULL"))
+                nullable = "NULL" if row[1] == "YES" else "NOT NULL"
+                conn.execute(text(f"ALTER TABLE {table} MODIFY {column} DOUBLE {nullable}"))
                 print(f"[init_db] {table}.{column}: FLOAT → DOUBLE")
 
 
