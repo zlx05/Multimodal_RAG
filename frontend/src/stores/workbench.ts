@@ -24,11 +24,12 @@ export const useWorkbenchStore = defineStore("workbench", {
   actions: {
     async bootstrap() {
       this.error = "";
-      const results = await Promise.allSettled([api.health(), api.documents(), api.models(), api.chunkProfiles()]);
+      const results = await Promise.allSettled([api.health(), api.documents(), api.models(), api.chunkProfiles(), api.tasks()]);
       const health = results[0];
       const docs = results[1];
       const models = results[2];
       const profiles = results[3];
+      const tasks = results[4];
       this.service = health.status === "fulfilled" && health.value.status === "ok" ? "online" : "offline";
       if (docs.status === "fulfilled") this.documents = docs.value.documents;
       if (models.status === "fulfilled") {
@@ -36,6 +37,7 @@ export const useWorkbenchStore = defineStore("workbench", {
         this.defaultModel = models.value.default_model;
       }
       if (profiles.status === "fulfilled") this.chunkProfiles = profiles.value.profiles;
+      if (tasks.status === "fulfilled") this.activeTasks = tasks.value.tasks.map((task) => ({ ...task, polling: false }));
       if (this.service === "offline") this.error = "无法连接 FastAPI，请先启动后端服务";
     },
     async upload(file: File, chunkProfile = "auto") {

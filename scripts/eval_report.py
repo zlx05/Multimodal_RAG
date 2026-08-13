@@ -1,4 +1,4 @@
-"""生成面试用的评估对比报告（markdown）。
+"""生成评估对比报告（markdown）。
 
 汇总三块数据，产出 data/eval/report.md：
 1. 检索指标（召回 + 精确 + MRR）：切片升级前快照（results.json） vs 切片升级后（results_new.json），

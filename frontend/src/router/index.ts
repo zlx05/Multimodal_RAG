@@ -21,7 +21,7 @@ const router = createRouter({
     { path: "/ingest", component: IngestView },
     { path: "/chat", component: ChatView },
     { path: "/chunks", component: ChunksView, meta: { requiresAdmin: true } },
-    { path: "/profile", component: ProfileView, meta: { requiresAdmin: true } },
+    { path: "/profile", component: ProfileView },
     { path: "/admin", component: AdminView, meta: { requiresAdmin: true } },
   ],
 });

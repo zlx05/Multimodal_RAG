@@ -205,7 +205,7 @@ onMounted(async () => {
 
 watch(() => workbench.defaultModel, (value) => {
   if (!chatStore.selectedModel || ["gpt-5.6-terra", "gpt-5.6-luna"].includes(chatStore.selectedModel)) chatStore.selectedModel = value;
-});
+}, { immediate: true });
 </script>
 
 <template>

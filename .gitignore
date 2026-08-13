@@ -27,3 +27,9 @@ data/*
 frontend/node_modules/
 frontend/dist/
 *.tsbuildinfo
+
+# Interview prep docs (kept locally, not published)
+INTERVIEW_PREP.md
+docs/interview-handbook.md
+docs/interview-notes.md
+docs/learn-*.md

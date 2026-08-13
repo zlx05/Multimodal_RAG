@@ -55,7 +55,7 @@ function logout() {
       >
         <SignOut :size="18" />
       </button>
-      <button class="icon-button" type="button" :aria-label="dark ? '切换浅色模式' : '切换深色模式'" @click="emit('toggleTheme')">
+      <button class="icon-button" type="button" :aria-label="dark ? '切换浅色模式' : '切换深色模式'" :title="dark ? '切换浅色模式' : '切换深色模式'" @click="emit('toggleTheme')">
         <Sun v-if="dark" :size="18" />
         <Moon v-else :size="18" />
       </button>

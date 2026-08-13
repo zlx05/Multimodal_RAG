@@ -164,14 +164,13 @@ async function save() {
   </section>
 
   <!-- 非老师直接访问 /profile：前端兜底提示（路由层另有拦截） -->
-  <section v-if="!auth.isAdmin" class="empty-state compact">
+  <section v-if="false" class="empty-state compact">
     <LockKey :size="28" />
     <strong>仅老师可访问</strong>
     <span>画像与学习特征管理需要老师身份。</span>
   </section>
 
-  <template v-else>
-    <div class="filter-tabs view-tabs">
+  <div v-if="auth.isAdmin" class="filter-tabs view-tabs">
       <button
         v-for="tab in tabs"
         :key="tab.value"
@@ -182,10 +181,10 @@ async function save() {
       >
         {{ tab.label }}
       </button>
-    </div>
+  </div>
 
     <!-- 我的画像：编辑表单 + 长期记忆 -->
-    <template v-if="activeTab === 'mine'">
+    <div v-if="!auth.isAdmin || activeTab === 'mine'" class="profile-workspace">
       <section v-if="loading" class="panel empty-state compact">
         <span>加载画像中…</span>
       </section>
@@ -283,9 +282,8 @@ async function save() {
           </div>
         </form>
       </section>
-    </template>
+    </div>
 
     <!-- 学生画像：老师只读查看每个学生的画像 + 长期记忆 -->
-    <StudentProfiles v-else />
-  </template>
+  <StudentProfiles v-if="auth.isAdmin && activeTab === 'students'" />
 </template>

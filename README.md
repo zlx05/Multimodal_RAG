@@ -89,8 +89,6 @@ Vue 3
 │   ├── api.md                       # 当前接口和升级后的接口约定
 │   ├── development.md               # 本地开发和验证方式
 │   ├── project-report.md             # 完整系统架构报告
-│   ├── interview-handbook.md         # 面试和手写题手册
-│   ├── interview-notes.md           # 面试讲解重点
 │   └── upgrade-plan.md              # 分阶段升级路线
 ├── infra/docker-compose.yml         # Milvus 依赖服务
 ├── scripts/                         # 启停和模型准备脚本
@@ -219,13 +217,6 @@ CONTEXTUAL_RETRIEVAL_ENABLED=true
 CONTEXTUAL_RETRIEVAL_MODEL=gpt-5.6-luna
 ~~~
 
-### 学习文档（docs/ 下）
-
-- [learn-rag-basics.md](docs/learn-rag-basics.md)：RAG 基础知识扫盲（面试入门）
-- [learn-parsers-ocr.md](docs/learn-parsers-ocr.md)：多模态解析与 OCR
-- [learn-hybrid-retrieval.md](docs/learn-hybrid-retrieval.md)：BM25 + 向量混合检索与溯源
-- [learn-async-ingestion.md](docs/learn-async-ingestion.md)：Redis 异步增量入库
-
 ### 后续优化
 
 - 用评估集调检索参数（per-collection top_k、RRF k、semantic floor）——检索与答案两套基线都有了（Recall@1=0.93 + groundedness 标注），调参收益可直接量化。
@@ -234,8 +225,4 @@ CONTEXTUAL_RETRIEVAL_MODEL=gpt-5.6-luna
 - 增加多资料对比视图，以及按课程/标签管理资料目录。
 - **Phase 2 班级学习库（后端 + 前端已完成）**：小团体班级——老师与学生共享文档库，上传经校验 agent 审核（驳回隐藏但保留）、管理员审计后台、用户画像调整回答形式（beginner/advanced）、会话持久化 + chat_history 多轮。前端已接入：登录页（区分老师/学生，老师可创建学生账号）、我的画像页（含长期记忆列表，可查看/删除画像进化自动积累的行为观察）、班级管理页（创建学生 + 上传审计放行/驳回/删除）、知识问答页接入 `/chat/agent` 多轮会话 + Agent 轨迹面板。会话是**真持久化**：每轮问答按用户落库 MySQL，问答状态提升到 Pinia store，切换栏目、刷新页面后自动从后端恢复，并带**历史会话列表**（标题 + 最后消息预览，点开续聊、可删除）——同一问题不必重复问。详见 [docs/upgrade-plan.md](docs/upgrade-plan.md) 阶段七。
 
-详细设计见 docs/project-report.md、docs/architecture.md 和 docs/upgrade-plan.md。面试学习见 [INTERVIEW_PREP.md](INTERVIEW_PREP.md) 和 docs/interview-handbook.md。
-
-## 面试表达重点
-
-项目亮点不是“接入了一个向量数据库”，而是围绕学生复习场景解决了多模态资料入库、知识点边界、专业术语召回和答案溯源四个问题。建议面试时按“问题 -> 方案 -> 取舍 -> 指标”展开，具体提纲见 docs/interview-notes.md。
+详细设计见 docs/project-report.md、docs/architecture.md 和 docs/upgrade-plan.md。
