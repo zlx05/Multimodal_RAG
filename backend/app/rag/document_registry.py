@@ -1,17 +1,15 @@
-"""Persistent document metadata used by ingestion and document-level routing.
-
-Milvus collection names must be ASCII-safe, while users need to see the
-original filename. This registry keeps both concerns together and prevents
-the upload UUID from becoming the only identity shown in the UI.
+"""Persistent document metadata used by ingestion and retrieval.
 
 Metadata lives in MySQL (documents 表) instead of a JSON file. The API and
 Worker are separate processes; a database gives cross-process consistency
 that a process-local RLock + atomic file replace cannot provide.
+
+Milvus 侧从每文档一个 collection 迁移到单共享 collection（rag_all）后，
+collection 名退化为常量，文档身份靠 chunk 上的 document_id 分区。
 """
 
 from __future__ import annotations
 
-import hashlib
 import re
 import time
 from pathlib import Path
@@ -19,6 +17,7 @@ from typing import Any
 
 from ..core.database import SessionLocal
 from ..db.models import Document
+from .hybrid_pipeline import SHARED_COLLECTION
 
 # 会话工厂注入点：测试用 SQLite sessionmaker 替换。运行期默认 MySQL。
 _session_factory = SessionLocal
@@ -29,29 +28,12 @@ def _to_dict(row: Document) -> dict[str, Any]:
 
 
 def document_collection_name(document_id: str, filename: str) -> str:
-    """Return a readable, stable and Milvus-safe collection name."""
-    slug = _topic_slug(filename)
-    # Keep the document ID suffix so two uploads with the same filename never
-    # share an index. The original filename remains in the registry metadata.
-    document_suffix = document_id.removeprefix("doc_")
-    suffix = re.sub(r"[^A-Za-z0-9]+", "", document_suffix)[-12:] or hashlib.sha1(
-        filename.encode("utf-8")
-    ).hexdigest()[:12]
-    return f"rag_{slug}_{suffix}"
+    """所有文档共用单共享 collection（rag_all），chunk 靠 document_id 分区。
 
-
-def _topic_slug(value: str) -> str:
-    """Convert English or Chinese topic text into a Milvus-safe slug."""
-    try:
-        from pypinyin import lazy_pinyin
-
-        value = "_".join(lazy_pinyin(Path(value).stem))
-    except ImportError:
-        # Keep uploads functional before optional multimodal dependencies are
-        # installed; the registry still retains the original topic label.
-        value = Path(value).stem
-    slug = re.sub(r"[^A-Za-z0-9]+", "_", value).strip("_").lower()
-    return slug[:64] or "document"
+    文档级路由消融 + 单库迁移后，每文档一个 collection 不再必要（检索全局化、
+    删除按 document_id expr）。参数保留以兼容调用方，返回值恒为 SHARED_COLLECTION。
+    """
+    return SHARED_COLLECTION
 
 
 def infer_document_topic(filename: str, blocks: list[Any]) -> str:
@@ -189,7 +171,7 @@ def list_documents(upload_dir: Path) -> list[dict[str, Any]]:
                 "document_id": document_id,
                 "filename": path.name,
                 "source_path": str(path),
-                "collection_name": f"rag_{document_id}",
+                "collection_name": SHARED_COLLECTION,
                 "topic_label": path.stem,
                 "content_hash": "",
                 "source_type": path.suffix.lstrip("."),

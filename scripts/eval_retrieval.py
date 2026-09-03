@@ -1,8 +1,9 @@
 """检索评估：纯向量 / 纯 BM25 / BM25+向量+RRF / 生产路径 四路对比。
 
-用 data/eval/questions.jsonl 的标注问题（每题一个期望文档），对全部
-collection 做检索并按变体合并，计算文档级 Recall@K 与 MRR，打印对比表并
-写出 data/eval/results.json。
+单库迁移（rag_all + document_id 分区）后文档级路由门控已删除，不再需要
+no_route 消融变体。用 data/eval/questions.jsonl 的标注问题（每题一个期望
+文档），对全部文档做检索并按变体合并，计算文档级 Recall@K 与 MRR，打印
+对比表并写出 data/eval/results.json。
 
 用法（从仓库根目录运行）:
     conda activate rag11
@@ -30,19 +31,29 @@ DEFAULT_KS = (1, 3, 5)
 ALL_VARIANTS = ("vector", "bm25", "rrf", "production")
 
 
-def resolve_documents(registry_path: Path) -> list[dict]:
-    """从 document_registry.json 读全部文档（document_id/filename/collection_name）。"""
-    with open(registry_path, encoding="utf-8") as fh:
-        registry = json.load(fh)
-    documents = [
-        {
-            "document_id": rec["document_id"],
-            "filename": rec.get("filename", ""),
-            "collection_name": rec["collection_name"],
-        }
-        for rec in registry.values()
-    ]
-    return sorted(documents, key=lambda d: d["document_id"])
+def resolve_documents() -> list[dict]:
+    """从 MySQL documents 表读全部文档（document_id/filename/collection_name）。
+
+    单库迁移后所有行 collection_name 恒为 rag_all；读真表而非过期的
+    document_registry.json，让「文档 N 份」反映真实知识库（而非评测时快照）。
+    """
+    from sqlalchemy import text
+
+    from backend.app.core.database import engine
+
+    documents = []
+    with engine.connect() as conn:
+        rows = conn.execute(
+            text(
+                "SELECT document_id, filename, collection_name "
+                "FROM documents ORDER BY document_id"
+            )
+        ).fetchall()
+    for doc_id, filename, collection in rows:
+        documents.append(
+            {"document_id": doc_id, "filename": filename, "collection_name": collection}
+        )
+    return documents
 
 
 def load_questions(path: Path) -> list[dict]:
@@ -116,16 +127,7 @@ def variant_rrf(question: str, pipelines: dict[str, HybridRAGPipeline], per_k: i
     return _sort_hits(hits)
 
 
-def variant_production(question: str, collections: list[str], top_k: int) -> list[dict]:
-    """真实生产路径：直接调 `_federated_search`（路由门控 + relevance 重排 + top_k 截断）。
-
-    这不是纯召回通道，而是用户实际看到的排序——用于回答"生产链路把原始 RRF
-    的跨库平局问题拉回多少"。内部 pipeline 缓存由 routes_retrieval 的
-    `_pipeline_cache` 管理（with_llm=False，embedder 复用共享缓存）。
-    """
-    from backend.app.api.routes_retrieval import _federated_search
-
-    fused, _routing = _federated_search(question, collections, top_k)
+def _federated_to_hits(fused: list[dict]) -> list[dict]:
     return [
         {
             "collection": item["collection"],
@@ -136,6 +138,19 @@ def variant_production(question: str, collections: list[str], top_k: int) -> lis
         }
         for item in fused
     ]
+
+
+def variant_production(question: str, collections: list[str], top_k: int) -> list[dict]:
+    """真实生产路径：直接调 `_federated_search`（路由门控 + relevance 重排 + top_k 截断）。
+
+    这不是纯召回通道，而是用户实际看到的排序——用于回答"生产链路把原始 RRF
+    的跨库平局问题拉回多少"。内部 pipeline 缓存由 routes_retrieval 的
+    `_pipeline_cache` 管理（with_llm=False，embedder 复用共享缓存）。
+    """
+    from backend.app.api.routes_retrieval import _federated_search
+
+    fused, _routing = _federated_search(question, collections, top_k)
+    return _federated_to_hits(fused)
 
 
 VARIANTS = {
@@ -174,21 +189,19 @@ def main() -> None:
     if not variants:
         parser.error("--variants 必须包含 vector/bm25/rrf/production 之一")
 
-    registry_path = PROJECT_ROOT / "data/document_registry.json"
     questions = load_questions(Path(args.questions))
     if args.limit:
         questions = questions[: args.limit]
-    documents = resolve_documents(registry_path)
+    documents = resolve_documents()
     print(f"评估集 {len(questions)} 题，文档 {len(documents)} 份，变体 {variants}")
 
     connect_milvus()
+    # 单库迁移后所有文档的 collection_name 都是 rag_all，去重后只有一个共享 pipeline。
+    collections = sorted({doc["collection_name"] for doc in documents})
     pipelines: dict[str, HybridRAGPipeline] = {}
-    collections: list[str] = []
-    for doc in documents:
-        collection = doc["collection_name"]
-        collections.append(collection)
+    for collection in collections:
         pipelines[collection] = HybridRAGPipeline(collection, with_llm=False)
-    print(f"Milvus connected, {len(pipelines)} collections")
+    print(f"Milvus connected, {len(pipelines)} shared collection(s)")
 
     per_question = []
     for q in questions:

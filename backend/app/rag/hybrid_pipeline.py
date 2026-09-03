@@ -35,6 +35,8 @@ from .chunking_profiles import TEXT_CONTENT_TYPES, ChunkingProfile, group_blocks
 MILVUS_HOST = os.getenv("MILVUS_HOST", "127.0.0.1")
 MILVUS_PORT = os.getenv("MILVUS_PORT", "19530")
 INDEX_BATCH_SIZE = 200
+# 单库共享 collection：所有文档的 chunk 都在这一个集合里，靠 document_id 分区。
+SHARED_COLLECTION = "rag_all"
 # 上下文绑定的目标块：图片描述/公式 OCR/整页扫描 OCR。检索"讲 XX 那张图/那个公式"
 # 这类问题时，仅靠这些块的自身文本召回差，需要邻近正文补上下文。
 CONTEXT_BINDING_TYPES = {"image_description", "formula", "image_ocr"}
@@ -43,10 +45,10 @@ CONTEXT_WINDOW = 150
 
 
 class HybridRAGPipeline:
-    """一个文档对应一个 collection 的混合检索管道。
+    """单共享 collection（rag_all）的混合检索管道，chunk 按 document_id 分区。
 
     用法：
-        pipe = HybridRAGPipeline(collection_name, ...)
+        pipe = HybridRAGPipeline(SHARED_COLLECTION, ...)
         pipe.build(blocks, chunker)   # blocks 来自解析器，分块后入库
         results = pipe.search(question)
         answer = pipe.answer(question, top_k=5)
@@ -74,7 +76,9 @@ class HybridRAGPipeline:
         self.collection = self._get_or_create_collection()
         self.bm25 = BM25Store()
         self._chunk_pool: list[dict] = []  # 所有 chunk 的元数据池
-        self._pool_by_index: dict[int, dict] = {}  # chunk_index -> chunk 元数据
+        # 单库全局键：Milvus auto id -> chunk 元数据。chunk_index 是每文档局部
+        # 计数器，跨文档必然冲突，不能当池键（见 _load_bm25_from_milvus）。
+        self._pool_by_id: dict[int, dict] = {}
 
         if self.collection.num_entities > 0 and not rebuild:
             self._load_bm25_from_milvus()
@@ -167,9 +171,10 @@ class HybridRAGPipeline:
                 "image_path", "bbox", "confidence", "metadata",
             ],
         )
-        results.sort(key=lambda r: r["chunk_index"])
+        results.sort(key=lambda r: int(r["id"]))
         self._chunk_pool = results
-        self._pool_by_index = {r["chunk_index"]: r for r in results}
+        # 键用 Milvus auto id（全局唯一），BM25 metadata 携带 id 保证语料位置→行映射。
+        self._pool_by_id = {int(r["id"]): r for r in results}
         self.bm25.build([self._search_text(r) for r in results], results)
 
     @staticmethod
@@ -241,10 +246,10 @@ class HybridRAGPipeline:
         # 把邻近正文片段并入其 search_text，BM25 + 向量双路同时受益。
         bind_context_around_media(blocks)
 
-        # 每个 block 可能切出多个 child chunk，编号在本 Collection 内递增。
+        # 每个 block 可能切出多个 child chunk，编号在当前文档内递增（入库后
+        # 仅作溯源元数据；内存池/BM25 的全局键是 Milvus auto id）。
         chunk_index = 0
         rows: list[dict] = []
-        pool: list[dict] = []
 
         for block_position, block in enumerate(blocks):
             text = block.text
@@ -320,22 +325,6 @@ class HybridRAGPipeline:
                         "metadata": metadata,
                     }
                 )
-                pool.append(
-                    {
-                        "chunk_index": chunk_index,
-                        "content": chunk,
-                        "document_id": block.document_id,
-                        "filename": block.metadata.get("filename", ""),
-                        "source_type": block.source_type,
-                        "content_type": block.content_type,
-                        "page_number": page_start or block.page_number or 0,
-                        "heading_path": heading,
-                        "image_path": block.image_path or "",
-                        "bbox": list(block.bbox) if block.bbox else [],
-                        "confidence": float(block.confidence) if block.confidence is not None else -1.0,
-                        "metadata": metadata,
-                    }
-                )
                 chunk_index += 1
 
         if not rows:
@@ -373,31 +362,49 @@ class HybridRAGPipeline:
         self.collection.flush()
         self.collection.load()
 
-        # 重建 BM25
-        self._chunk_pool = pool
-        self._pool_by_index = {r["chunk_index"]: r for r in pool}
-        self.bm25.build([self._search_text(r) for r in pool], pool)
-        print(f"[hybrid] 入库 {len(pool)} chunks")
-        return len(pool)
+        # 共享单库：insert 后从 Milvus 全量重载，内存池/BM25 反映库内全部文档
+        # （不能只拿本次 rows——那会把其他文档的 chunk 从内存池里挤掉）。
+        self._load_bm25_from_milvus()
+        print(f"[hybrid] 入库 {len(rows)} chunks（rag_all 现有 {len(self._chunk_pool)}）")
+        return len(rows)
+
+    def delete_document_chunks(self, document_id: str) -> int:
+        """删除单库中某文档的全部 chunk（单库下替代 drop collection），并重载内存池/BM25。
+
+        返回删除的行数。对从未入库的文档是幂等 no-op。**绝不可 drop rag_all 本身**
+        ——那会炸掉整个库。
+        """
+        result = self.collection.delete(expr=f'document_id == "{document_id}"')
+        self.collection.flush()
+        self.collection.load()
+        self._load_bm25_from_milvus()
+        deleted = int(getattr(result, "delete_count", 0))
+        print(f"[hybrid] 删除 {document_id} 的 {deleted} chunks")
+        return deleted
 
     # ---------- 检索 ----------
 
-    def _vector_search(self, question: str, top_k: int = 8) -> list[dict]:
+    def _vector_search(self, question: str, top_k: int = 8, document_ids: list[str] | None = None) -> list[dict]:
         vector = self.embedder.encode([question], normalize_embeddings=True).tolist()
+        expr = None
+        if document_ids:
+            expr = 'document_id in ["' + '","'.join(document_ids) + '"]'
         results = self.collection.search(
             data=vector,
             anns_field="embedding",
             param={"metric_type": "COSINE", "params": {}},
             limit=top_k,
+            expr=expr,
             output_fields=[
-                "chunk_index", "document_id", "filename", "page_number",
+                "id", "chunk_index", "document_id", "filename", "page_number",
                 "content", "heading_path", "source_type", "content_type",
                 "image_path", "bbox", "confidence", "metadata",
             ],
         )
         return [
             {
-                "index": int(hit.entity.get("chunk_index")),
+                # index 统一用 Milvus auto id（单库全局唯一），RRF 融合按它去重合并。
+                "index": int(hit.id),
                 "score": float(hit.score),
                 "source": "vector",
                 "chunk": {
@@ -417,11 +424,15 @@ class HybridRAGPipeline:
             for hit in results[0]
         ]
 
-    def _bm25_search(self, question: str, top_k: int = 8) -> list[dict]:
-        results = self.bm25.search(question, top_k=top_k)
+    def _bm25_search(self, question: str, top_k: int = 8, document_ids: list[str] | None = None) -> list[dict]:
+        # 带 document_id 过滤时多取候选再筛，避免过滤后不足 top_k。
+        results = self.bm25.search(question, top_k=top_k * 4 if document_ids else top_k)
+        if document_ids:
+            allowed = set(document_ids)
+            results = [r for r in results if r["metadata"].get("document_id") in allowed][:top_k]
         return [
             {
-                "index": r["index"],
+                "index": int(r["metadata"]["id"]),
                 "score": r["score"],
                 "source": "bm25",
                 "chunk": {
@@ -441,19 +452,28 @@ class HybridRAGPipeline:
             for r in results
         ]
 
-    def search(self, question: str, top_k: int = 8, bm25_k: int = 8, vector_k: int = 8, rrf_k: int = 60) -> list[dict]:
-        """混合检索：BM25 + 向量 -> RRF 融合。
+    def search(
+        self,
+        question: str,
+        top_k: int = 8,
+        bm25_k: int = 8,
+        vector_k: int = 8,
+        rrf_k: int = 60,
+        document_ids: list[str] | None = None,
+    ) -> list[dict]:
+        """混合检索：BM25 + 向量 -> RRF 融合（可带 document_id 范围过滤）。
 
-        返回按融合分数排序的结果列表（每个结果带 index 和 origins）。
+        返回按融合分数排序的结果列表（index 为 Milvus auto id，带 origins/signals）。
         """
         if self.collection.num_entities == 0:
             return []
-        bm25_results = self._bm25_search(question, top_k=bm25_k)
-        vector_results = self._vector_search(question, top_k=vector_k)
+        bm25_results = self._bm25_search(question, top_k=bm25_k, document_ids=document_ids)
+        vector_results = self._vector_search(question, top_k=vector_k, document_ids=document_ids)
         return reciprocal_rank_fusion([bm25_results, vector_results], k=rrf_k)
 
     def _chunk_pool_by_index(self, index: int) -> dict | None:
-        return self._pool_by_index.get(index)
+        # 兼容方法名：index 语义现在是 Milvus auto id（单库全局唯一键）。
+        return self._pool_by_id.get(index)
 
     # ---------- 问答 ----------
 

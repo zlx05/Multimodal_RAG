@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import { Check, LockKey, Trash, UserPlus } from "@/components/icons";
+import { Check, LockKey, Trash, User, UserPlus } from "@/components/icons";
 import { api } from "@/api/client";
 import type { UploadAudit, UploadStatus, UserRole, UserWithRole } from "@/api/types";
 import { useAuthStore } from "@/stores/auth";
@@ -179,7 +179,6 @@ async function act(uploadId: string, action: "approve" | "reject" | "delete") {
 </script>
 
 <template>
-  <!-- 非管理员直接访问 /admin：前端兜底提示 -->
   <section v-if="!auth.isAdmin" class="empty-state compact">
     <LockKey :size="28" />
     <strong>仅老师可访问</strong>
@@ -187,175 +186,136 @@ async function act(uploadId: string, action: "approve" | "reject" | "delete") {
   </section>
 
   <template v-else>
-    <section class="workspace-intro fade-up">
-      <div>
-        <h2>管理班级成员<em>与上传审计。</em></h2>
-        <p class="intro-copy">创建学生账号（建号即入班），把 user_id 发给对方登录；上传的资料先自动校验，老师可以放行、驳回或删除。</p>
+    <div class="new-admin-layout">
+      <div class="new-admin-header">
+        <h2>管理班级成员<em>与上传审计</em></h2>
+        <p>创建学生账号（建号即入班），把 user_id 发给对方登录；上传的资料先自动校验，老师可以放行、驳回或删除。</p>
       </div>
-      <button class="quiet-link" type="button" @click="loadUploads">刷新台账 <Check :size="15" /></button>
-    </section>
 
-    <section class="content-grid admin-grid fade-up delay-1">
-      <div class="admin-left">
-        <!-- 创建学生 -->
-        <div class="panel">
-          <div class="panel-heading">
-            <div>
+      <div class="new-admin-grid">
+        <!-- 左侧：创建账号 -->
+        <div class="admin-left-panel">
+          <div class="new-admin-card">
+            <div class="admin-card-header">
               <h3>创建学生账号</h3>
+              <UserPlus :size="24" style="color: var(--accent);" />
             </div>
-            <UserPlus :size="21" class="heading-mark" />
+            <p class="admin-card-hint">学生用生成的 user_id 登录；可填初始密码（留空则首次登录引导设密）。账号建立即加入默认班级。</p>
+            <form class="new-admin-form" @submit.prevent="createStudent">
+              <input v-model="username" type="text" class="new-admin-input" placeholder="学生姓名，例如 小明" autocomplete="off" data-1p-ignore />
+              <input v-model="password" type="password" class="new-admin-input" placeholder="初始密码（可选）" autocomplete="new-password" data-1p-ignore />
+              <button class="new-admin-submit" type="submit" :disabled="creating || !username.trim()">
+                {{ creating ? "创建中…" : "创建账号" }}
+              </button>
+            </form>
+            <p v-if="createdId" class="admin-success">
+              创建成功，user_id: <code>{{ createdId }}</code>
+            </p>
+            <p v-if="createError" class="form-error">{{ createError }}</p>
           </div>
-          <p class="admin-note">学生用生成的 user_id 登录；可填初始密码（留空则首次登录引导设密）。账号建立即加入默认班级。</p>
-          <form class="admin-create" @submit.prevent="createStudent">
-            <input v-model="username" type="text" placeholder="学生姓名，例如 小明" autocomplete="off" data-1p-ignore />
-            <input v-model="password" type="password" placeholder="初始密码（可选）" autocomplete="new-password" data-1p-ignore />
-            <button class="primary-button" type="submit" :disabled="creating || !username.trim()">
-              {{ creating ? "创建中…" : "创建" }}
-            </button>
-          </form>
-          <p v-if="createdId" class="admin-result" role="status">
-            创建成功，学生 user_id 为 <code>{{ createdId }}</code>，请发给该学生登录。
-          </p>
-          <p v-if="createError" class="form-error" role="alert">{{ createError }}</p>
-        </div>
 
-        <!-- 添加老师（仅班主任） -->
-        <div v-if="auth.isHead" class="panel">
-          <div class="panel-heading">
-            <div>
+          <div v-if="auth.isHead" class="new-admin-card">
+            <div class="admin-card-header">
               <h3>添加老师</h3>
+              <UserPlus :size="24" style="color: var(--accent);" />
             </div>
-            <UserPlus :size="21" class="heading-mark" />
+            <p class="admin-card-hint">老师与你有同等的班级管理权限，能建学生、审计上传，但不能添加或删除老师。可填初始密码（留空则首登引导设密）。</p>
+            <form class="new-admin-form" @submit.prevent="createTeacher">
+              <input v-model="teacherName" type="text" class="new-admin-input" placeholder="老师姓名，例如 王老师" autocomplete="off" data-1p-ignore />
+              <input v-model="teacherPassword" type="password" class="new-admin-input" placeholder="初始密码（可选）" autocomplete="new-password" data-1p-ignore />
+              <button class="new-admin-submit" type="submit" :disabled="creatingTeacher || !teacherName.trim()">
+                {{ creatingTeacher ? "添加中…" : "添加老师" }}
+              </button>
+            </form>
+            <p v-if="teacherCreatedId" class="admin-success">
+              添加成功，user_id: <code>{{ teacherCreatedId }}</code>
+            </p>
+            <p v-if="teacherError" class="form-error">{{ teacherError }}</p>
           </div>
-          <p class="admin-note">老师与你有同等的班级管理权限，能建学生、审计上传，但不能添加或删除老师。可填初始密码（留空则首登引导设密）。</p>
-          <form class="admin-create" @submit.prevent="createTeacher">
-            <input v-model="teacherName" type="text" placeholder="老师姓名，例如 王老师" autocomplete="off" data-1p-ignore />
-            <input v-model="teacherPassword" type="password" placeholder="初始密码（可选）" autocomplete="new-password" data-1p-ignore />
-            <button class="primary-button" type="submit" :disabled="creatingTeacher || !teacherName.trim()">
-              {{ creatingTeacher ? "创建中…" : "添加" }}
-            </button>
-          </form>
-          <p v-if="teacherCreatedId" class="admin-result" role="status">
-            添加成功，老师 user_id 为 <code>{{ teacherCreatedId }}</code>。
-          </p>
-          <p v-if="teacherError" class="form-error" role="alert">{{ teacherError }}</p>
         </div>
-      </div>
 
-      <div class="admin-right">
-        <!-- 班级成员 -->
-        <div class="panel member-panel">
-          <div class="panel-heading">
-            <div>
+        <!-- 右侧：班级成员和上传审计 -->
+        <div class="admin-right-panel">
+          <div class="new-admin-card">
+            <div class="admin-card-header">
               <h3>班级成员</h3>
+              <span class="member-badge">班主任/学生</span>
             </div>
-            <span class="member-count">{{ users.length }} 人</span>
-          </div>
 
-          <p v-if="usersError" class="form-error" role="alert">{{ usersError }}</p>
-
-          <div v-if="usersLoading" class="empty-state compact"><span>加载中…</span></div>
-          <div v-else-if="!users.length" class="empty-state compact muted">
-            <strong>还没有成员</strong>
-            <span>先创建学生或老师账号。</span>
-          </div>
-          <div v-else class="member-list">
-            <div v-for="user in users" :key="user.id" class="member-row">
-              <div class="member-avatar">{{ user.username.slice(0, 1) }}</div>
-              <div class="member-main">
-                <strong>{{ user.username }}</strong>
-                <span class="member-id" :title="user.id">{{ user.id }}</span>
+            <p v-if="usersError" class="form-error" role="alert">{{ usersError }}</p>
+            <div v-if="usersLoading" class="admin-loading">加载中...</div>
+            <div v-else-if="!users.length" class="admin-empty">还没有成员</div>
+            <div v-else class="new-member-grid">
+              <div v-for="user in users" :key="user.id" class="new-member-card">
+                <div class="member-avatar">
+                  <User :size="32" />
+                </div>
+                <div class="member-info">
+                  <strong>{{ user.username }}</strong>
+                  <span :title="user.id">{{ user.id }}</span>
+                </div>
+                <span class="role-tag" :class="roleMeta[user.role].cls">{{ roleMeta[user.role].label }}</span>
+                <button
+                  v-if="canDelete(user)"
+                  class="member-delete-btn"
+                  type="button"
+                  @click="confirmingId === user.id ? removeUser(user.id) : requestDelete(user.id)"
+                >
+                  <Trash :size="16" />
+                </button>
               </div>
-              <span class="role-badge" :class="roleMeta[user.role].cls">{{ roleMeta[user.role].label }}</span>
-              <button
-                v-if="canDelete(user)"
-                class="icon-button danger member-delete"
-                type="button"
-                :disabled="deletingId === user.id"
-                :title="confirmingId === user.id ? '再次点击确认删除' : '删除该成员'"
-                @click="confirmingId === user.id ? removeUser(user.id) : requestDelete(user.id)"
-              >
-                <Trash :size="15" />
-              </button>
             </div>
           </div>
-        </div>
 
-        <!-- 审计台账 -->
-        <div class="panel audit-panel">
-          <div class="panel-heading">
-            <div>
+          <div class="new-admin-card">
+            <div class="admin-card-header">
               <h3>上传审计</h3>
+              <div class="audit-tabs">
+                <button
+                  v-for="tab in filterTabs"
+                  :key="tab.value"
+                  type="button"
+                  class="audit-tab"
+                  :class="{ active: filter === tab.value }"
+                  @click="filter = tab.value"
+                >
+                  {{ tab.label }}
+                </button>
+              </div>
             </div>
-            <div class="filter-tabs">
-              <button
-                v-for="tab in filterTabs"
-                :key="tab.value"
-                type="button"
-                class="filter-tab"
-                :class="{ active: filter === tab.value }"
-                @click="filter = tab.value"
-              >
-                {{ tab.label }}
-              </button>
-            </div>
-          </div>
 
-          <p v-if="uploadError" class="form-error" role="alert">{{ uploadError }}</p>
-
-          <div v-if="loading" class="empty-state compact"><span>加载中…</span></div>
-          <div v-else-if="!filteredUploads().length" class="empty-state compact muted">
-            <strong>没有记录</strong>
-            <span>当前筛选下没有上传记录。</span>
-          </div>
-          <div v-else class="audit-list">
-            <div v-for="item in filteredUploads()" :key="item.id" class="audit-row">
-              <div class="audit-main">
-                <div class="audit-title">
+            <p v-if="uploadError" class="form-error" role="alert">{{ uploadError }}</p>
+            <div v-if="loading" class="admin-loading">加载中...</div>
+            <div v-else-if="!filteredUploads().length" class="admin-empty">没有记录</div>
+            <div v-else class="new-audit-list">
+              <div v-for="item in filteredUploads()" :key="item.id" class="new-audit-item">
+                <div class="audit-item-header">
                   <strong>{{ item.document.topic_label || item.filename }}</strong>
-                  <span class="status-badge" :class="statusMeta[item.status].cls">{{ statusLabel(item) }}</span>
+                  <span class="audit-status" :class="statusMeta[item.status].cls">{{ statusLabel(item) }}</span>
                 </div>
                 <p v-if="item.status === 'approved' && item.indexed === false" class="audit-note">上次放行未入库，请再次放行补索引</p>
-                <div class="audit-meta">
+                <p v-if="item.review_note" class="audit-note">校验说明：{{ item.review_note }}</p>
+                <div class="audit-item-meta">
                   <span>{{ item.uploader.username || item.uploader_user_id }} 上传</span>
                   <span>{{ item.filename }}</span>
                   <span>{{ new Date(item.created_at * 1000).toLocaleString() }}</span>
                 </div>
-                <p v-if="item.review_note" class="audit-note">校验说明：{{ item.review_note }}</p>
-              </div>
-              <div class="audit-actions">
-                <button
-                  v-if="canApprove(item)"
-                  class="text-button"
-                  type="button"
-                  :disabled="busyId === item.id"
-                  @click="act(item.id, 'approve')"
-                >
-                  <Check :size="14" /> 放行
-                </button>
-                <button
-                  v-if="item.status === 'pending' || item.status === 'approved'"
-                  class="text-button danger"
-                  type="button"
-                  :disabled="busyId === item.id"
-                  @click="act(item.id, 'reject')"
-                >
-                  驳回
-                </button>
-                <button
-                  class="icon-button danger"
-                  type="button"
-                  :disabled="busyId === item.id"
-                  title="删除（含文件与向量）"
-                  @click="act(item.id, 'delete')"
-                >
-                  <Trash :size="15" />
-                </button>
+                <div class="audit-item-actions">
+                  <button v-if="canApprove(item)" class="audit-action-btn approve" type="button" @click="act(item.id, 'approve')">
+                    <Check :size="14" /> 放行
+                  </button>
+                  <button v-if="item.status === 'pending' || item.status === 'approved'" class="audit-action-btn reject" type="button" @click="act(item.id, 'reject')">
+                    驳回
+                  </button>
+                  <button class="audit-action-btn delete" type="button" @click="act(item.id, 'delete')">
+                    <Trash :size="14" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   </template>
 </template>

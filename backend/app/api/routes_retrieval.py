@@ -1,6 +1,5 @@
 """Retrieval and chat APIs, including automatic document routing."""
 
-from collections import defaultdict
 from pathlib import Path
 import json
 import re
@@ -51,6 +50,7 @@ from ..rag.agent_rag import (
 from ..rag.profile_evolution import apply_profile_evolution
 from ..rag.assets import asset_url, original_url
 from ..rag.document_registry import get_document, list_documents as list_registered_documents
+from ..rag.hybrid_pipeline import SHARED_COLLECTION
 
 router = APIRouter(prefix="/api/v1", tags=["retrieval"])
 UPLOAD_DIR = DATA_DIR / "uploads"
@@ -92,6 +92,13 @@ class _PipelineCache:
 
 _pipeline_cache = _PipelineCache()
 
+# 每文档多样性上限：单库全局 RRF 把 top-K 集中到最相似的单个文档，削弱跨
+# 文档覆盖（迁移后关系型 all_docs@5 从 0.4667 掉到 0.30）。按相关性顺序贪心
+# 选取、每 document_id 至多 N 条，是 MMR 式最大源多样性的轻量实现：
+# 6 文档受限 R@5 0.9459→1.0000、关系型 all_docs@5 0.30→0.60。N 越小越
+# 偏多样性、越牺牲单文档上下文深度；cap=2 在两组评估上均优于 cap=3。
+MAX_PER_DOC_DIVERSITY = 2
+
 
 def _hidden_document_ids() -> set[str]:
     """有 upload 记录但非 approved 的 document_id 集合（Phase 2 可见性规则）。
@@ -102,20 +109,20 @@ def _hidden_document_ids() -> set[str]:
 
 
 def _degraded_catalog_from_disk() -> list[dict]:
-    """MySQL 不可用时的降级目录：仅靠 uploads 目录 + Milvus collection 重建。
+    """MySQL 不可用时的降级目录：仅靠 uploads 目录重建（单共享 collection）。
 
-    文件按 `{document_id}.{ext}` 落盘，collection 名的后缀是 document_id 的去
-    "doc_" 前缀后 12 位字母数字，与真实 collection 精确匹配。降级模式不做
-    approved 过滤（所有落盘文件可见），保证个人检索问答仍可用。
-    Milvus 也连不上时返回空目录（知识库为空，不崩）。
+    单库迁移后 collection 恒为 rag_all，不再需要按 document_id 反推 collection。
+    Milvus 也不可用时返回空目录（知识库为空，不崩，避免对死库发起检索）。
+    降级模式不做 approved 过滤（所有落盘文件可见），保证个人检索问答仍可用。
     """
     try:
         from pymilvus import connections, utility
 
         connections.connect(alias="default", host=MILVUS_HOST, port=MILVUS_PORT)
-        collections = set(utility.list_collections())
+        if not utility.has_collection(SHARED_COLLECTION):
+            return []
     except Exception as exc:
-        print(f"[retrieval] 降级目录无法读取 Milvus collection，返回空: {exc}")
+        print(f"[retrieval] 降级目录无法读取 Milvus，返回空: {exc}")
         return []
 
     result: list[dict] = []
@@ -123,16 +130,12 @@ def _degraded_catalog_from_disk() -> list[dict]:
         if not path.is_file():
             continue
         document_id = path.stem
-        suffix = re.sub(r"[^A-Za-z0-9]+", "", document_id.removeprefix("doc_"))[-12:]
-        if not suffix:
-            continue
-        matched = [name for name in collections if name.endswith(suffix)]
         result.append(
             {
                 "document_id": document_id,
                 "filename": path.name,
                 "source_path": str(path),
-                "collection_name": matched[0] if matched else f"rag_{document_id}",
+                "collection_name": SHARED_COLLECTION,
                 "topic_label": path.stem,
                 "source_type": path.suffix.lstrip("."),
                 "size": path.stat().st_size,
@@ -163,29 +166,28 @@ def _visible_document_records() -> list[dict]:
     ]
 
 
-# 文档子章节标题缓存：{collection: (读取时间, 摘要串)}。重建 collection 后最长
-# _SUBSECTION_TTL 秒内可能读到旧标题，可接受（路由是宽松意图判断，不要求实时）。
+# 文档子章节标题缓存：{document_id: (读取时间, 摘要串)}。单库后所有文档共一个
+# collection，缓存键从 collection 换到 document_id，避免跨文档串读。
 _SUBSECTION_CACHE: dict[str, tuple[float, str]] = {}
 _SUBSECTION_TTL = 600
 
 
 def _subsection_summary(document_id: str) -> str:
-    """返回该文档 collection 的顶层子章节标题（如「声明；赋值；交换；比较」）。
+    """返回该文档的顶层子章节标题（如「声明；赋值；交换；比较」）。
 
     供 router 看到文档级主题之外的具体小节（比较/相等/类型转换…），避免只凭
     「变量」「数据类型」这类文件主题路由选错文档。Milvus 不可用或没有子章节
     时返回空串，不阻塞路由（降级为只看文件名+主题）。
     """
-    collection = _collection_for_document(document_id)
     now = time.monotonic()
-    cached = _SUBSECTION_CACHE.get(collection)
+    cached = _SUBSECTION_CACHE.get(document_id)
     if cached and now - cached[0] < _SUBSECTION_TTL:
         return cached[1]
     summary = ""
     try:
-        pipeline = _pipeline_cache.get(collection, with_llm=False)
+        pipeline = _pipeline_cache.get(SHARED_COLLECTION, with_llm=False)
         rows = pipeline.collection.query(
-            expr="chunk_index >= 0", output_fields=["heading_path"]
+            expr=f'document_id == "{document_id}"', output_fields=["heading_path"]
         )
         headings: list[str] = []
         for row in rows:
@@ -200,8 +202,8 @@ def _subsection_summary(document_id: str) -> str:
                 headings.append(sub)
         summary = "；".join(headings[:8])
     except Exception as exc:
-        print(f"[retrieval] 子章节读取失败 {collection}: {exc}")
-    _SUBSECTION_CACHE[collection] = (now, summary)
+        print(f"[retrieval] 子章节读取失败 {document_id}: {exc}")
+    _SUBSECTION_CACHE[document_id] = (now, summary)
     return summary
 
 
@@ -219,40 +221,36 @@ def _router_catalog() -> list[dict]:
 
 
 def _uploaded_collections() -> list[str]:
-    return [
-        str(item["collection_name"])
-        for item in _visible_document_records()
-        if item.get("collection_name")
-    ]
+    return [SHARED_COLLECTION] if _visible_document_records() else []
 
 
 def _collection_for_document(document_id: str) -> str:
-    record = None
-    try:
-        record = get_document(document_id)
-    except SQLAlchemyError as exc:
-        print(f"[retrieval] 查询文档记录失败（数据库不可用），走降级目录: {exc}")
-    if record:
-        return str(record.get("collection_name", f"rag_{document_id}"))
-    # 降级：从磁盘目录按 document_id 找 collection（scope=selected / search_documents）
-    for item in _degraded_catalog_from_disk():
-        if item.get("document_id") == document_id:
-            return item["collection_name"]
-    return f"rag_{document_id}"
+    # 单库迁移后所有文档共用一个 collection，文档身份靠 chunk 上的 document_id
+    # 分区，collection 名恒为 rag_all。
+    return SHARED_COLLECTION
 
 
 def _resolve_collections(req: SearchRequest) -> list[str]:
-    if req.collection:
-        if not req.collection.startswith("rag_"):
-            raise HTTPException(status_code=400, detail="Collection 名称无效")
-        return [req.collection]
+    # 单共享 collection：检索永远发生在 rag_all 上，范围收窄走 document_ids filter。
+    if req.collection and req.collection != SHARED_COLLECTION:
+        raise HTTPException(status_code=400, detail="Collection 名称无效，检索范围为单共享库 rag_all")
+    return [SHARED_COLLECTION]
+
+
+def _resolve_document_filter(req: SearchRequest) -> list[str] | None:
+    """把 scope/document_ids 解析成 Milvus 的 document_id 过滤集。
+
+    - scope=selected：必须给 document_ids（无则 400），只搜指定文档。
+    - scope=auto/all 且带了 document_ids：仍按指定文档收窄（宽松语义）。
+    - 其余返回 None（全库检索）。
+    """
     if req.scope == "selected":
         if not req.document_ids:
             raise HTTPException(status_code=400, detail="selected 范围需要 document_ids")
-        return [_collection_for_document(document_id) for document_id in req.document_ids]
+        return list(req.document_ids)
     if req.document_ids:
-        return [_collection_for_document(document_id) for document_id in req.document_ids]
-    return _uploaded_collections()
+        return list(req.document_ids)
+    return None
 
 
 def _serialize_source(item: dict) -> dict:
@@ -329,10 +327,6 @@ def _query_phrases(question: str) -> set[str]:
 def _lexical_hits(question: str, text: str) -> int:
     terms = _query_terms(question)
     return sum(1 for term in terms if term in text)
-
-
-def _strong_lexical_match(question: str, text: str) -> bool:
-    return any(phrase in text for phrase in _query_phrases(question))
 
 
 def _query_entity_anchors(question: str) -> set[str]:
@@ -416,180 +410,111 @@ def _federated_search(
     collections: list[str],
     top_k: int,
     *,
-    semantic_floor_min: float = 0.48,
-    semantic_floor_ratio: float = 0.82,
+    document_ids: list[str] | None = None,
     rrf_k: int = 60,
     w_vector: float = 0.65,
     w_term: float = 0.25,
     w_rank: float = 0.10,
 ) -> tuple[list[dict], dict]:
-    """Route to relevant documents before fusing their local rankings.
+    """全局检索：单共享 collection（rag_all）上一次 BM25+向量+RRF 融合。
 
-    RRF is useful inside one document, but its rank score is not comparable
-    across independent Collections. We therefore use exact term evidence first
-    and semantic similarity as a fallback before cross-document fusion.
+    文档级路由门控已删除（74 题消融：路由只多救 1/74 题 q102、0.001 分硬币
+    翻转、不省算力）。单库后所有文档 chunk 同处一个 collection，RRF 排名
+    跨文档直接可比——当初「每文档一 collection」导致的跨库 rank 制榜首平局
+    （R@1=0.465）从根上消失。范围收窄靠 Milvus `document_id in [...]` filter
+    （pipeline.search 的 document_ids），最终排序由 _relevance_score 给出
+    可解释分数。
     """
-    evaluated: list[dict] = []
-    skipped: list[str] = []
     retrieval_question = _expand_learning_question(question)
-    entity_anchors = _query_entity_anchors(question)
     anchor_phrases = _query_phrases(question) | _query_phrases(retrieval_question)
-    for collection in collections:
-        try:
-            pipeline = _pipeline_cache.get(collection, with_llm=False)
-            local = pipeline.search(retrieval_question, top_k=max(12, top_k * 3), rrf_k=rrf_k)
-            if local:
-                chunks = list(pipeline._pool_by_index.values())
-                texts = [str(chunk.get("content", "")) for chunk in chunks if chunk]
-                lexical_hits = max((_lexical_hits(retrieval_question, text) for text in texts), default=0)
-                strong_match = any(_strong_lexical_match(retrieval_question, text) for text in texts)
-                entity_indices = {
-                    int(chunk["chunk_index"])
-                    for chunk in chunks
-                    if chunk and _anchor_hits(entity_anchors, chunk.get("content", ""))
-                }
-                phrase_indices = {
-                    int(chunk["chunk_index"])
-                    for chunk in chunks
-                    if chunk and _anchor_hits(anchor_phrases, chunk.get("content", ""))
-                }
-                anchor_indices = entity_indices or phrase_indices
-                vector_score = max(
-                    (float(item.get("signals", {}).get("vector", -1.0)) for item in local),
-                    default=-1.0,
-                )
-                evaluated.append(
-                    {
-                        "collection": collection,
-                        "pipeline": pipeline,
-                        "ranked": local,
-                        "lexical_hits": lexical_hits,
-                        "strong_match": strong_match,
-                        "vector_score": vector_score,
-                        "entity_indices": entity_indices,
-                        "anchor_indices": anchor_indices,
-                    }
-                )
-        except Exception:
-            # Old or incomplete collections must not make the whole personal library unavailable.
-            skipped.append(collection)
+    try:
+        pipeline = _pipeline_cache.get(SHARED_COLLECTION, with_llm=False)
+        # 跨进程新鲜度：worker 单独进程入库/删除后，本进程内存池可能滞后。
+        # count(*) 聚合（尊重 tombstone）是检索视角的真值，与池大小不符即触发
+        # 全量 reload（覆盖新增/删除）；不能用 collection.num_entities——它把
+        # 已删除的 tombstone 行也计入，删除后恒与池大小不符导致每次检索都全量
+        # 重载。重入库会换一批新 id 而计数不变，靠候选里查不到 id 再 reload 兜底。
+        current = pipeline.collection.query(
+            expr="chunk_index >= 0", output_fields=["count(*)"]
+        )[0]["count(*)"]
+        if current != len(pipeline._pool_by_id):
+            pipeline._load_bm25_from_milvus()
+        ranked = pipeline.search(
+            retrieval_question, top_k=max(12, top_k * 3), rrf_k=rrf_k,
+            document_ids=document_ids,
+        )
+    except Exception as exc:
+        # Milvus 不可用/未迁移时整个库不可检索，返回空而不是崩（降级为
+        # 「资料中没有找到相关内容」，与旧版单 collection 故障语义一致）。
+        print(f"[retrieval] 全局检索失败 {SHARED_COLLECTION}: {exc}")
+        return [], {
+            "mode": "selected" if document_ids else "global",
+            "candidate_documents": len(collections),
+            "used_documents": [],
+            "skipped_collections": [SHARED_COLLECTION],
+            "routed_documents": 0,
+            "routing_strategy": "relevance",
+        }
 
-    entity_direct = [item for item in evaluated if item["entity_indices"]]
-    phrase_direct = [
-        item for item in evaluated
-        if item["anchor_indices"] and not entity_anchors
-    ]
-    direct = [
-        item for item in evaluated
-        if item["strong_match"] or item["lexical_hits"] >= 3
-    ]
-    if entity_direct:
-        routed = entity_direct
-        routing_strategy = "entity_gate"
-    else:
-        # 短语证据优先但不独占：某个文档命中短语不代表缺失短语的文档就
-        # 没有答案。并集保留 phrase + lexical 文档，短语权重交给
-        # _relevance_score 区分，避免排除只靠词汇/语义证据的正确文档。
-        routed = []
-        for item in phrase_direct + direct:
-            if not any(item is existing for existing in routed):
-                routed.append(item)
-        if routed:
-            routing_strategy = "phrase_gate" if phrase_direct else "lexical_gate"
-        else:
-            best_vector = max((item["vector_score"] for item in evaluated), default=-1.0)
-            semantic_floor = max(semantic_floor_min, best_vector * semantic_floor_ratio)
-            routed = [item for item in evaluated if item["vector_score"] >= semantic_floor]
-            if best_vector < semantic_floor_min:
-                routed = []
-            routing_strategy = "semantic_gate"
-
-    scores: dict[tuple[str, int], float] = defaultdict(float)
-    origins: dict[tuple[str, int], list[str]] = defaultdict(list)
-    chunks: dict[tuple[str, int], dict] = {}
-    for routed_item in routed:
-        collection = routed_item["collection"]
-        ranked = routed_item["ranked"]
-        pipeline = routed_item["pipeline"]
-        anchor_indices = routed_item["anchor_indices"]
-        if anchor_indices:
-            present = {int(item["index"]) for item in ranked}
-            # 短语命中的 chunk 单独注入，避免它因 RRF 排位低而丢失。
-            # 过滤时兜底保留本地 RRF 前 3：缺失短语但语义强的答案 chunk
-            # 往往排位靠前，不应被 phrase gate 直接丢弃。
-            keep_top = {int(item["index"]) for item in ranked[:3]}
-            ranked = [
-                item for item in ranked
-                if int(item["index"]) in anchor_indices or int(item["index"]) in keep_top
-            ]
-            ranked.extend(
-                {
-                    "index": index,
-                    "origins": ["exact"],
-                    "signals": {"exact": 1.0},
-                }
-                for index in sorted(anchor_indices - present)
-            )
-        for rank, item in enumerate(ranked, start=1):
-            key = (collection, int(item["index"]))
-            chunk = pipeline._chunk_pool_by_index(item["index"])
-            if not chunk:
+    candidates: list[dict] = []
+    reloaded = False
+    for rank, item in enumerate(ranked, start=1):
+        chunk = pipeline._chunk_pool_by_index(item["index"])
+        if chunk is None:
+            # 进程内池过期（重入库换新 id）：重载一次后再查，仍无则跳过。
+            if not reloaded:
+                pipeline._load_bm25_from_milvus()
+                reloaded = True
+                chunk = pipeline._chunk_pool_by_index(item["index"])
+            if chunk is None:
                 continue
-            # `pipeline.search()` has already fused BM25 and vector results
-            # for this Collection. Preserve that local RRF score here instead
-            # of resetting every Collection to rank 1 in a second RRF pass.
-            rank_score = float(item.get("score", 0.0))
-            if rank_score <= 0.0:
-                # Exact chunks injected by the entity/phrase gate have no
-                # local RRF score; keep them as candidates for final scoring.
-                rank_score = 1.0 / (60 + rank)
-            if _heading_matches_intent(retrieval_question, str(chunk.get("heading_path", ""))):
-                rank_score += 0.012
-            scores[key] = max(scores[key], rank_score)
-            origins[key].extend(item.get("origins", []))
-            chunks[key] = chunk
-
-    fused: list[dict] = []
-    for key, score in sorted(scores.items(), key=lambda item: item[1], reverse=True):
-        collection, index = key
-        fused.append(
+        # RRF 融合分直接作为候选排序分；0 分兜底（本链路无 gate 注入，防御性）。
+        rank_score = float(item.get("score", 0.0))
+        if rank_score <= 0.0:
+            rank_score = 1.0 / (rrf_k + rank)
+        if _heading_matches_intent(retrieval_question, str(chunk.get("heading_path", ""))):
+            rank_score += 0.012
+        candidates.append(
             {
-                "collection": collection,
-                "index": index,
-                "score": float(score),
-                "origins": sorted(set(origins[key])),
-                "chunk": chunks[key],
+                "collection": SHARED_COLLECTION,
+                "index": item["index"],
+                "score": rank_score,
+                "origins": item.get("origins", []),
+                "signals": item.get("signals", {}),
+                "chunk": chunk,
             }
         )
 
-    for rank, item in enumerate(fused, start=1):
+    # RRF 只是候选生成顺序。用户看到的顺序必须按可解释分数排，否则单库里
+    # 多个文档可能各自贡献一个 RRF 榜首，掩盖真正的更优匹配。
+    for rank, item in enumerate(candidates, start=1):
         item["rrf_score"] = item["score"]
-        item["signals"] = {}
-        # Recover the local signals for the selected chunk so the displayed
-        # score combines lexical evidence, semantic similarity and rank.
-        routed_item = next((candidate for candidate in routed if candidate["collection"] == item["collection"]), None)
-        if routed_item:
-            for local_item in routed_item["ranked"]:
-                if int(local_item["index"]) == item["index"]:
-                    item["signals"] = local_item.get("signals", {})
-                    break
         item["score"] = _relevance_score(
             question,
             item["chunk"],
             item["signals"],
             rank,
-            len(fused),
+            len(candidates),
             extra_phrases=anchor_phrases,
             w_vector=w_vector,
             w_term=w_term,
             w_rank=w_rank,
         )
+    candidates.sort(key=lambda item: (item["score"], item["rrf_score"]), reverse=True)
+    # 每文档多样性上限：见 MAX_PER_DOC_DIVERSITY。贪心按可解释分取，同一
+    # document_id 至多 N 条后再取下一文档，保证 top-K 跨源覆盖（不改变榜首——
+    # 全局第一永远是第一，只把集中在一篇的后续位置让给其它文档）。
+    fused: list[dict] = []
+    per_doc_counts: dict[str, int] = {}
+    for item in candidates:
+        document_id = (item["chunk"] or {}).get("document_id", "")
+        if per_doc_counts.get(document_id, 0) >= MAX_PER_DOC_DIVERSITY:
+            continue
+        fused.append(item)
+        per_doc_counts[document_id] = per_doc_counts.get(document_id, 0) + 1
+        if len(fused) >= top_k:
+            break
 
-    # RRF is only the candidate-generation order. The user-facing order must
-    # follow the explainable score, otherwise independent Collections can
-    # produce several equal rank-1 RRF values and hide the better match.
-    fused.sort(key=lambda item: (item["score"], item["rrf_score"]), reverse=True)
-    fused = fused[:top_k]
     used_documents: dict[str, dict] = {}
     for rank, item in enumerate(fused, start=1):
         chunk = item["chunk"]
@@ -605,19 +530,20 @@ def _federated_search(
             }
 
     routing = {
-        "mode": "document" if len(routed) == 1 else "federated",
+        "mode": "selected" if document_ids else "global",
         "candidate_documents": len(collections),
         "used_documents": list(used_documents.values()),
-        "skipped_collections": skipped,
-        "routed_documents": len(routed),
-        "routing_strategy": routing_strategy,
+        "skipped_collections": [],
+        "routed_documents": len(collections),
+        "routing_strategy": "relevance",
     }
     return fused, routing
 
 
 def _run_search(req: SearchRequest) -> tuple[list[dict], dict]:
     collections = _resolve_collections(req)
-    return _federated_search(req.question, collections, req.top_k)
+    document_ids = _resolve_document_filter(req)
+    return _federated_search(req.question, collections, req.top_k, document_ids=document_ids)
 
 
 @router.get("/models")
@@ -968,7 +894,9 @@ def _probe_and_escalate(req: ChatRequest, decision: RouterDecision, question: st
         collections = _resolve_collections(
             SearchRequest(question=question, scope="selected", document_ids=decision.document_ids, top_k=PROBE_TOP_K)
         )
-        probe, _ = _federated_search(question, collections, PROBE_TOP_K)
+        probe, _ = _federated_search(
+            question, collections, PROBE_TOP_K, document_ids=decision.document_ids or None
+        )
     except Exception as exc:
         print(f"[chat/agent] 证据探针失败，保持原路由: {exc}")
         return decision, False

@@ -152,138 +152,140 @@ async function save() {
 </script>
 
 <template>
-  <section class="workspace-intro fade-up">
-    <div>
-      <h2>让回答<em>贴合你的学习情况。</em></h2>
-      <p class="intro-copy">这里是最初填写的科目、薄弱点与回答风格。之后每次长回答，都会根据你的提问习惯自动微调画像。</p>
+  <section class="new-profile-layout">
+    <div class="new-profile-header">
+      <div class="profile-header-left">
+        <h2>让回答<em>贴合你的学习情况</em></h2>
+        <p>这里是最初填写的科目、薄弱点与回答风格。之后每次长回答，都会根据你的提问习惯自动微调画像。</p>
+      </div>
+      <div class="profile-user-chip">
+        <UserCircle :size="20" />
+        <span>{{ auth.identity?.username }} · {{ auth.roleLabel }}</span>
+      </div>
     </div>
-    <div class="identity-chip">
-      <UserCircle :size="18" />
-      <span>{{ auth.identity?.username }} · {{ auth.roleLabel }}</span>
-    </div>
-  </section>
 
-  <!-- 非老师直接访问 /profile：前端兜底提示（路由层另有拦截） -->
-  <section v-if="false" class="empty-state compact">
-    <LockKey :size="28" />
-    <strong>仅老师可访问</strong>
-    <span>画像与学习特征管理需要老师身份。</span>
-  </section>
-
-  <div v-if="auth.isAdmin" class="filter-tabs view-tabs">
+    <div v-if="auth.isAdmin" class="new-profile-tabs">
       <button
         v-for="tab in tabs"
         :key="tab.value"
         type="button"
-        class="filter-tab"
+        class="profile-tab"
         :class="{ active: activeTab === tab.value }"
         @click="activeTab = tab.value"
       >
         {{ tab.label }}
       </button>
-  </div>
+    </div>
 
-    <!-- 我的画像：编辑表单 + 长期记忆 -->
-    <div v-if="!auth.isAdmin || activeTab === 'mine'" class="profile-workspace">
-      <section v-if="loading" class="panel empty-state compact">
-        <span>加载画像中…</span>
-      </section>
-
-      <form v-else class="profile-form" @submit.prevent="save">
-        <div class="panel profile-panel">
-          <div class="panel-heading">
-            <div>
+    <!-- 我的画像 -->
+    <div v-if="!auth.isAdmin || activeTab === 'mine'" class="new-profile-content">
+      <div v-if="loading" class="profile-loading">加载中...</div>
+      <form v-else class="new-profile-form" @submit.prevent="save">
+        <div class="profile-grid">
+          <div class="profile-card">
+            <div class="profile-card-header">
               <h3>学习科目</h3>
             </div>
+            <div class="profile-card-body">
+              <p class="card-hint">用顿号或逗号分隔，例如「数学、物理、英语」</p>
+              <input v-model="subjectsText" type="text" class="new-text-input" placeholder="数学、物理、英语" />
+            </div>
           </div>
-          <label class="field">
-            <span>用顿号或逗号分隔，例如「数学、物理、英语」</span>
-            <input v-model="subjectsText" type="text" placeholder="数学、物理、英语" />
-          </label>
-        </div>
 
-        <div class="panel profile-panel">
-          <div class="panel-heading">
-            <div>
+          <div class="profile-card">
+            <div class="profile-card-header">
               <h3>薄弱点</h3>
             </div>
-          </div>
-          <label class="field">
-            <span>问答会优先讲解这些内容</span>
-            <input v-model="weakPointsText" type="text" placeholder="导数、电磁感应" />
-          </label>
-        </div>
-
-        <div class="panel profile-panel">
-          <div class="panel-heading">
-            <div>
-              <h3>回答风格</h3>
+            <div class="profile-card-body">
+              <p class="card-hint">问答会优先讲解这些内容</p>
+              <input v-model="weakPointsText" type="text" class="new-text-input" placeholder="导数、电磁感应" />
             </div>
-            <Sparkle :size="21" class="heading-mark" />
           </div>
-          <div class="style-options">
-            <label v-for="option in styleOptions" :key="option.value" class="style-option" :class="{ selected: preferredStyle === option.value }">
-              <input v-model="preferredStyle" type="radio" name="preferred-style" :value="option.value" />
-              <strong>{{ option.label }}</strong>
-              <span>{{ option.hint }}</span>
-            </label>
+
+          <div class="profile-card full-width">
+            <div class="profile-card-header">
+              <h3>回答风格</h3>
+              <Sparkle :size="20" style="color: var(--accent);" />
+            </div>
+            <div class="profile-card-body">
+              <p class="card-hint">选择回答的展开方式，长回答会根据你的画像自动微调</p>
+              <div class="style-options-grid">
+                <label v-for="option in styleOptions" :key="option.value" class="style-option-card" :class="{ selected: preferredStyle === option.value }">
+                  <input v-model="preferredStyle" type="radio" name="preferred-style" :value="option.value" class="visually-hidden" />
+                  <div class="style-option-content">
+                    <strong>{{ option.label }}</strong>
+                    <span>{{ option.hint }}</span>
+                  </div>
+                  <div class="style-option-check">
+                    <CheckCircle v-if="preferredStyle === option.value" :size="20" />
+                  </div>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="profile-actions">
           <p v-if="error" class="form-error" role="alert">{{ error }}</p>
           <p v-else-if="saved" class="form-success" role="status"><CheckCircle :size="15" /> 已保存</p>
-          <button class="primary-button" type="submit" :disabled="saving">
+          <button class="new-save-btn" type="submit" :disabled="saving">
             {{ saving ? "保存中…" : "保存画像" }}
           </button>
         </div>
       </form>
 
-      <section class="panel profile-panel memory-panel">
-        <div class="panel-heading">
-          <div><h3>长期记忆</h3></div>
-          <Sparkle :size="21" class="heading-mark" />
+      <!-- 长期记忆 -->
+      <div class="profile-card full-width">
+        <div class="profile-card-header">
+          <h3>长期记忆</h3>
+          <Sparkle :size="20" style="color: var(--accent);" />
         </div>
-        <p class="memory-hint">来自画像进化的持久观察——每次长回答后自动记录学习行为、薄弱点与风格倾向，问答时会自动用于调整回答形式。</p>
-        <MemoryList
-          :items="memoryList"
-          :loading="memoryLoading"
-          :error="memoryError"
-          empty-hint="还没有长期记忆，多问几次长回答后会自动积累。"
-          :deletable="true"
-          @delete="deleteMemory"
-        />
-      </section>
+        <div class="profile-card-body">
+          <p class="card-hint">来自画像进化的持久观察——每次长回答后自动记录学习行为、薄弱点与风格倾向，问答时会自动用于调整回答形式。</p>
+          <MemoryList
+            :items="memoryList"
+            :loading="memoryLoading"
+            :error="memoryError"
+            empty-hint="还没有长期记忆，多问几次长回答后会自动积累。"
+            :deletable="true"
+            @delete="deleteMemory"
+          />
+        </div>
+      </div>
 
-      <section class="panel profile-panel">
-        <div class="panel-heading">
-          <div><h3>修改密码</h3></div>
-          <LockKey :size="21" class="heading-mark" />
+      <!-- 修改密码 -->
+      <div class="profile-card full-width">
+        <div class="profile-card-header">
+          <h3>修改密码</h3>
+          <LockKey :size="20" style="color: var(--accent);" />
         </div>
-        <form class="profile-form password-form" @submit.prevent="changePassword">
-          <label class="field">
-            <span>原密码</span>
-            <input v-model="oldPassword" type="password" placeholder="原密码" autocomplete="current-password" data-1p-ignore />
-          </label>
-          <label class="field">
-            <span>新密码</span>
-            <input v-model="newPassword" type="password" placeholder="至少 6 位" autocomplete="new-password" data-1p-ignore />
-          </label>
-          <label class="field">
-            <span>确认新密码</span>
-            <input v-model="confirmPassword" type="password" placeholder="再输一遍" autocomplete="new-password" data-1p-ignore />
-          </label>
-          <div class="profile-actions">
-            <p v-if="passwordError" class="form-error" role="alert">{{ passwordError }}</p>
-            <p v-else-if="passwordSaved" class="form-success" role="status"><CheckCircle :size="15" /> 密码已更新</p>
-            <button class="primary-button" type="submit" :disabled="passwordSaving || !oldPassword || newPassword.length < 6 || !confirmPassword">
-              {{ passwordSaving ? "提交中…" : "更新密码" }}
-            </button>
-          </div>
-        </form>
-      </section>
+        <div class="profile-card-body">
+          <form class="password-form" @submit.prevent="changePassword">
+            <label class="field">
+              <span>原密码</span>
+              <input v-model="oldPassword" type="password" placeholder="原密码" autocomplete="current-password" data-1p-ignore />
+            </label>
+            <label class="field">
+              <span>新密码</span>
+              <input v-model="newPassword" type="password" placeholder="至少 6 位" autocomplete="new-password" data-1p-ignore />
+            </label>
+            <label class="field">
+              <span>确认新密码</span>
+              <input v-model="confirmPassword" type="password" placeholder="再输一遍" autocomplete="new-password" data-1p-ignore />
+            </label>
+            <div class="profile-actions">
+              <p v-if="passwordError" class="form-error" role="alert">{{ passwordError }}</p>
+              <p v-else-if="passwordSaved" class="form-success" role="status"><CheckCircle :size="15" /> 密码已更新</p>
+              <button class="new-save-btn" type="submit" :disabled="passwordSaving || !oldPassword || newPassword.length < 6 || !confirmPassword">
+                {{ passwordSaving ? "提交中…" : "更新密码" }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
 
-    <!-- 学生画像：老师只读查看每个学生的画像 + 长期记忆 -->
-  <StudentProfiles v-if="auth.isAdmin && activeTab === 'students'" />
+    <!-- 学生画像（老师视角） -->
+    <StudentProfiles v-if="auth.isAdmin && activeTab === 'students'" />
+  </section>
 </template>

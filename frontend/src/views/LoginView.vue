@@ -144,7 +144,6 @@ async function setup() {
       </template>
 
       <p v-if="hint" class="login-hint" :class="{ error: auth.error }" role="alert">{{ hint }}</p>
-      <p v-if="auth.error" class="login-hint error" role="alert">{{ auth.error }}</p>
     </div>
   </div>
 </template>

@@ -178,7 +178,7 @@ class IngestionWorker:
 
             t1 = time.perf_counter()
             stage = "INDEXING"
-            chunks_count = self._index(collection, blocks, task)
+            chunks_count = self._index(collection, blocks, task, document_id)
             get_metrics().observe("index_ms", (time.perf_counter() - t1) * 1000)
             self.tasks.mark_succeeded(
                 task_id,
@@ -315,12 +315,18 @@ class IngestionWorker:
 
         return create_formula_recognizer(device=FORMULA_RECOGNITION_DEVICE)
 
-    def _index(self, collection: str, blocks, task: dict) -> int:
-        """分块 + 向量化 + 入库（Milvus + BM25）。"""
+    def _index(self, collection: str, blocks, task: dict, document_id: str) -> int:
+        """分块 + 向量化 + 入库（Milvus + BM25）。
+
+        单库后 build 前先按 document_id 删旧 chunk（幂等去重）：同一文档重放行/
+        重入队不会累积重复切片，同时修掉 worker 进程内 pipeline 的 stale 内存池
+        （delete_document_chunks 内部会 reload）。
+        """
         from ..rag.chunkers import get_chunker
 
         profile = resolve_profile(task.get("chunk_profile", "auto"), task.get("filename", ""), blocks)
         pipeline = self._get_pipeline(collection)
+        pipeline.delete_document_chunks(document_id)
         params = dict(profile.params)
         if profile.chunker == "semantic":
             params["embedder"] = pipeline.embedder

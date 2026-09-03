@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T01:43:37",
+  "generated_at": "2026-08-23T01:22:53",
   "config": {
     "per_collection_k": 20,
     "ks": [
@@ -290,14 +290,14 @@
             "doc_3f570a771fd1",
             "doc_67f86e0aceb1",
             "doc_67f86e0aceb1",
-            "doc_4fa9aac419d6"
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.6,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -330,10 +330,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753719,
-              "score": 0.0606,
-              "document_id": "doc_4fa9aac419d6",
-              "filename": "67_pointer.html"
+              "index": 468560325690753592,
+              "score": 0.5863,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -611,14 +611,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -632,6 +635,27 @@
               "collection": "rag_all",
               "index": 468560325690753585,
               "score": 0.7254,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753574,
+              "score": 0.6756,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753557,
+              "score": 0.6648,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753590,
+              "score": 0.6643,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -912,16 +936,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
-            "doc_d85d9e1df100",
-            "doc_67b953f62c96",
-            "doc_9b0b33a3685e"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_d85d9e1df100"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -940,24 +964,24 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753561,
+              "score": 0.5941,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753594,
+              "score": 0.592,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690754562,
               "score": 0.5389,
               "document_id": "doc_d85d9e1df100",
               "filename": "55_loop.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754032,
-              "score": 0.4955,
-              "document_id": "doc_67b953f62c96",
-              "filename": "10_datatype.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754366,
-              "score": 0.4786,
-              "document_id": "doc_9b0b33a3685e",
-              "filename": "65_map.html"
             }
           ]
         }
@@ -1235,14 +1259,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -1256,6 +1283,27 @@
               "collection": "rag_all",
               "index": 468560325690753564,
               "score": 0.6634,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753603,
+              "score": 0.6556,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753566,
+              "score": 0.6407,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753569,
+              "score": 0.6346,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -1536,15 +1584,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
-            "doc_67f86e0aceb1",
-            "doc_67f86e0aceb1"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -1563,17 +1612,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754152,
-              "score": 0.073,
-              "document_id": "doc_67f86e0aceb1",
-              "filename": "60_slice.html"
+              "index": 468560325690753564,
+              "score": 0.6389,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754109,
-              "score": 0.0711,
-              "document_id": "doc_67f86e0aceb1",
-              "filename": "60_slice.html"
+              "index": 468560325690753570,
+              "score": 0.6319,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753571,
+              "score": 0.5898,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -1852,16 +1908,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
-            "doc_9b0b33a3685e",
-            "doc_e393694f5a06",
-            "doc_4fa9aac419d6"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -1880,24 +1936,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754341,
-              "score": 0.1263,
-              "document_id": "doc_9b0b33a3685e",
-              "filename": "65_map.html"
+              "index": 468560325690753571,
+              "score": 0.6236,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754657,
-              "score": 0.0955,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753568,
+              "score": 0.5936,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753703,
-              "score": 0.0801,
-              "document_id": "doc_4fa9aac419d6",
-              "filename": "67_pointer.html"
+              "index": 468560325690753603,
+              "score": 0.5919,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -2176,16 +2232,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_75627d8c5517",
-            "doc_b7e03749c833",
-            "doc_ead7cf52dd71"
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -2204,6 +2260,13 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753569,
+              "score": 0.5709,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690754258,
               "score": 0.5529,
               "document_id": "doc_75627d8c5517",
@@ -2211,17 +2274,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754465,
-              "score": 0.1679,
-              "document_id": "doc_b7e03749c833",
-              "filename": "作品报告（含撰写指导）8.1.pdf"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754746,
-              "score": 0.1109,
-              "document_id": "doc_ead7cf52dd71",
-              "filename": "62_string.html"
+              "index": 468560325690753580,
+              "score": 0.531,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -2500,16 +2556,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_b7e03749c833",
-            "doc_b7e03749c833",
-            "doc_28be467a0861"
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -2528,6 +2584,13 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753556,
+              "score": 0.5794,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690754463,
               "score": 0.5567,
               "document_id": "doc_b7e03749c833",
@@ -2535,17 +2598,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754520,
-              "score": 0.5382,
-              "document_id": "doc_b7e03749c833",
-              "filename": "作品报告（含撰写指导）8.1.pdf"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753545,
-              "score": 0.4882,
-              "document_id": "doc_28be467a0861",
-              "filename": "LLM4Sensing_第5-6页_排版重做版.pptx"
+              "index": 468560325690753594,
+              "score": 0.5539,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -2823,14 +2879,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -2844,6 +2903,27 @@
               "collection": "rag_all",
               "index": 468560325690753590,
               "score": 0.7335,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753598,
+              "score": 0.7183,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753594,
+              "score": 0.7057,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753596,
+              "score": 0.6769,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -3126,14 +3206,14 @@
             "doc_3f570a771fd1",
             "doc_56a675f39c23",
             "doc_56a675f39c23",
-            "doc_9b0b33a3685e"
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.6,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -3166,10 +3246,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754366,
-              "score": 0.5177,
-              "document_id": "doc_9b0b33a3685e",
-              "filename": "65_map.html"
+              "index": 468560325690753592,
+              "score": 0.5758,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -3772,16 +3852,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
-            "doc_2465175ccf4b",
-            "doc_4fa9aac419d6",
-            "doc_4fa9aac419d6"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_2465175ccf4b"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -3800,24 +3880,24 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753600,
+              "score": 0.6412,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753557,
+              "score": 0.6219,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753508,
               "score": 0.6093,
               "document_id": "doc_2465175ccf4b",
               "filename": "80_method.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753730,
-              "score": 0.5825,
-              "document_id": "doc_4fa9aac419d6",
-              "filename": "67_pointer.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753699,
-              "score": 0.5781,
-              "document_id": "doc_4fa9aac419d6",
-              "filename": "67_pointer.html"
             }
           ]
         }
@@ -4096,16 +4176,16 @@
           "ranked_doc_ids": [
             "doc_e393694f5a06",
             "doc_e393694f5a06",
+            "doc_e393694f5a06",
             "doc_40926030450d",
-            "doc_40926030450d",
-            "doc_9d2929e5f287"
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -4124,6 +4204,13 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690754669,
+              "score": 0.6737,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753620,
               "score": 0.6552,
               "document_id": "doc_40926030450d",
@@ -4131,17 +4218,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753618,
-              "score": 0.6215,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754402,
-              "score": 0.0917,
-              "document_id": "doc_9d2929e5f287",
-              "filename": "52_condition.html"
+              "index": 468560325690754655,
+              "score": 0.6388,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -4743,14 +4823,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
             "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -4764,6 +4847,27 @@
               "collection": "rag_all",
               "index": 468560325690754596,
               "score": 0.7001,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754594,
+              "score": 0.6928,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754592,
+              "score": 0.6735,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754599,
+              "score": 0.656,
               "document_id": "doc_e393694f5a06",
               "filename": "1_grammer.html"
             }
@@ -5044,14 +5148,16 @@
           "ranked_doc_ids": [
             "doc_e393694f5a06",
             "doc_e393694f5a06",
-            "doc_d85d9e1df100"
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -5070,10 +5176,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754553,
-              "score": 0.5246,
-              "document_id": "doc_d85d9e1df100",
-              "filename": "55_loop.html"
+              "index": 468560325690754594,
+              "score": 0.6911,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754596,
+              "score": 0.6107,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754595,
+              "score": 0.5867,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -5352,15 +5472,16 @@
           "ranked_doc_ids": [
             "doc_e393694f5a06",
             "doc_e393694f5a06",
-            "doc_5e3321826306",
-            "doc_75627d8c5517"
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -5379,17 +5500,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753940,
-              "score": 0.5795,
-              "document_id": "doc_5e3321826306",
-              "filename": "30_constant.html"
+              "index": 468560325690754632,
+              "score": 0.6723,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754224,
-              "score": 0.0667,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690754626,
+              "score": 0.6704,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754630,
+              "score": 0.5985,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -6318,7 +6446,7 @@
             "doc_40926030450d",
             "doc_e393694f5a06",
             "doc_40926030450d",
-            "doc_67b953f62c96"
+            "doc_40926030450d"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
@@ -6358,10 +6486,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754024,
-              "score": 0.6416,
-              "document_id": "doc_67b953f62c96",
-              "filename": "10_datatype.html"
+              "index": 468560325690753618,
+              "score": 0.6526,
+              "document_id": "doc_40926030450d",
+              "filename": "69_func.html"
             }
           ]
         }
@@ -6640,15 +6768,16 @@
           "ranked_doc_ids": [
             "doc_e393694f5a06",
             "doc_e393694f5a06",
-            "doc_5e3321826306",
-            "doc_542551a603e7"
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -6667,17 +6796,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753938,
-              "score": 0.6029,
-              "document_id": "doc_5e3321826306",
-              "filename": "30_constant.html"
+              "index": 468560325690754632,
+              "score": 0.6789,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753761,
-              "score": 0.5746,
-              "document_id": "doc_542551a603e7",
-              "filename": "45_inout.html"
+              "index": 468560325690754629,
+              "score": 0.6701,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754684,
+              "score": 0.6644,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -6957,14 +7093,15 @@
             "doc_e393694f5a06",
             "doc_d85d9e1df100",
             "doc_e393694f5a06",
-            "doc_9d2929e5f287"
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -6990,10 +7127,17 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754389,
-              "score": 0.075,
-              "document_id": "doc_9d2929e5f287",
-              "filename": "52_condition.html"
+              "index": 468560325690754676,
+              "score": 0.6966,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754665,
+              "score": 0.6778,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -7597,7 +7741,7 @@
             "doc_67b953f62c96",
             "doc_67b953f62c96",
             "doc_40926030450d",
-            "doc_75627d8c5517",
+            "doc_67b953f62c96",
             "doc_75627d8c5517"
           ],
           "recall@1": 1,
@@ -7605,7 +7749,7 @@
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.6,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -7631,15 +7775,15 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754281,
-              "score": 0.602,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690754030,
+              "score": 0.615,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754216,
-              "score": 0.5499,
+              "index": 468560325690754281,
+              "score": 0.602,
               "document_id": "doc_75627d8c5517",
               "filename": "40_variable.html"
             }
@@ -7920,9 +8064,9 @@
           "ranked_doc_ids": [
             "doc_40926030450d",
             "doc_40926030450d",
-            "doc_4fa9aac419d6",
-            "doc_e393694f5a06",
-            "doc_e393694f5a06"
+            "doc_40926030450d",
+            "doc_40926030450d",
+            "doc_4fa9aac419d6"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
@@ -7948,24 +8092,24 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753626,
+              "score": 0.6611,
+              "document_id": "doc_40926030450d",
+              "filename": "69_func.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753620,
+              "score": 0.6444,
+              "document_id": "doc_40926030450d",
+              "filename": "69_func.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753697,
               "score": 0.6365,
               "document_id": "doc_4fa9aac419d6",
               "filename": "67_pointer.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754592,
-              "score": 0.62,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754662,
-              "score": 0.5944,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
             }
           ]
         }
@@ -8246,7 +8390,7 @@
             "doc_75627d8c5517",
             "doc_e393694f5a06",
             "doc_e393694f5a06",
-            "doc_40926030450d"
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
@@ -8286,10 +8430,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753632,
-              "score": 0.5599,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754657,
+              "score": 0.5866,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -8892,15 +9036,16 @@
           "ranked_doc_ids": [
             "doc_67b953f62c96",
             "doc_67b953f62c96",
-            "doc_40926030450d",
-            "doc_40926030450d"
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -8919,17 +9064,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753634,
-              "score": 0.6023,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754079,
+              "score": 0.6805,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753618,
-              "score": 0.5619,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754081,
+              "score": 0.649,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754082,
+              "score": 0.6468,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
             }
           ]
         }
@@ -9208,15 +9360,16 @@
           "ranked_doc_ids": [
             "doc_67b953f62c96",
             "doc_67b953f62c96",
-            "doc_40926030450d",
-            "doc_40926030450d"
+            "doc_67b953f62c96",
+            "doc_67b953f62c96",
+            "doc_67b953f62c96"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -9235,17 +9388,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753620,
-              "score": 0.6159,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754026,
+              "score": 0.7619,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753618,
-              "score": 0.553,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754025,
+              "score": 0.7303,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754071,
+              "score": 0.6326,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
             }
           ]
         }
@@ -9848,17 +10008,17 @@
           "ranked_doc_ids": [
             "doc_67f86e0aceb1",
             "doc_67f86e0aceb1",
-            "doc_75627d8c5517",
-            "doc_40926030450d",
-            "doc_5e3321826306"
+            "doc_67f86e0aceb1",
+            "doc_67f86e0aceb1",
+            "doc_67f86e0aceb1"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
           "recall@3": 0,
           "precision@3": 0.0,
-          "recall@5": 1,
-          "precision@5": 0.2,
-          "mrr": 0.2,
+          "recall@5": 0,
+          "precision@5": 0.0,
+          "mrr": 0.0,
           "top_hits": [
             {
               "collection": "rag_all",
@@ -9876,24 +10036,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754292,
-              "score": 0.6106,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690754091,
+              "score": 0.7264,
+              "document_id": "doc_67f86e0aceb1",
+              "filename": "60_slice.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753626,
-              "score": 0.6021,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754087,
+              "score": 0.6901,
+              "document_id": "doc_67f86e0aceb1",
+              "filename": "60_slice.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753912,
-              "score": 0.1829,
-              "document_id": "doc_5e3321826306",
-              "filename": "30_constant.html"
+              "index": 468560325690754132,
+              "score": 0.6589,
+              "document_id": "doc_67f86e0aceb1",
+              "filename": "60_slice.html"
             }
           ]
         }
@@ -10172,16 +10332,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_67f86e0aceb1",
-            "doc_56a675f39c23",
-            "doc_75627d8c5517"
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_67f86e0aceb1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -10200,24 +10360,24 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753914,
+              "score": 0.6698,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753917,
+              "score": 0.6612,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690754093,
               "score": 0.6132,
               "document_id": "doc_67f86e0aceb1",
               "filename": "60_slice.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753846,
-              "score": 0.6048,
-              "document_id": "doc_56a675f39c23",
-              "filename": "75_struct.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754216,
-              "score": 0.5937,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
             }
           ]
         }
@@ -10496,15 +10656,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_75627d8c5517",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
             "doc_75627d8c5517"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -10523,15 +10684,22 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754266,
-              "score": 0.6146,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690753934,
+              "score": 0.6626,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754243,
-              "score": 0.5649,
+              "index": 468560325690753922,
+              "score": 0.642,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754266,
+              "score": 0.6146,
               "document_id": "doc_75627d8c5517",
               "filename": "40_variable.html"
             }
@@ -10812,16 +10980,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_e393694f5a06",
-            "doc_40926030450d",
-            "doc_d85d9e1df100"
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -10840,24 +11008,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754584,
-              "score": 0.1417,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753933,
+              "score": 0.643,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753608,
-              "score": 0.1083,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690753926,
+              "score": 0.6291,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754536,
-              "score": 0.0833,
-              "document_id": "doc_d85d9e1df100",
-              "filename": "55_loop.html"
+              "index": 468560325690753934,
+              "score": 0.6,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             }
           ]
         }
@@ -11135,14 +11303,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306",
             "doc_5e3321826306"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -11156,6 +11327,27 @@
               "collection": "rag_all",
               "index": 468560325690753934,
               "score": 0.6731,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753927,
+              "score": 0.6529,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753925,
+              "score": 0.5768,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753932,
+              "score": 0.5697,
               "document_id": "doc_5e3321826306",
               "filename": "30_constant.html"
             }
@@ -11437,15 +11629,15 @@
             "doc_5e3321826306",
             "doc_e393694f5a06",
             "doc_5e3321826306",
-            "doc_e393694f5a06",
-            "doc_67b953f62c96"
+            "doc_5e3321826306",
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.6,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -11471,17 +11663,17 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753948,
+              "score": 0.6643,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690754627,
               "score": 0.6533,
               "document_id": "doc_e393694f5a06",
               "filename": "1_grammer.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754024,
-              "score": 0.6061,
-              "document_id": "doc_67b953f62c96",
-              "filename": "10_datatype.html"
             }
           ]
         }
@@ -11761,15 +11953,15 @@
             "doc_5e3321826306",
             "doc_ead7cf52dd71",
             "doc_5e3321826306",
-            "doc_75627d8c5517",
-            "doc_e393694f5a06"
+            "doc_5e3321826306",
+            "doc_5e3321826306"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -11795,17 +11987,17 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754256,
-              "score": 0.6095,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690753942,
+              "score": 0.6558,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754629,
-              "score": 0.5863,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753938,
+              "score": 0.6521,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             }
           ]
         }
@@ -12084,16 +12276,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_75627d8c5517",
-            "doc_75627d8c5517",
-            "doc_67f86e0aceb1"
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -12112,24 +12304,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754292,
-              "score": 0.5381,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690753909,
+              "score": 0.6403,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754243,
-              "score": 0.5261,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690753934,
+              "score": 0.6258,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754138,
-              "score": 0.0864,
-              "document_id": "doc_67f86e0aceb1",
-              "filename": "60_slice.html"
+              "index": 468560325690753915,
+              "score": 0.6256,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             }
           ]
         }
@@ -12732,9 +12924,9 @@
           "ranked_doc_ids": [
             "doc_e393694f5a06",
             "doc_e393694f5a06",
+            "doc_e393694f5a06",
             "doc_28be467a0861",
-            "doc_4fa9aac419d6",
-            "doc_67f86e0aceb1"
+            "doc_e393694f5a06"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
@@ -12760,6 +12952,13 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690754667,
+              "score": 0.5692,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753546,
               "score": 0.5547,
               "document_id": "doc_28be467a0861",
@@ -12767,17 +12966,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753703,
-              "score": 0.5244,
-              "document_id": "doc_4fa9aac419d6",
-              "filename": "67_pointer.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754198,
-              "score": 0.5086,
-              "document_id": "doc_67f86e0aceb1",
-              "filename": "60_slice.html"
+              "index": 468560325690754668,
+              "score": 0.5404,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -13058,7 +13250,7 @@
             "doc_67f86e0aceb1",
             "doc_9b0b33a3685e",
             "doc_9b0b33a3685e",
-            "doc_e393694f5a06"
+            "doc_67f86e0aceb1"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
@@ -13098,10 +13290,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754621,
-              "score": 0.5279,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690754098,
+              "score": 0.5418,
+              "document_id": "doc_67f86e0aceb1",
+              "filename": "60_slice.html"
             }
           ]
         }
@@ -13381,16 +13573,16 @@
             "doc_a90db09f1b7d",
             "doc_224cb977f79b",
             "doc_224cb977f79b",
-            "doc_24fd41910512",
-            "doc_24fd41910512"
+            "doc_224cb977f79b",
+            "doc_224cb977f79b"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
           "recall@3": 0,
           "precision@3": 0.0,
-          "recall@5": 1,
-          "precision@5": 0.4,
-          "mrr": 0.25,
+          "recall@5": 0,
+          "precision@5": 0.0,
+          "mrr": 0.0,
           "top_hits": [
             {
               "collection": "rag_all",
@@ -13415,16 +13607,16 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753532,
-              "score": 0.6055,
-              "document_id": "doc_24fd41910512",
+              "index": 468560325690753464,
+              "score": 0.6528,
+              "document_id": "doc_224cb977f79b",
               "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753531,
-              "score": 0.5714,
-              "document_id": "doc_24fd41910512",
+              "index": 468560325690753468,
+              "score": 0.6199,
+              "document_id": "doc_224cb977f79b",
               "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
             }
           ]
@@ -13704,17 +13896,17 @@
           "ranked_doc_ids": [
             "doc_224cb977f79b",
             "doc_224cb977f79b",
-            "doc_f75ae06adf0a",
-            "doc_b7e03749c833",
-            "doc_24fd41910512"
+            "doc_224cb977f79b",
+            "doc_224cb977f79b",
+            "doc_f75ae06adf0a"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
           "recall@3": 0,
           "precision@3": 0.0,
-          "recall@5": 1,
-          "precision@5": 0.2,
-          "mrr": 0.2,
+          "recall@5": 0,
+          "precision@5": 0.0,
+          "mrr": 0.0,
           "top_hits": [
             {
               "collection": "rag_all",
@@ -13732,24 +13924,24 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753475,
+              "score": 0.6858,
+              "document_id": "doc_224cb977f79b",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753485,
+              "score": 0.6672,
+              "document_id": "doc_224cb977f79b",
+              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690754805,
               "score": 0.651,
               "document_id": "doc_f75ae06adf0a",
               "filename": "scanned_sample.pdf"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754515,
-              "score": 0.647,
-              "document_id": "doc_b7e03749c833",
-              "filename": "作品报告（含撰写指导）8.1.pdf"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753538,
-              "score": 0.6354,
-              "document_id": "doc_24fd41910512",
-              "filename": "附件2：大学生创新创业训练计划项目（创新训练类）立项申请书.pdf"
             }
           ]
         }
@@ -14028,15 +14220,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
-            "doc_b7e03749c833",
-            "doc_9d2929e5f287"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -14055,17 +14248,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754520,
-              "score": 0.5675,
-              "document_id": "doc_b7e03749c833",
-              "filename": "作品报告（含撰写指导）8.1.pdf"
+              "index": 468560325690753557,
+              "score": 0.6325,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754384,
-              "score": 0.5123,
-              "document_id": "doc_9d2929e5f287",
-              "filename": "52_condition.html"
+              "index": 468560325690753600,
+              "score": 0.6077,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753583,
+              "score": 0.5891,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -14669,15 +14869,15 @@
             "doc_3f570a771fd1",
             "doc_d85d9e1df100",
             "doc_d85d9e1df100",
-            "doc_40926030450d",
-            "doc_3f570a771fd1"
+            "doc_d85d9e1df100",
+            "doc_d85d9e1df100"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.3333,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.2,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -14703,17 +14903,17 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753672,
-              "score": 0.5419,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754540,
+              "score": 0.5772,
+              "document_id": "doc_d85d9e1df100",
+              "filename": "55_loop.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753576,
-              "score": 0.1769,
-              "document_id": "doc_3f570a771fd1",
-              "filename": "data_structures.md"
+              "index": 468560325690754556,
+              "score": 0.5683,
+              "document_id": "doc_d85d9e1df100",
+              "filename": "55_loop.html"
             }
           ]
         }
@@ -14991,14 +15191,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -15012,6 +15215,27 @@
               "collection": "rag_all",
               "index": 468560325690753564,
               "score": 0.6718,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753566,
+              "score": 0.6586,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753567,
+              "score": 0.6535,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753603,
+              "score": 0.6359,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -15291,14 +15515,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -15312,6 +15539,27 @@
               "collection": "rag_all",
               "index": 468560325690753566,
               "score": 0.759,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753564,
+              "score": 0.6875,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753565,
+              "score": 0.6859,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753576,
+              "score": 0.6638,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -15591,14 +15839,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -15612,6 +15863,27 @@
               "collection": "rag_all",
               "index": 468560325690753568,
               "score": 0.8118,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753571,
+              "score": 0.7807,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753564,
+              "score": 0.6572,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753566,
+              "score": 0.6523,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -15891,14 +16163,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -15912,6 +16187,27 @@
               "collection": "rag_all",
               "index": 468560325690753568,
               "score": 0.7774,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753571,
+              "score": 0.7404,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753564,
+              "score": 0.7052,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753565,
+              "score": 0.6434,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -16194,7 +16490,7 @@
             "doc_9b0b33a3685e",
             "doc_9b0b33a3685e",
             "doc_3f570a771fd1",
-            "doc_f75ae06adf0a"
+            "doc_9b0b33a3685e"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
@@ -16234,10 +16530,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754784,
-              "score": 0.5558,
-              "document_id": "doc_f75ae06adf0a",
-              "filename": "scanned_sample.pdf"
+              "index": 468560325690754351,
+              "score": 0.5914,
+              "document_id": "doc_9b0b33a3685e",
+              "filename": "65_map.html"
             }
           ]
         }
@@ -16518,7 +16814,7 @@
             "doc_9b0b33a3685e",
             "doc_9b0b33a3685e",
             "doc_3f570a771fd1",
-            "doc_f75ae06adf0a"
+            "doc_9b0b33a3685e"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
@@ -16558,10 +16854,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754784,
-              "score": 0.5605,
-              "document_id": "doc_f75ae06adf0a",
-              "filename": "scanned_sample.pdf"
+              "index": 468560325690754351,
+              "score": 0.5787,
+              "document_id": "doc_9b0b33a3685e",
+              "filename": "65_map.html"
             }
           ]
         }
@@ -16842,14 +17138,14 @@
             "doc_3f570a771fd1",
             "doc_542551a603e7",
             "doc_e393694f5a06",
-            "doc_e393694f5a06"
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.6,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -16882,10 +17178,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754631,
-              "score": 0.512,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753602,
+              "score": 0.5297,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -17165,15 +17461,15 @@
             "doc_3f570a771fd1",
             "doc_542551a603e7",
             "doc_3f570a771fd1",
-            "doc_e393694f5a06",
-            "doc_9b0b33a3685e"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -17199,17 +17495,17 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754675,
-              "score": 0.5477,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753578,
+              "score": 0.6178,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754311,
-              "score": 0.5289,
-              "document_id": "doc_9b0b33a3685e",
-              "filename": "65_map.html"
+              "index": 468560325690753592,
+              "score": 0.5665,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -17490,7 +17786,7 @@
             "doc_9d2929e5f287",
             "doc_b7e03749c833",
             "doc_b7e03749c833",
-            "doc_9d2929e5f287"
+            "doc_b7e03749c833"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
@@ -17530,10 +17826,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754378,
-              "score": 0.5293,
-              "document_id": "doc_9d2929e5f287",
-              "filename": "52_condition.html"
+              "index": 468560325690754480,
+              "score": 0.5455,
+              "document_id": "doc_b7e03749c833",
+              "filename": "作品报告（含撰写指导）8.1.pdf"
             }
           ]
         }
@@ -18135,14 +18431,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -18156,6 +18455,27 @@
               "collection": "rag_all",
               "index": 468560325690753594,
               "score": 0.7365,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753592,
+              "score": 0.7326,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753596,
+              "score": 0.7053,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753556,
+              "score": 0.6946,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -18436,14 +18756,16 @@
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
             "doc_3f570a771fd1",
-            "doc_9b0b33a3685e"
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -18462,10 +18784,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754351,
-              "score": 0.5077,
-              "document_id": "doc_9b0b33a3685e",
-              "filename": "65_map.html"
+              "index": 468560325690753592,
+              "score": 0.8199,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753594,
+              "score": 0.8013,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753598,
+              "score": 0.7065,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
             }
           ]
         }
@@ -18743,14 +19079,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
+            "doc_3f570a771fd1",
             "doc_3f570a771fd1"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -18764,6 +19103,27 @@
               "collection": "rag_all",
               "index": 468560325690753603,
               "score": 0.756,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753570,
+              "score": 0.7459,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753571,
+              "score": 0.6961,
+              "document_id": "doc_3f570a771fd1",
+              "filename": "data_structures.md"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753564,
+              "score": 0.6727,
               "document_id": "doc_3f570a771fd1",
               "filename": "data_structures.md"
             }
@@ -19046,14 +19406,14 @@
             "doc_40926030450d",
             "doc_40926030450d",
             "doc_75627d8c5517",
-            "doc_e393694f5a06"
+            "doc_40926030450d"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.3333,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.2,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -19086,10 +19446,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754586,
-              "score": 0.2025,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753620,
+              "score": 0.6973,
+              "document_id": "doc_40926030450d",
+              "filename": "69_func.html"
             }
           ]
         }
@@ -19367,14 +19727,17 @@
         "production": {
           "ranked_doc_ids": [
             "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
+            "doc_e393694f5a06",
             "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -19388,6 +19751,27 @@
               "collection": "rag_all",
               "index": 468560325690754594,
               "score": 0.6614,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754592,
+              "score": 0.6537,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754599,
+              "score": 0.6501,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690754596,
+              "score": 0.647,
               "document_id": "doc_e393694f5a06",
               "filename": "1_grammer.html"
             }
@@ -19668,16 +20052,16 @@
           "ranked_doc_ids": [
             "doc_e393694f5a06",
             "doc_e393694f5a06",
+            "doc_e393694f5a06",
             "doc_40926030450d",
-            "doc_40926030450d",
-            "doc_d85d9e1df100"
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -19696,6 +20080,13 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690754614,
+              "score": 0.6808,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753620,
               "score": 0.6674,
               "document_id": "doc_40926030450d",
@@ -19703,17 +20094,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753608,
-              "score": 0.2179,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754536,
-              "score": 0.2107,
-              "document_id": "doc_d85d9e1df100",
-              "filename": "55_loop.html"
+              "index": 468560325690754617,
+              "score": 0.6517,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -19993,15 +20377,15 @@
             "doc_e393694f5a06",
             "doc_e393694f5a06",
             "doc_75627d8c5517",
-            "doc_40926030450d",
-            "doc_75627d8c5517"
+            "doc_e393694f5a06",
+            "doc_e393694f5a06"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -20027,17 +20411,17 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753620,
-              "score": 0.6247,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
+              "index": 468560325690754597,
+              "score": 0.6675,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754292,
-              "score": 0.579,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
+              "index": 468560325690754592,
+              "score": 0.6486,
+              "document_id": "doc_e393694f5a06",
+              "filename": "1_grammer.html"
             }
           ]
         }
@@ -20965,15 +21349,15 @@
             "doc_67b953f62c96",
             "doc_67b953f62c96",
             "doc_5e3321826306",
-            "doc_2465175ccf4b",
-            "doc_75627d8c5517"
+            "doc_67b953f62c96",
+            "doc_2465175ccf4b"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
           "precision@3": 0.6667,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.6,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -20999,17 +21383,17 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690754030,
+              "score": 0.6848,
+              "document_id": "doc_67b953f62c96",
+              "filename": "10_datatype.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753495,
               "score": 0.6699,
               "document_id": "doc_2465175ccf4b",
               "filename": "80_method.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690754292,
-              "score": 0.6425,
-              "document_id": "doc_75627d8c5517",
-              "filename": "40_variable.html"
             }
           ]
         }
@@ -21289,8 +21673,8 @@
             "doc_ead7cf52dd71",
             "doc_ead7cf52dd71",
             "doc_56a675f39c23",
-            "doc_40926030450d",
-            "doc_5e3321826306"
+            "doc_ead7cf52dd71",
+            "doc_40926030450d"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
@@ -21323,17 +21707,17 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690754744,
+              "score": 0.6923,
+              "document_id": "doc_ead7cf52dd71",
+              "filename": "62_string.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753618,
               "score": 0.6805,
               "document_id": "doc_40926030450d",
               "filename": "69_func.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753940,
-              "score": 0.6803,
-              "document_id": "doc_5e3321826306",
-              "filename": "30_constant.html"
             }
           ]
         }
@@ -21614,7 +21998,7 @@
             "doc_40926030450d",
             "doc_40926030450d",
             "doc_e393694f5a06",
-            "doc_e393694f5a06"
+            "doc_40926030450d"
           ],
           "recall@1": 0,
           "precision@1": 0.0,
@@ -21654,10 +22038,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754655,
-              "score": 0.5898,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753620,
+              "score": 0.6222,
+              "document_id": "doc_40926030450d",
+              "filename": "69_func.html"
             }
           ]
         }
@@ -21938,7 +22322,7 @@
             "doc_ead7cf52dd71",
             "doc_e393694f5a06",
             "doc_ead7cf52dd71",
-            "doc_e393694f5a06"
+            "doc_ead7cf52dd71"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
@@ -21978,10 +22362,10 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754629,
-              "score": 0.5371,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690754744,
+              "score": 0.6998,
+              "document_id": "doc_ead7cf52dd71",
+              "filename": "62_string.html"
             }
           ]
         }
@@ -22908,16 +23292,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_56a675f39c23",
-            "doc_56a675f39c23",
-            "doc_40926030450d"
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_56a675f39c23"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 0.8,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -22936,24 +23320,24 @@
             },
             {
               "collection": "rag_all",
+              "index": 468560325690753938,
+              "score": 0.6759,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
+              "index": 468560325690753927,
+              "score": 0.6704,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
+            },
+            {
+              "collection": "rag_all",
               "index": 468560325690753866,
               "score": 0.5997,
               "document_id": "doc_56a675f39c23",
               "filename": "75_struct.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753836,
-              "score": 0.5557,
-              "document_id": "doc_56a675f39c23",
-              "filename": "75_struct.html"
-            },
-            {
-              "collection": "rag_all",
-              "index": 468560325690753608,
-              "score": 0.0949,
-              "document_id": "doc_40926030450d",
-              "filename": "69_func.html"
             }
           ]
         }
@@ -23232,16 +23616,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_56a675f39c23",
-            "doc_e393694f5a06",
-            "doc_66c9331f45d6"
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -23260,24 +23644,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753852,
-              "score": 0.1571,
-              "document_id": "doc_56a675f39c23",
-              "filename": "75_struct.html"
+              "index": 468560325690753942,
+              "score": 0.7479,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754655,
-              "score": 0.1371,
-              "document_id": "doc_e393694f5a06",
-              "filename": "1_grammer.html"
+              "index": 468560325690753946,
+              "score": 0.6222,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753984,
-              "score": 0.0457,
-              "document_id": "doc_66c9331f45d6",
-              "filename": "85_interface.html"
+              "index": 468560325690753937,
+              "score": 0.6175,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             }
           ]
         }
@@ -23556,16 +23940,16 @@
           "ranked_doc_ids": [
             "doc_5e3321826306",
             "doc_5e3321826306",
-            "doc_9d2929e5f287",
-            "doc_66c9331f45d6",
-            "doc_66c9331f45d6"
+            "doc_5e3321826306",
+            "doc_5e3321826306",
+            "doc_5e3321826306"
           ],
           "recall@1": 1,
           "precision@1": 1.0,
           "recall@3": 1,
-          "precision@3": 0.6667,
+          "precision@3": 1.0,
           "recall@5": 1,
-          "precision@5": 0.4,
+          "precision@5": 1.0,
           "mrr": 1.0,
           "top_hits": [
             {
@@ -23584,24 +23968,24 @@
             },
             {
               "collection": "rag_all",
-              "index": 468560325690754413,
-              "score": 0.5624,
-              "document_id": "doc_9d2929e5f287",
-              "filename": "52_condition.html"
+              "index": 468560325690753943,
+              "score": 0.6673,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753953,
-              "score": 0.0556,
-              "document_id": "doc_66c9331f45d6",
-              "filename": "85_interface.html"
+              "index": 468560325690753942,
+              "score": 0.6413,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             },
             {
               "collection": "rag_all",
-              "index": 468560325690753984,
-              "score": 0.0378,
-              "document_id": "doc_66c9331f45d6",
-              "filename": "85_interface.html"
+              "index": 468560325690753948,
+              "score": 0.6167,
+              "document_id": "doc_5e3321826306",
+              "filename": "30_constant.html"
             }
           ]
         }
@@ -23641,13 +24025,13 @@
     },
     "production": {
       "questions": 74,
-      "mrr": 0.8601,
+      "mrr": 0.8514,
       "recall@1": 0.8378,
       "precision@1": 0.8378,
       "recall@3": 0.8649,
-      "precision@3": 0.5135,
-      "recall@5": 0.9054,
-      "precision@5": 0.3378
+      "precision@3": 0.6667,
+      "recall@5": 0.8649,
+      "precision@5": 0.6108
     }
   }
 }

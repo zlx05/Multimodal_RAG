@@ -7,7 +7,6 @@
 import hashlib
 import ipaddress
 import socket
-import shutil
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
@@ -36,8 +35,12 @@ from ..rag.document_registry import (
     register_document,
     remove_document,
 )
+from ..rag.hybrid_pipeline import SHARED_COLLECTION
 from ..rag.assets import asset_url, media_type, original_url
 from ..rag.chunking_profiles import PROFILES, profile_catalog
+# 复用 routes_retrieval 的共享 pipeline 缓存（避免删除时重复加载 Embedding 模型）。
+# 单库后删除按 document_id 删 chunk——rag_all 是共享库，绝不能 drop_collection。
+from .routes_retrieval import _pipeline_cache
 from ..tasks import TaskStore, enqueue_ingestion
 
 router = APIRouter(prefix="/api/v1/documents", tags=["documents"])
@@ -320,10 +323,10 @@ async def list_documents(current_user: dict = Depends(get_current_user)):
 
 @router.delete("/{document_id}")
 async def delete_document(document_id: str, admin: dict = Depends(require_admin)):
-    """删除资料：源文件 + 注册记录 + 上传台账 + Milvus collection + Redis 任务。
+    """删除资料：源文件 + 注册记录 + 上传台账 + Milvus chunk + Redis 任务。
 
-    用于清理上传失败留下的残留（collection 从未建成），或整份移除资料。
-    幂等：collection/源文件不存在时静默跳过。
+    用于清理上传失败留下的残留（chunk 从未入库），或整份移除资料。
+    幂等：chunk/源文件不存在时静默跳过。
     """
     record = get_document(document_id)
     if record is None:
@@ -337,16 +340,11 @@ async def delete_document(document_id: str, admin: dict = Depends(require_admin)
     if source_path.is_file():
         source_path.unlink(missing_ok=True)
 
-    # Milvus collection（失败残留没有 collection，跳过即可）
-    collection_name = record.get("collection_name") or f"rag_{document_id}"
+    # Milvus chunk（单库后 rag_all 是共享库，绝不能 drop，按 document_id 删分片）
     try:
-        from pymilvus import connections, utility
-
-        connections.connect(alias="default", host=MILVUS_HOST, port=MILVUS_PORT)
-        if utility.has_collection(collection_name):
-            utility.drop_collection(collection_name)
+        _pipeline_cache.get(SHARED_COLLECTION, with_llm=False).delete_document_chunks(document_id)
     except Exception as exc:
-        print(f"[documents] 删除 collection {collection_name} 失败: {exc}")
+        print(f"[documents] 删除 {document_id} 的 chunk 失败: {exc}")
 
     # 上传校验台账
     upload = get_upload_by_document(document_id)
@@ -458,7 +456,7 @@ async def list_document_chunks(
         raise
     except Exception as exc:
         print(f"[documents] 读取可见性规则失败，跳过隐藏校验: {exc}")
-    collection_name = record.get("collection_name", f"rag_{document_id}")
+    collection_name = SHARED_COLLECTION
     if not utility.has_collection(collection_name):
         raise HTTPException(status_code=404, detail="该资料尚未完成入库")
 
@@ -476,8 +474,9 @@ async def list_document_chunks(
         )
         if field in available
     ]
+    # 单库后按 document_id 过滤，只返回该文档的 chunk
     rows = collection.query(
-        expr="chunk_index >= 0",
+        expr=f'document_id == "{document_id}"',
         output_fields=fields,
         limit=offset + limit,
     )
@@ -500,48 +499,3 @@ async def list_document_chunks(
     }
 
 
-@router.delete("/{document_id}")
-async def delete_document(document_id: str):
-    """删除文档文件及关联索引（当前简化：删文件 + 对应 collection）。"""
-    record = get_document(document_id)
-    collection_name = (record or {}).get("collection_name", f"rag_{document_id}")
-
-    # 删除文件
-    removed = False
-    for path in UPLOAD_DIR.glob(f"{document_id}.*"):
-        path.unlink(missing_ok=True)
-        removed = True
-    for path in Path(RAG_ORIGINAL_DIR).glob(f"{document_id}.*"):
-        path.unlink(missing_ok=True)
-        removed = True
-    work_dir = Path(RAG_WORK_DIR) / document_id
-    if work_dir.exists():
-        try:
-            if work_dir.is_dir():
-                shutil.rmtree(work_dir)
-            else:
-                work_dir.unlink(missing_ok=True)
-            removed = True
-        except OSError:
-            # Index deletion should remain available even if a temporary OCR
-            # artifact is locked by an external viewer.
-            pass
-    # 删除 Milvus collection
-    try:
-        from pymilvus import connections, utility
-
-        connections.connect(
-            alias="default",
-            host=__import__("os").getenv("MILVUS_HOST", "127.0.0.1"),
-            port=__import__("os").getenv("MILVUS_PORT", "19530"),
-        )
-        coll = collection_name
-        if utility.has_collection(coll):
-            utility.drop_collection(coll)
-            removed = True
-    except Exception:
-        pass
-    if not removed:
-        raise HTTPException(status_code=404, detail=f"文档 {document_id} 不存在")
-    remove_document(document_id)
-    return {"ok": True, "document_id": document_id}

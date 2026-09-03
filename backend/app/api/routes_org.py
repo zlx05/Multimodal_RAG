@@ -19,7 +19,11 @@ from ..core.config import DATA_DIR, RAG_ORIGINAL_DIR, RAG_WORK_DIR, REDIS_URL
 from ..db import org
 from ..db.seed import DEFAULT_ADMIN_ID, DEFAULT_CLASS_ID
 from ..rag.document_registry import get_document, remove_document
+from ..rag.hybrid_pipeline import SHARED_COLLECTION
 from ..tasks import TaskStore, enqueue_ingestion
+# 复用 routes_retrieval 的共享 pipeline 缓存（避免驳回/删除时重复加载 Embedding 模型）。
+# 单库后删除按 document_id 删 chunk——rag_all 是共享库，绝不能 drop_collection。
+from .routes_retrieval import _pipeline_cache
 
 router = APIRouter(prefix="/api/v1", tags=["org"])
 _task_store = TaskStore(REDIS_URL)
@@ -178,15 +182,20 @@ def _clear_terminal_tasks(document_id: str) -> None:
 
 # ---------------------------------------------------------------- 管理员审计
 
-def _collection_has_chunks(collection_name: str) -> bool:
-    """Milvus 里该 collection 是否存在且非空（判断资料是否真的已入库）。"""
+def _document_has_chunks(document_id: str) -> bool:
+    """该文档是否真的已入库（rag_all 中存在该 document_id 的 chunk）。
+
+    单库迁移后 collection 恒为 rag_all，绝不能看共享 collection 的 num_entities
+    （永远 >0，会静默跳过放行重入库）。改按 document_id 过滤查一条即可。
+    """
     try:
-        from pymilvus import Collection, connections, utility
+        from pymilvus import Collection, connections
 
         connections.connect(alias="default", host="127.0.0.1", port="19530")
-        if not utility.has_collection(collection_name):
-            return False
-        return int(Collection(collection_name).num_entities) > 0
+        rows = Collection(SHARED_COLLECTION).query(
+            expr=f'document_id == "{document_id}"', output_fields=["id"], limit=1
+        )
+        return len(rows) > 0
     except Exception:
         return False
 
@@ -206,7 +215,7 @@ def _audit_entry(upload: dict) -> dict:
         },
         # 是否真的已入库（有非空 collection）。放行按钮据此显示：
         # approved 但未入库 = 上一次放行没生效/失败，需要再次放行补索引。
-        "indexed": _collection_has_chunks(doc.get("collection_name", "")),
+        "indexed": _document_has_chunks(upload["document_id"]),
     }
 
 
@@ -240,8 +249,8 @@ def approve_upload(upload_id: str, admin: dict = Depends(require_admin)):
     )
     record = get_document(upload["document_id"])
     if record:
-        collection_name = record.get("collection_name") or f"rag_{upload['document_id']}"
-        if not _collection_has_chunks(collection_name):
+        collection_name = record.get("collection_name") or SHARED_COLLECTION
+        if not _document_has_chunks(upload["document_id"]):
             # 清掉旧的卡死任务（REJECTED/FAILED），避免同一资料出现两张任务卡片。
             _clear_terminal_tasks(upload["document_id"])
             task_id = _task_store.create_task(
@@ -274,28 +283,21 @@ def reject_upload(upload_id: str, admin: dict = Depends(require_admin)):
         reviewed_at=time.time(),
         review_note="管理员驳回",
     )
-    record = get_document(upload["document_id"]) or {}
-    collection_name = record.get("collection_name") or f"rag_{upload['document_id']}"
     try:
-        from pymilvus import connections, utility
-
-        connections.connect(alias="default", host="127.0.0.1", port="19530")
-        if utility.has_collection(collection_name):
-            utility.drop_collection(collection_name)
+        # 单库后不 drop collection（rag_all 是全库），只删该文档的 chunk。
+        _pipeline_cache.get(SHARED_COLLECTION, with_llm=False).delete_document_chunks(upload["document_id"])
     except Exception as exc:
-        print(f"[org] 驳回时删除 collection {collection_name} 失败: {exc}")
+        print(f"[org] 驳回时删除 {upload['document_id']} 的 chunk 失败: {exc}")
     return {"status": "rejected"}
 
 
 @router.delete("/admin/uploads/{upload_id}")
 def delete_upload(upload_id: str, admin: dict = Depends(require_admin)):
-    """管理员删除：移除上传记录 + 文档记录 + 文件 + Milvus collection。"""
+    """管理员删除：移除上传记录 + 文档记录 + 文件 + Milvus chunk。"""
     upload = org.get_upload(upload_id)
     if upload is None:
         raise HTTPException(status_code=404, detail="上传记录不存在")
     document_id = upload["document_id"]
-    record = get_document(document_id) or {}
-    collection_name = record.get("collection_name", f"rag_{document_id}")
 
     # 删除文件与工作目录（与 routes_documents.delete_document 同逻辑）
     for path in UPLOAD_DIR.glob(f"{document_id}.*"):
@@ -309,13 +311,10 @@ def delete_upload(upload_id: str, admin: dict = Depends(require_admin)):
         except OSError:
             pass
     try:
-        from pymilvus import connections, utility
-
-        connections.connect(alias="default", host="127.0.0.1", port="19530")
-        if utility.has_collection(collection_name):
-            utility.drop_collection(collection_name)
-    except Exception:
-        pass
+        # 单库后不 drop collection（rag_all 是全库），只删该文档的 chunk。
+        _pipeline_cache.get(SHARED_COLLECTION, with_llm=False).delete_document_chunks(document_id)
+    except Exception as exc:
+        print(f"[org] 删除 {document_id} 的 chunk 失败: {exc}")
 
     org.delete_upload(upload_id)
     remove_document(document_id)

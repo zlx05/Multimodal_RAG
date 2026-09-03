@@ -2,7 +2,7 @@
 
 - 身份：get_current_user 回退**降级** u_admin（degraded=True），require_admin 一律 503
   （不会因为 DB 挂了升级成管理员权限）；非默认身份 503。
-- 目录：_visible_document_records / _collection_for_document 降级为磁盘+Milvus 重建。
+- 目录：_visible_document_records / _collection_for_document 降级为磁盘重建（单库后 collection 恒为 rag_all）。
 
 把 org._session_factory 与 document_registry._session_factory 换成抛
 OperationalError 的桩模拟 MySQL 挂掉；Milvus 用假连接返回 collection 列表。
@@ -33,11 +33,12 @@ def db_down(monkeypatch):
 @pytest.fixture
 def fake_milvus(monkeypatch):
     """_degraded_catalog_from_disk 内部 `from pymilvus import connections, utility`。"""
-    collections = {"rag_gao_shu_abc123def456", "rag_other_zzzzzzzzzzzz"}
     import pymilvus
 
+    # 单库迁移后只认 rag_all：has_collection("rag_all") 为真，其余为假
     monkeypatch.setattr(pymilvus.connections, "connect", lambda *a, **k: None)
-    monkeypatch.setattr(pymilvus.utility, "list_collections", lambda: collections)
+    monkeypatch.setattr(pymilvus.utility, "has_collection", lambda name: name == "rag_all")
+    monkeypatch.setattr(pymilvus.utility, "list_collections", lambda: ["rag_all"])
 
 
 def _seed_upload_dir(tmp_path, filename="doc_abc123def456.pdf") -> None:
@@ -100,23 +101,23 @@ def test_visible_records_degrades_to_disk_catalog(db_down, fake_milvus, monkeypa
     assert len(catalog) == 1
     item = catalog[0]
     assert item["document_id"] == "doc_abc123def456"
-    # collection 名通过 document_id 后缀精确匹配假 Milvus 里的真实 collection
-    assert item["collection_name"] == "rag_gao_shu_abc123def456"
+    # 单库迁移后 collection 名恒为 rag_all
+    assert item["collection_name"] == "rag_all"
     assert item.get("degraded") is True
 
 
 def test_uploaded_collections_degrades(db_down, fake_milvus, monkeypatch, tmp_path):
     _seed_upload_dir(tmp_path)
     monkeypatch.setattr(rr, "UPLOAD_DIR", tmp_path / "uploads")
-    assert rr._uploaded_collections() == ["rag_gao_shu_abc123def456"]
+    assert rr._uploaded_collections() == ["rag_all"]
 
 
 def test_collection_for_document_degraded(db_down, fake_milvus, monkeypatch, tmp_path):
     _seed_upload_dir(tmp_path)
     monkeypatch.setattr(rr, "UPLOAD_DIR", tmp_path / "uploads")
-    assert rr._collection_for_document("doc_abc123def456") == "rag_gao_shu_abc123def456"
-    # 磁盘上没有的 document_id → 默认 rag_<id>
-    assert rr._collection_for_document("doc_ghost") == "rag_doc_ghost"
+    # 单库后 collection 恒为 rag_all，与 document_id 无关
+    assert rr._collection_for_document("doc_abc123def456") == "rag_all"
+    assert rr._collection_for_document("doc_ghost") == "rag_all"
 
 
 def test_catalog_empty_when_milvus_also_down(db_down, monkeypatch, tmp_path):

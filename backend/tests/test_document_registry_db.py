@@ -50,7 +50,7 @@ def test_register_then_get_roundtrip(sqlite_db):
     assert fetched is not None
     for key in ("document_id", "filename", "source_path", "content_hash", "source_type"):
         assert fetched[key] == record[key]
-    assert fetched["collection_name"].startswith("rag_data_structures_")
+    assert fetched["collection_name"] == "rag_all"
     assert fetched["topic_label"] == "data_structures"
     assert fetched["created_at"] > 0
 
@@ -136,7 +136,7 @@ def test_list_documents_legacy_fallback(sqlite_db, tmp_path):
     item = next((d for d in docs if d["document_id"] == "doc_legacy"), None)
     assert item is not None
     assert item["legacy"] is True
-    assert item["collection_name"] == "rag_doc_legacy"
+    assert item["collection_name"] == "rag_all"
     assert item["size"] == len("legacy")
 
 

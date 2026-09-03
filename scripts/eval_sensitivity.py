@@ -1,16 +1,15 @@
-"""检索参数敏感性分析：扫描 top_k / RRF k / semantic floor，判断当前参数是否接近最优。
+"""检索参数敏感性分析：扫描 RRF k / relevance 权重，判断当前参数是否接近最优。
 
-对 data/eval/questions.jsonl 的 43 题，在 production 生产链路（`_federated_search`）
+对 data/eval/questions.jsonl 的评估题，在 production 生产链路（`_federated_search`）
 上逐个维度扫描参数，输出每个组合的 Recall@1/3/5 + MRR，与当前生产值对比。
 
-覆盖的参数（都是 `_federated_search` 现在带默认值的可选参数）：
-- per-collection top_k 倍数（本地 max(12, top_k*3) 里的 3）
-- RRF k（融合常数，默认 60）
-- semantic floor 下限 / 比例（semantic gate 的 max(min, best*ratio)）
+单库迁移（rag_all + document_id 分区）后删除了文档级路由门控，semantic floor 等
+gate 参数随门控一起删除，`_federated_search` 可调参数只剩 RRF k 与 relevance 打分
+权重（w_vector/w_term/w_rank）。
 
 用法（从仓库根目录运行）:
     python scripts/eval_sensitivity.py                     # 全维度扫描
-    python scripts/eval_sensitivity.py --dims top_k,rrf_k  # 只扫部分维度
+    python scripts/eval_sensitivity.py --dims rrf_k        # 只扫部分维度
     python scripts/eval_sensitivity.py --limit 3           # 冒烟
 """
 
@@ -22,9 +21,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from backend.app.rag.catalog import connect_milvus
 from backend.app.rag.eval.metrics import aggregate_metrics, evaluate_question
-from backend.app.rag.hybrid_pipeline import HybridRAGPipeline
 
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from eval_retrieval import load_questions, resolve_documents  # noqa: E402
@@ -33,22 +30,14 @@ DEFAULT_KS = (1, 3, 5)
 
 # 每个维度的候选值（第一个是当前生产值）
 GRIDS = {
-    # 每 collection 本地召回数 = max(12, top_k * mult)
-    "top_k_mult": [3, 4, 5, 6],
     # RRF 融合常数
     "rrf_k": [60, 40, 80, 100],
-    # semantic gate: floor = max(min, best * ratio)
-    "semantic_min": [0.48, 0.40, 0.55, 0.60],
-    "semantic_ratio": [0.82, 0.70, 0.90],
     # relevance 打分权重：score = w_vector*vec + w_term*term + w_rank*rank
     "weights": ["0.65/0.25/0.10", "0.55/0.35/0.10", "0.60/0.30/0.10", "0.50/0.40/0.10"],
 }
 
 CURRENT = {
-    "top_k_mult": 3,
     "rrf_k": 60,
-    "semantic_min": 0.48,
-    "semantic_ratio": 0.82,
     "weights": "0.65/0.25/0.10",
 }
 
@@ -69,8 +58,6 @@ def _run_production(question: str, collections: list[str], top_k: int, params: d
         question,
         collections,
         top_k,
-        semantic_floor_min=params["semantic_min"],
-        semantic_floor_ratio=params["semantic_ratio"],
         rrf_k=params["rrf_k"],
         w_vector=w_vector,
         w_term=w_term,
@@ -112,12 +99,9 @@ def main() -> None:
     if args.limit:
         questions = questions[: args.limit]
     documents = resolve_documents(PROJECT_ROOT / "data/document_registry.json")
-    collections = [d["collection_name"] for d in documents]
+    # 单库迁移后所有文档的 collection_name 都是 rag_all，去重后只有一个共享库。
+    collections = sorted({d["collection_name"] for d in documents})
     print(f"评估集 {len(questions)} 题，文档 {len(documents)} 份，扫描维度 {dims}")
-
-    connect_milvus()
-    # 预热 pipeline 缓存（_federated_search 内部用 _pipeline_cache，此处无需显式建）
-    print(f"Milvus connected, {len(collections)} collections")
 
     # 1. 当前生产值基线
     current = _score(CURRENT, questions, collections)
@@ -159,9 +143,9 @@ def main() -> None:
         "baseline": current,
         "dims": scan_results,
         "conclusion": (
-            "当前生产参数在五个维度上均为最优或持平：semantic_min 提高会明显掉指标 "
-            "(0.48→0.55 时 R@1 0.977→0.930)，其余维度 (top_k_mult / rrf_k / "
-            "semantic_ratio / weights) 在扫描范围内指标持平。现有参数已是局部最优，无需调整。"
+            "单库迁移后仅剩 RRF k 与 relevance 权重两个可调参数。rrf_k 在扫描范围内"
+            "指标持平（RRF 只决定候选顺序，最终排序由 relevance 分数给出）；weights "
+            "语义相似度主导是 65/25/10 的由来，偏离会掉召回。现有参数接近局部最优。"
         ),
     }
     out_path = Path(args.out)

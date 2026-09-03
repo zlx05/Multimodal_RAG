@@ -209,56 +209,66 @@ watch(() => workbench.defaultModel, (value) => {
 </script>
 
 <template>
-  <section class="chat-layout chat-with-history fade-up">
-    <aside class="history-panel panel" :class="{ open: showHistory }">
-      <div class="history-head">
-        <div class="history-title"><ChatsCircle :size="16" /> 历史会话</div>
-        <button class="quiet-link" type="button" @click="newConversation">新会话</button>
+  <section class="new-chat-layout">
+    <aside class="new-chat-sidebar" :class="{ open: showHistory }">
+      <div class="new-chat-sidebar-header">
+        <h3>历史会话</h3>
+        <button class="new-chat-btn primary" type="button" @click="newConversation">新会话</button>
       </div>
 
-      <div v-if="historyLoading && !historyList.length" class="history-note">加载中…</div>
-      <div v-else-if="historyError && !historyList.length" class="history-note">{{ historyError }}</div>
-      <ul v-else-if="historyList.length" class="history-list">
+      <div v-if="historyLoading && !historyList.length" class="history-loading">加载中…</div>
+      <div v-else-if="historyError && !historyList.length" class="history-error">{{ historyError }}</div>
+      <ul v-else-if="historyList.length" class="new-history-list">
         <li
           v-for="conversation in historyList"
           :key="conversation.id"
-          class="history-item"
+          class="new-history-item"
           :class="{ active: conversation.id === chatStore.conversationId }"
           @click="openConversation(conversation.id)"
         >
-          <div class="history-item-main">
-            <strong class="history-title-text">{{ conversation.title || "未命名会话" }}</strong>
-            <span v-if="conversation.last_message" class="history-preview">{{ conversation.last_message }}</span>
-            <span v-else-if="conversation.message_count" class="history-preview">{{ conversation.message_count }} 条消息</span>
+          <div class="history-item-content">
+            <strong>{{ conversation.title || "未命名会话" }}</strong>
+            <span>{{ conversation.last_message || `${conversation.message_count || 0} 条消息` }}</span>
           </div>
-          <span class="history-time">{{ formatTime(conversation.updated_at) }}</span>
-          <button class="history-delete" type="button" title="删除" @click.stop="removeConversation(conversation.id)">
-            <Trash :size="14" />
-          </button>
+          <div class="history-item-meta">
+            <span class="history-time">{{ formatTime(conversation.updated_at) }}</span>
+            <button class="history-delete-btn" type="button" @click.stop="removeConversation(conversation.id)">
+              <Trash :size="14" />
+            </button>
+          </div>
         </li>
       </ul>
-      <div v-else class="history-note">还没有历史会话，先问一个问题试试</div>
+      <div v-else class="history-empty">还没有历史会话</div>
     </aside>
 
-    <div class="chat-main">
-      <div class="chat-toolbar">
-        <div class="scope-control" role="group" aria-label="资料范围">
-          <div class="scope-options">
-            <button v-for="option in ([['auto', '自动选择'], ['all', '全部资料'], ['selected', '指定资料']] as const)" :key="option[0]" class="scope-option" :class="{ active: chatStore.scope === option[0] }" type="button" @click="setScope(option[0])">
+    <div class="new-chat-main">
+      <div class="new-chat-toolbar">
+        <div class="chat-toolbar-left">
+          <div class="scope-tabs">
+            <button
+              v-for="option in ([['auto', '自动选择'], ['all', '全部资料'], ['selected', '指定资料']] as const)"
+              :key="option[0]"
+              class="scope-tab"
+              :class="{ active: chatStore.scope === option[0] }"
+              type="button"
+              @click="setScope(option[0])"
+            >
               {{ option[1] }}
             </button>
           </div>
-        </div>
-        <div v-if="showManualScope" class="manual-scope">
-          <select id="document-select" v-model="chatStore.selectedDocument" class="control-select" @change="chatStore.persist()">
+          <select v-if="showManualScope" v-model="chatStore.selectedDocument" class="new-document-select" @change="chatStore.persist()">
             <option value="" disabled>选择资料</option>
-            <option v-for="document in completedDocuments" :key="document.document_id" :value="document.document_id">{{ document.topic_label || document.filename }} · {{ document.filename }}</option>
+            <option v-for="document in completedDocuments" :key="document.document_id" :value="document.document_id">
+              {{ document.topic_label || document.filename }}
+            </option>
           </select>
         </div>
-        <ModelSwitcher :models="workbench.models" :model="chatStore.selectedModel" @change="updateModel" />
-        <span class="toolbar-spacer"></span>
-        <button class="quiet-link history-toggle" type="button" @click="showHistory = !showHistory"><ChatsCircle :size="15" /> 历史</button>
-        <button v-if="chatStore.conversationId" class="quiet-link" type="button" title="清空本轮对话" @click="newConversation">新会话</button>
+        <div class="chat-toolbar-right">
+          <ModelSwitcher :models="workbench.models" :model="chatStore.selectedModel" @change="updateModel" />
+          <button class="icon-btn" type="button" @click="showHistory = !showHistory">
+            <ChatsCircle :size="18" />
+          </button>
+        </div>
       </div>
 
       <div v-if="status === 'active' || status === 'error'" class="answer-progress panel">
@@ -271,30 +281,32 @@ watch(() => workbench.defaultModel, (value) => {
         <p v-if="errorMessage" class="inline-error"><WarningCircle :size="16" /> {{ errorMessage }}</p>
       </div>
 
-      <div ref="answerBody" class="conversation">
-        <div v-if="!chatStore.turns.length" class="empty-state large">
-          <div class="empty-graphic"><ChatCenteredDots :size="27" /></div>
-          <strong>输入问题开始检索</strong>
+      <div ref="answerBody" class="new-conversation">
+        <div v-if="!chatStore.turns.length" class="new-empty-state">
+          <div class="empty-icon">
+            <ChatCenteredDots :size="64" />
+          </div>
+          <h3>输入问题开始检索</h3>
         </div>
 
         <template v-for="(turn, index) in chatStore.turns" :key="index">
-          <div v-if="turn.role === 'user'" class="turn turn-user">
-            <div class="turn-bubble">
+          <div v-if="turn.role === 'user'" class="new-turn new-turn-user">
+            <div class="turn-bubble-user">
               <p>{{ turn.content }}</p>
             </div>
           </div>
 
-          <div v-else class="turn turn-assistant">
-            <div class="turn-bubble" :class="{ error: turn.error }">
-              <div class="turn-heading">
-                <div class="answer-icon"><ChatCenteredDots :size="17" /></div>
-                <span v-if="turn.model" class="model-stamp">{{ turn.model }}</span>
+          <div v-else class="new-turn new-turn-assistant">
+            <div class="turn-bubble-assistant" :class="{ error: turn.error }">
+              <div class="answer-header">
+                <ChatCenteredDots :size="20" />
+                <span v-if="turn.model" class="model-badge">{{ turn.model }}</span>
               </div>
-              <div class="answer-copy" v-html="renderMarkdown(turn.content)"></div>
-              <div v-if="matchedDocsOf(turn).length" class="answer-trace" :class="{ 'original-links': isMember }">
+              <div class="answer-content" v-html="renderMarkdown(turn.content)"></div>
+              <div v-if="matchedDocsOf(turn).length" class="answer-sources" :class="{ 'original-links': isMember }">
                 <CheckCircle :size="15" />
                 <span>已从 {{ matchedDocsOf(turn).length }} 份资料中找到相关内容</span>
-                <!-- 学生视角：不展示召回片段，每个命中文档一个「定位到整体原文件」链接，点击打开整文件 -->
+                <!-- 学生视角：不展示召回片段，每个命中文档一个「定位到整体原文件」链接 -->
                 <template v-if="isMember">
                   <a
                     v-for="doc in matchedDocsOf(turn)"
@@ -306,7 +318,7 @@ watch(() => workbench.defaultModel, (value) => {
                     :title="doc.filename"
                   >定位到整体原文件：{{ doc.topic_label || doc.filename }}</a>
                 </template>
-                <!-- 老师视角：保留现有不可点芯片 -->
+                <!-- 老师视角：保留不可点芯片 -->
                 <template v-else>
                   <span v-for="document in turn.usedDocuments" :key="document.document_id" class="used-document">{{ document.topic_label || document.filename }}</span>
                 </template>
@@ -342,16 +354,17 @@ watch(() => workbench.defaultModel, (value) => {
         </template>
       </div>
 
-      <div class="chat-composer">
+      <div class="new-chat-composer">
         <textarea
-          id="question-input"
           v-model="question"
-          class="chat-composer-input"
+          class="new-chat-input"
           rows="2"
-          placeholder="输入你的问题，Enter 发送，Shift+Enter 换行…"
+          placeholder="输入你的问题"
           @keydown.enter.exact.prevent="ask"
         ></textarea>
-        <button class="primary-button" type="button" :disabled="!canAsk" @click="ask"><Sparkle :size="18" weight="bold" /> {{ status === "active" ? "处理中" : "发送" }} <ArrowRight :size="16" /></button>
+        <button class="new-send-btn" type="button" :disabled="!canAsk" @click="ask">
+          <Sparkle :size="18" /> {{ status === "active" ? "处理中" : "发送" }} <ArrowRight :size="16" />
+        </button>
       </div>
     </div>
   </section>

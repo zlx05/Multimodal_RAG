@@ -73,7 +73,10 @@ class RetrievalGateway(Protocol):
     """检索能力的注入点，由 routes_retrieval 实现，避免循环 import。"""
 
     def resolve_collections(self, scope: str, document_ids: list[str]) -> list[str]: ...
-    def federated_search(self, question: str, collections: list[str], top_k: int) -> tuple[list[dict], dict]: ...
+    def federated_search(
+        self, question: str, collections: list[str], top_k: int,
+        document_ids: list[str] | None = None,
+    ) -> tuple[list[dict], dict]: ...
     def serialize_source(self, item: dict) -> dict: ...
     def document_catalog(self) -> list[dict]: ...
 
@@ -531,16 +534,18 @@ def _run_search_tool(
     # 多路召回：主路用 LLM 选的检索词（通常=改写后），副路补原问题，扩展路补子主题。
     # 双路（Phase 2.2）：改写未变化（dual_question == question）时副路跳过，零额外开销。
     # 扩展（Phase 4）：每个扩展子问题各跑小 top_k，避免 broad 问题漏掉具体子主题。
-    fused, routing = gateway.federated_search(question, collections, top_k)
+    # document_ids 必须透传（否则 search_documents 工具会静默搜全库）：
+    # 单库迁移后范围收窄靠 Milvus document_id filter，而不是按 collection 分库。
+    fused, routing = gateway.federated_search(question, collections, top_k, document_ids=document_ids or None)
     results: list[list[dict]] = [fused]
     dual = bool(dual_question and dual_question.strip() and dual_question != question)
     if dual:
-        dual_fused, _ = gateway.federated_search(dual_question, collections, top_k)
+        dual_fused, _ = gateway.federated_search(dual_question, collections, top_k, document_ids=document_ids or None)
         results.append(dual_fused)
     used_expansions: list[str] = []
     for eq in expansion_queries:
         if eq and eq != question and eq != dual_question and eq not in used_expansions:
-            eq_fused, _ = gateway.federated_search(eq, collections, expansion_top_k)
+            eq_fused, _ = gateway.federated_search(eq, collections, expansion_top_k, document_ids=document_ids or None)
             results.append(eq_fused)
             used_expansions.append(eq)
     if len(results) > 1:

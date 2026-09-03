@@ -43,7 +43,7 @@ def _fake_gateway():
             "chunk_index": index,
         }
 
-    def federated_search(question, collections, top_k):
+    def federated_search(question, collections, top_k, document_ids=None):
         return [
             {
                 "collection": collections[0],
@@ -144,7 +144,7 @@ def _dual_gateway():
             "chunk_index": index,
         }
 
-    def federated_search(question, collections, top_k):
+    def federated_search(question, collections, top_k, document_ids=None):
         calls.append(question)
         if question == "原问题":
             return [
@@ -412,7 +412,7 @@ def test_probe_escalates_when_selected_empty(monkeypatch):
     from backend.app.api import routes_retrieval as rr
 
     monkeypatch.setattr(rr, "_resolve_collections", lambda req: ["rag_coll_1"])
-    monkeypatch.setattr(rr, "_federated_search", lambda q, c, k: ([], {"routing_strategy": "none"}))
+    monkeypatch.setattr(rr, "_federated_search", lambda q, c, k, document_ids=None: ([], {"routing_strategy": "none"}))
     req = SimpleNamespace(scope="auto")
     decision, escalated = _probe_and_escalate(req, _selected_decision(), "问题")
     assert escalated is True
@@ -424,7 +424,7 @@ def test_probe_keeps_decision_when_selected_has_hits(monkeypatch):
     from backend.app.api import routes_retrieval as rr
 
     monkeypatch.setattr(rr, "_resolve_collections", lambda req: ["rag_coll_1"])
-    monkeypatch.setattr(rr, "_federated_search", lambda q, c, k: ([{"score": 0.9}], {"routing_strategy": "lexical_gate"}))
+    monkeypatch.setattr(rr, "_federated_search", lambda q, c, k, document_ids=None: ([{"score": 0.9}], {"routing_strategy": "lexical_gate"}))
     decision, escalated = _probe_and_escalate(SimpleNamespace(scope="auto"), _selected_decision(), "问题")
     assert escalated is False
     assert decision.scope == "selected"
@@ -434,7 +434,7 @@ def test_probe_does_not_escalate_user_locked_selected(monkeypatch):
     from backend.app.api import routes_retrieval as rr
 
     monkeypatch.setattr(rr, "_resolve_collections", lambda req: ["rag_coll_1"])
-    monkeypatch.setattr(rr, "_federated_search", lambda q, c, k: ([], {"routing_strategy": "none"}))
+    monkeypatch.setattr(rr, "_federated_search", lambda q, c, k, document_ids=None: ([], {"routing_strategy": "none"}))
     req = SimpleNamespace(scope="selected")  # 用户显式锁定范围
     decision, escalated = _probe_and_escalate(req, _selected_decision(), "问题")
     assert escalated is False
@@ -550,7 +550,7 @@ def _expansion_gateway():
             "chunk_index": index,
         }
 
-    def federated_search(question, collections, top_k):
+    def federated_search(question, collections, top_k, document_ids=None):
         calls.append(question)
         if question == "go语言的数据类型":
             return [
